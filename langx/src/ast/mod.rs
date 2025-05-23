@@ -19,6 +19,12 @@ pub enum Expression {
         right: Box<Expression>,
     },
     
+    /// A unary operation (e.g., not x)
+    UnaryOp {
+        operator: UnaryOperator,
+        operand: Box<Expression>,
+    },
+    
     /// A function call (e.g., Call add with 1, 2)
     FunctionCall {
         name: String,
@@ -36,6 +42,13 @@ pub enum BinaryOperator {
     Minus,
     Times,
     Divide,
+    And,
+    Or,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub enum UnaryOperator {
+    Not,
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -89,6 +102,9 @@ impl fmt::Display for Expression {
             Expression::BinaryOp { left, operator, right } => {
                 write!(f, "({} {} {})", left, operator, right)
             },
+            Expression::UnaryOp { operator, operand } => {
+                write!(f, "{} {}", operator, operand)
+            },
             Expression::FunctionCall { name, arguments } => {
                 write!(f, "Call {} with ", name)?;
                 let args: Vec<String> = arguments.iter()
@@ -111,6 +127,16 @@ impl fmt::Display for BinaryOperator {
             BinaryOperator::Minus => write!(f, "minus"),
             BinaryOperator::Times => write!(f, "times"),
             BinaryOperator::Divide => write!(f, "divided by"),
+            BinaryOperator::And => write!(f, "and"),
+            BinaryOperator::Or => write!(f, "or"),
+        }
+    }
+}
+
+impl fmt::Display for UnaryOperator {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            UnaryOperator::Not => write!(f, "not"),
         }
     }
 }

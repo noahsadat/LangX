@@ -8,18 +8,18 @@ pub Program: Program = {
 };
 
 pub Statement: Statement = {
-    "Set" <variable:Identifier> "to" <value:Expression> "." => {
+    "Set" <variable:Identifier> "to" <value:LogicalOr> "." => {
         Statement::Assignment { variable, value }
     },
     
-    "If" <condition:Condition> "," <then_branch:Statement> => {
+    "If" <condition:LogicalOr> "," <then_branch:Statement> => {
         Statement::Conditional { 
             condition, 
             then_branch: Box::new(then_branch) 
         }
     },
     
-    "print" <expr:Expression> "." => {
+    "print" <expr:LogicalOr> "." => {
         Statement::Print(expr)
     },
     
@@ -57,7 +57,7 @@ pub Statement: Statement = {
         }
     },
     
-    "Return" <expr:Expression?> "." => {
+    "Return" <expr:LogicalOr?> "." => {
         Statement::Return(expr)
     },
     
@@ -67,14 +67,58 @@ pub Statement: Statement = {
     },
 };
 
-Condition: Expression = {
-    <left:Expression> "is" "greater" "than" <right:Expression> => {
-        Expression::BinaryOp {
-            left: Box::new(left),
-            operator: BinaryOperator::GreaterThan,
-            right: Box::new(right),
-        }
+// LogicalOr: lowest precedence (right recursion)
+LogicalOr: Expression = {
+    <left:LogicalAnd> "or" <right:LogicalOr> => Expression::BinaryOp {
+        left: Box::new(left),
+        operator: BinaryOperator::Or,
+        right: Box::new(right),
     },
+    <and:LogicalAnd> => and,
+};
+
+// LogicalAnd: next precedence (right recursion)
+LogicalAnd: Expression = {
+    <left:Comparison> "and" <right:LogicalAnd> => Expression::BinaryOp {
+        left: Box::new(left),
+        operator: BinaryOperator::And,
+        right: Box::new(right),
+    },
+    <cmp:Comparison> => cmp,
+};
+
+// Comparison: next precedence (right recursion)
+Comparison: Expression = {
+    <left:LogicalNot> "is" "greater" "than" <right:LogicalNot> => Expression::BinaryOp {
+        left: Box::new(left),
+        operator: BinaryOperator::GreaterThan,
+        right: Box::new(right),
+    },
+    <left:LogicalNot> "is" "less" "than" <right:LogicalNot> => Expression::BinaryOp {
+        left: Box::new(left),
+        operator: BinaryOperator::LessThan,
+        right: Box::new(right),
+    },
+    <left:LogicalNot> "is" "equal" "to" <right:LogicalNot> => Expression::BinaryOp {
+        left: Box::new(left),
+        operator: BinaryOperator::Equal,
+        right: Box::new(right),
+    },
+    <left:LogicalNot> "is" "not" "equal" "to" <right:LogicalNot> => Expression::BinaryOp {
+        left: Box::new(left),
+        operator: BinaryOperator::NotEqual,
+        right: Box::new(right),
+    },
+    <not:LogicalNot> => not,
+};
+
+// LogicalNot: highest precedence (unary)
+LogicalNot: Expression = {
+    "not" <expr:LogicalNot> => Expression::UnaryOp {
+        operator: UnaryOperator::Not,
+        operand: Box::new(expr),
+    },
+    <expr:Expression> => expr,
 };
 
 // Atom: highest precedence
@@ -122,11 +166,6 @@ TermOp: (BinaryOperator, Expression) = {
     "minus" <rhs:Factor> => (BinaryOperator::Minus, rhs),
 };
 
-// Top-level
-Expression: Expression = {
-    <term:Term> => term,
-};
-
 Number: i64 = {
     <n:"Number"> => n,
 };
@@ -170,6 +209,11 @@ PrimaryExpression: Expression = {
     <id:Identifier> => Expression::Variable(id),
 };
 
+// Restore Expression as an alias for Term
+Expression: Expression = {
+    <term:Term> => term,
+};
+
 extern {
     type Location = usize;
     type Error = String;
@@ -206,5 +250,9 @@ extern {
         "Number" => Token::Number(<i64>),
         "Identifier" => Token::Identifier(<String>),
         "StringLiteral" => Token::StringLiteral(<String>),
+        "less" => Token::Less,
+        "equal" => Token::Equal,
+        "not" => Token::Not,
+        "or" => Token::Or,
     }
 } 

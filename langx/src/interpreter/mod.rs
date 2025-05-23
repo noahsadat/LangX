@@ -1,4 +1,4 @@
-use crate::ast::{Program, Statement, Expression, BinaryOperator};
+use crate::ast::{Program, Statement, Expression, BinaryOperator, UnaryOperator};
 use std::collections::HashMap;
 
 /// Value types that can be stored in variables
@@ -224,7 +224,10 @@ impl Interpreter {
             Expression::String(s) => Ok(Value::String(s)),
             Expression::Variable(name) => {
                 self.env.get(&name)
-                    .ok_or_else(|| format!("Undefined variable: {}", name))
+                    .ok_or_else(|| format!(
+                        "Runtime error: Undefined variable '{}'.\nHint: Check if the variable is declared and spelled correctly.",
+                        name
+                    ))
             }
             Expression::BinaryOp { left, operator, right } => {
                 let left_val = self.evaluate_expression(&left)?;
@@ -261,25 +264,64 @@ impl Interpreter {
                         if let (Value::Number(l), Value::Number(r)) = (&left_val, &right_val) {
                             Ok(Value::Number(l - r))
                         } else {
-                            Err(format!("Cannot subtract {:?} from {:?}", right_val, left_val))
+                            Err(format!(
+                                "Runtime error: Cannot subtract {:?} from {:?}.\nHint: Both operands must be numbers.",
+                                right_val, left_val
+                            ))
                         }
                     }
                     BinaryOperator::Times => {
                         if let (Value::Number(l), Value::Number(r)) = (&left_val, &right_val) {
                             Ok(Value::Number(l * r))
                         } else {
-                            Err(format!("Cannot multiply {:?} and {:?}", left_val, right_val))
+                            Err(format!(
+                                "Runtime error: Cannot multiply {:?} and {:?}.\nHint: Both operands must be numbers.",
+                                left_val, right_val
+                            ))
                         }
                     }
                     BinaryOperator::Divide => {
                         if let (Value::Number(l), Value::Number(r)) = (&left_val, &right_val) {
                             if *r == 0 {
-                                Err("Division by zero".to_string())
+                                Err("Runtime error: Division by zero.\nHint: The divisor must not be zero.".to_string())
                             } else {
                                 Ok(Value::Number(l / r))
                             }
                         } else {
-                            Err(format!("Cannot divide {:?} by {:?}", left_val, right_val))
+                            Err(format!(
+                                "Runtime error: Cannot divide {:?} by {:?}.\nHint: Both operands must be numbers.",
+                                left_val, right_val
+                            ))
+                        }
+                    }
+                    BinaryOperator::And => {
+                        if let Value::Boolean(l) = left_val {
+                            if !l {
+                                return Ok(Value::Boolean(false));
+                            }
+                            let right_val = self.evaluate_expression(&right)?;
+                            if let Value::Boolean(r) = right_val {
+                                Ok(Value::Boolean(r))
+                            } else {
+                                Err("Runtime error: 'and' operator requires boolean operands.".to_string())
+                            }
+                        } else {
+                            Err("Runtime error: 'and' operator requires boolean operands.".to_string())
+                        }
+                    }
+                    BinaryOperator::Or => {
+                        if let Value::Boolean(l) = left_val {
+                            if l {
+                                return Ok(Value::Boolean(true));
+                            }
+                            let right_val = self.evaluate_expression(&right)?;
+                            if let Value::Boolean(r) = right_val {
+                                Ok(Value::Boolean(r))
+                            } else {
+                                Err("Runtime error: 'or' operator requires boolean operands.".to_string())
+                            }
+                        } else {
+                            Err("Runtime error: 'or' operator requires boolean operands.".to_string())
                         }
                     }
                 }
@@ -287,7 +329,10 @@ impl Interpreter {
             Expression::FunctionCall { name, arguments } => {
                 // Get the function definition
                 let function = self.env.get_function(&name)
-                    .ok_or_else(|| format!("Undefined function: {}", name))?;
+                    .ok_or_else(|| format!(
+                        "Runtime error: Undefined function '{}'.\nHint: Check if the function is defined and spelled correctly.",
+                        name
+                    ))?;
                 
                 // Evaluate arguments
                 let mut arg_values = Vec::new();
@@ -298,7 +343,7 @@ impl Interpreter {
                 // Check argument count
                 if arg_values.len() != function.parameters.len() {
                     return Err(format!(
-                        "Function {} expects {} arguments, got {}",
+                        "Runtime error: Function '{}' expects {} arguments, got {}.\nHint: Check the number of arguments in the function call.",
                         name,
                         function.parameters.len(),
                         arg_values.len()
@@ -328,6 +373,18 @@ impl Interpreter {
                 }
                 
                 Ok(result)
+            }
+            Expression::UnaryOp { operator, operand } => {
+                let value = self.evaluate_expression(operand)?;
+                match operator {
+                    UnaryOperator::Not => {
+                        if let Value::Boolean(b) = value {
+                            Ok(Value::Boolean(!b))
+                        } else {
+                            Err("Runtime error: 'not' operator requires a boolean operand.\nHint: Use 'not' only with boolean expressions.".to_string())
+                        }
+                    }
+                }
             }
         }
     }

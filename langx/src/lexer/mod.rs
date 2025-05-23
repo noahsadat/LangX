@@ -112,6 +112,18 @@ pub enum Token {
     // Catch-all for errors
     #[regex(r".", logos::skip, priority = 0)]
     Error,
+    
+    #[token("less")]
+    Less,
+    
+    #[token("equal")]
+    Equal,
+    
+    #[token("not")]
+    Not,
+    
+    #[token("or")]
+    Or,
 }
 
 impl fmt::Display for Token {
@@ -150,6 +162,10 @@ impl fmt::Display for Token {
             Token::StringLiteral(s) => write!(f, "\"{}\"", s),
             Token::Error => write!(f, "ERROR"),
             Token::Whitespace => write!(f, " "),
+            Token::Less => write!(f, "less"),
+            Token::Equal => write!(f, "equal"),
+            Token::Not => write!(f, "not"),
+            Token::Or => write!(f, "or"),
         }
     }
 }

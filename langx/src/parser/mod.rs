@@ -12,7 +12,10 @@ pub fn parse(input: &str) -> Result<Program, String> {
     let parser = grammar::ProgramParser::new();
     
     parser.parse(tokens)
-        .map_err(|e| format!("Parse error: {:?}", e))
+        .map_err(|e| format!(
+            "Parse error: {:?}\nHint: Check for missing or extra tokens, and review parentheses and statement syntax.",
+            e
+        ))
 }
 
 #[cfg(test)]

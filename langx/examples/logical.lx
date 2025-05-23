@@ -1,0 +1,12 @@
+Set a to true.
+Set b to false.
+
+print not a.
+print not b.
+print a and b.
+print a or b.
+print not (a and b).
+print (a or b) and (not b).
+print (5 is greater than 3) and (2 is less than 4).
+print (5 is greater than 3) or (2 is greater than 10).
+print not (5 is equal to 5). 

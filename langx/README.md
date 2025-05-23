@@ -159,3 +159,49 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Built with Rust
 - Uses Logos for lexical analysis
 - Uses LALRPOP for parsing 
+
+## Current Capabilities (May 2025)
+
+LangX supports:
+- Variables and assignment
+- Arithmetic and logical expressions (plus, minus, times, divided by, and, or, not, comparisons)
+- Parentheses and operator precedence
+- Conditional statements (if)
+- Loops (repeat)
+- Functions (0, 1, or 2 parameters)
+- Function calls with natural 'and' separator (e.g., Call add with 5 and 10)
+- Print statements
+
+### Function Calls and Logical 'and'
+- To call a function with two arguments: `Call add with 5 and 10` (arguments must be simple values, variables, or parenthesized expressions)
+- To use logical 'and': `Set result to a and b`
+- To pass a logical expression as a function argument, use parentheses: `Call print_results with (a and b) and (a or b)`
+
+### Example
+```
+Define add with parameters a and b:
+    Return a plus b.
+End definition.
+
+Set a to true.
+Set b to false.
+
+Set sum to Call add with 5 and 10.
+print sum.
+
+Set logic_result to a and b.
+print logic_result.
+
+Define print_results with parameters first and second:
+    print first.
+    print second.
+End definition.
+
+Call print_results with (a and b) and (a or b).
+```
+
+## Recent Improvements
+- Operator precedence and parentheses
+- Logical and comparison operators
+- Natural function call syntax with 'and' (unambiguous for user code)
+- Documentation and examples updated 

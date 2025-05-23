@@ -1,0 +1,11 @@
+Set a to 5.
+Set b to 10.
+
+print a is greater than b.
+print a is less than b.
+print a is equal to b.
+print a is not equal to b.
+print b is greater than a.
+print b is less than a.
+print b is equal to 10.
+print a is not equal to 5. 
