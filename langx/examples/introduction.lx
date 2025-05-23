@@ -1,0 +1,49 @@
+print "LangX Language Introduction".
+print "A programming language with English-like syntax".
+
+print "1. Variables and Assignment:".
+Set name to "World".
+Set age to 42.
+print name.
+print age.
+
+print "2. Conditional Statements:".
+If age is greater than 40, print "Over 40.".
+
+print "3. Loops:".
+Repeat 3 times: print "Loop iteration.".
+
+print "4. Functions:".
+Define greet with parameter person:
+    print "Hello, ".
+    print person.
+End definition.
+
+Call greet with name.
+
+Define add with parameters a and b:
+    Return a plus b.
+End definition.
+
+print "5. Arithmetic Operations:".
+print "Addition:".
+Set result to Call add with 5 and 7.
+print result.
+
+print "Subtraction:".
+Set result to 10 minus 3.
+print result.
+
+print "Multiplication:".
+Set result to 6 times 4.
+print result.
+
+print "Division:".
+Set result to 20 divided by 5.
+print result.
+
+print "Complex operation (without precedence yet):".
+Set result to 2 plus 3 times 4.
+print result.
+
+print "End of introduction.". 

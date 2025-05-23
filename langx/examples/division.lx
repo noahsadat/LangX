@@ -1,0 +1,23 @@
+print "Division Example".
+
+Set a to 20.
+Set b to 4.
+
+print "Basic division:".
+Set quotient to a divided by b.
+print "a divided by b =".
+print quotient.
+
+print "Divide a number:".
+Set result to 100 divided by 5.
+print "100 divided by 5 =".
+print result.
+
+print "Function with division:".
+Define divide with parameters x and y:
+    Return x divided by y.
+End definition.
+
+Set result to Call divide with 30 and 6.
+print "divide(30, 6) =".
+print result. 

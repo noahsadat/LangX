@@ -1,0 +1,64 @@
+──────────────────────────────────────────────
+LangX — A Language of My Own
+──────────────────────────────────────────────
+
+LangX is a custom programming language built entirely in Rust.  
+It is not a framework. Not a script. Not a wrapper around AI.
+
+LangX is:
+- A handcrafted grammar
+- A real parser, lexer, and interpreter
+- A minimal language with sharp syntax and fast execution
+- A sandbox for control, not guesswork
+
+This project is an exercise in mastery:
+Designing not just code, but the rules *code itself* follows.
+
+LangX doesn’t depend on large models, neural nets, or external engines.  
+It interprets your instructions—because you wrote the logic, the structure, and the bones of the machine.
+
+───────────────
+Core Principles
+───────────────
+• No AI. No magic. Just logic.
+• Custom syntax, shaped to fit real use cases.
+• Transparent execution — inspect every part.
+• Extensible, clean, and built for real control.
+• Interpreted first. Compiled later.
+
+───────────────
+Who This Is For
+───────────────
+• Builders who want to go beneath the abstraction.
+• Hackers who want to control the language, not just use one.
+• Creators who aren’t satisfied with “good enough.”
+
+───────────────
+Tech Stack
+───────────────
+• Rust
+• Logos (lexer)
+• LALRPOP (parser generator)
+• Custom-built runtime/interpreter
+• Optional: CLI interface + REPL
+
+───────────────
+Vision (Later Stages)
+───────────────
+• Bytecode VM
+• Compilation to WebAssembly
+• Package system and standard library
+• Embedded scripting in Rust applications
+
+───────────────
+Status
+───────────────
+Early scaffolding. The shape is forming.  
+The interpreter is coming online.  
+Syntax is raw, but structured.
+
+───────────────
+Why LangX?
+───────────────
+Because sometimes the only way to understand the machine  
+is to build one yourself.

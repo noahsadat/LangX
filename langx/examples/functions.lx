@@ -1,0 +1,24 @@
+Define greet with parameter name:
+    print "Hello, ".
+    print name.
+End definition.
+
+Define add with parameters a and b:
+    Return a.
+End definition.
+
+print "Testing functions:".
+Call greet with "World".
+
+Set result to Call add with 5 and 10.
+print "Result is:".
+print result.
+
+Define factorial with parameter n:
+    If n is greater than 1,
+        Return n.
+    Return 1.
+End definition.
+
+print "Factorial result:".
+print Call factorial with 5. 

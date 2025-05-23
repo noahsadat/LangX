@@ -1,0 +1,205 @@
+use crate::ast::{Expression, BinaryOperator, Statement, Program};
+use crate::lexer::Token;
+
+grammar;
+
+pub Program: Program = {
+    <statements:Statement*> => Program { statements },
+};
+
+pub Statement: Statement = {
+    "Set" <variable:Identifier> "to" <value:Expression> "." => {
+        Statement::Assignment { variable, value }
+    },
+    
+    "If" <condition:Condition> "," <then_branch:Statement> => {
+        Statement::Conditional { 
+            condition, 
+            then_branch: Box::new(then_branch) 
+        }
+    },
+    
+    "print" <expr:Expression> "." => {
+        Statement::Print(expr)
+    },
+    
+    "Repeat" <count:Expression> "times" ":" <body:Statement> => {
+        Statement::Repeat { 
+            count, 
+            body: Box::new(body) 
+        }
+    },
+    
+    // Function definition with no parameters
+    "Define" <name:Identifier> ":" <body:Statement*> "End" "definition" "." => {
+        Statement::FunctionDefinition {
+            name,
+            parameters: Vec::new(),
+            body,
+        }
+    },
+    
+    // Function definition with one parameter
+    "Define" <name:Identifier> "with" "parameter" <param:Identifier> ":" <body:Statement*> "End" "definition" "." => {
+        Statement::FunctionDefinition {
+            name,
+            parameters: vec![param],
+            body,
+        }
+    },
+    
+    // Function definition with two parameters
+    "Define" <name:Identifier> "with" "parameters" <param1:Identifier> "and" <param2:Identifier> ":" <body:Statement*> "End" "definition" "." => {
+        Statement::FunctionDefinition {
+            name,
+            parameters: vec![param1, param2],
+            body,
+        }
+    },
+    
+    "Return" <expr:Expression?> "." => {
+        Statement::Return(expr)
+    },
+    
+    // Call as a statement (for functions that don't return a value)
+    <call:FunctionCall> "." => {
+        Statement::Print(call)
+    },
+};
+
+Condition: Expression = {
+    <left:Expression> "is" "greater" "than" <right:Expression> => {
+        Expression::BinaryOp {
+            left: Box::new(left),
+            operator: BinaryOperator::GreaterThan,
+            right: Box::new(right),
+        }
+    },
+};
+
+// Simplified expression grammar with all arithmetic operations
+Expression: Expression = {
+    <n:Number> => Expression::Number(n),
+    <s:StringLiteral> => Expression::String(s),
+    <id:Identifier> => Expression::Variable(id),
+    FunctionCall,
+    <left:Expression> "plus" <right:PrimaryExpression> => {
+        Expression::BinaryOp {
+            left: Box::new(left),
+            operator: BinaryOperator::Plus,
+            right: Box::new(right),
+        }
+    },
+    <left:Expression> "minus" <right:PrimaryExpression> => {
+        Expression::BinaryOp {
+            left: Box::new(left),
+            operator: BinaryOperator::Minus,
+            right: Box::new(right),
+        }
+    },
+    <left:Expression> "times" <right:PrimaryExpression> => {
+        Expression::BinaryOp {
+            left: Box::new(left),
+            operator: BinaryOperator::Times,
+            right: Box::new(right),
+        }
+    },
+    <left:Expression> "divided" "by" <right:PrimaryExpression> => {
+        Expression::BinaryOp {
+            left: Box::new(left),
+            operator: BinaryOperator::Divide,
+            right: Box::new(right),
+        }
+    },
+};
+
+// Primary expressions (values that can be on the right side of operators)
+PrimaryExpression: Expression = {
+    <n:Number> => Expression::Number(n),
+    <id:Identifier> => Expression::Variable(id),
+    FunctionCall,
+};
+
+FunctionCall: Expression = {
+    // Function call with no arguments
+    "Call" <name:Identifier> => {
+        Expression::FunctionCall {
+            name,
+            arguments: Vec::new(),
+        }
+    },
+    
+    // Function call with one argument
+    "Call" <name:Identifier> "with" <arg:BasicExpression> => {
+        Expression::FunctionCall {
+            name,
+            arguments: vec![arg],
+        }
+    },
+    
+    // Function call with two arguments
+    "Call" <name:Identifier> "with" <arg1:BasicExpression> "and" <arg2:BasicExpression> => {
+        Expression::FunctionCall {
+            name,
+            arguments: vec![arg1, arg2],
+        }
+    },
+};
+
+// Basic expressions that can't include function calls (to avoid recursion)
+BasicExpression: Expression = {
+    <n:Number> => Expression::Number(n),
+    <s:StringLiteral> => Expression::String(s),
+    <id:Identifier> => Expression::Variable(id),
+};
+
+Number: i64 = {
+    <n:"Number"> => n,
+};
+
+StringLiteral: String = {
+    <s:"StringLiteral"> => s,
+};
+
+Identifier: String = {
+    <id:"Identifier"> => id,
+};
+
+extern {
+    type Location = usize;
+    type Error = String;
+
+    enum Token {
+        "Set" => Token::Set,
+        "to" => Token::To,
+        "If" => Token::If,
+        "is" => Token::Is,
+        "greater" => Token::Greater,
+        "than" => Token::Than,
+        "print" => Token::Print,
+        "Repeat" => Token::Repeat,
+        "times" => Token::Times,
+        "Define" => Token::Define,
+        "with" => Token::With,
+        "parameters" => Token::Parameters,
+        "parameter" => Token::Parameter,
+        "and" => Token::And,
+        "End" => Token::End,
+        "definition" => Token::Definition,
+        "Call" => Token::Call,
+        "Return" => Token::Return,
+        "plus" => Token::Plus,
+        "minus" => Token::Minus,
+        "times" => Token::Times,
+        "divided" => Token::Divided,
+        "by" => Token::By,
+        "(" => Token::LeftParen,
+        ")" => Token::RightParen,
+        "." => Token::Period,
+        "," => Token::Comma,
+        ":" => Token::Colon,
+        "Number" => Token::Number(<i64>),
+        "Identifier" => Token::Identifier(<String>),
+        "StringLiteral" => Token::StringLiteral(<String>),
+    }
+} 

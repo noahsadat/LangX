@@ -1,0 +1,7 @@
+Set greeting to "Hello, world!".
+print greeting.
+
+Set counter to 1.
+If counter is greater than 0, print "Counter is positive.".
+
+Repeat 3 times: print "Looping...". 

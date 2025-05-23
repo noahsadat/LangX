@@ -1,0 +1,87 @@
+──────────────────────────────────────────────
+LangX — A Programming Language That Understands English
+──────────────────────────────────────────────
+
+LangX is a new programming language, built entirely in Rust,  
+designed to interpret **structured English** as real, executable code.
+
+This is not a chatbot.  
+Not an AI agent.  
+Not a natural-language interface duct-taped to Python.  
+
+LangX is a **real language** — with grammar, syntax, and a runtime — where English *is* the code.
+
+───────────────
+🛠 Purpose
+───────────────
+LangX exists to answer one question:  
+**Can we write programs in English that compile like code — and behave like code — without AI?**
+
+This project aims to:
+- Treat English as a valid programming language
+- Define its grammar strictly using parser generators
+- Interpret and run structured English statements deterministically
+- Avoid IR or bytecode (initially) — just parse and run
+
+───────────────
+🧠 What It Is (and Isn’t)
+───────────────
+✔ A real programming language, not an AI prompt format  
+✔ Built in Rust, with real tools: `logos` for lexing, `lalrpop` for parsing  
+✔ Executes statements like “Set x to 5” or “If x is greater than 3, print 'Hello'”  
+✔ English as formal code — not freeform, not conversational  
+
+✘ Not dependent on LLMs or AI at runtime  
+✘ Not fuzzy or probabilistic — deterministic behavior only  
+✘ Not just a transpiler — LangX has its own runtime and execution engine
+
+───────────────
+🔧 Architecture (High-Level)
+───────────────
+1. **Lexical Analysis** — Tokenize structured English into syntax elements  
+2. **Parsing** — Convert token stream into an Abstract Syntax Tree (AST)  
+3. **Interpreter** — Walk the AST and execute commands directly  
+4. **Runtime** — Manage memory, variables, scopes, and control flow  
+5. **CLI / Runner** — Execute `.lx` files or run interactive REPL (optional)
+
+───────────────
+🚫 No AI During Execution
+───────────────
+LangX may be developed with AI support (editing, suggestions, architecture),  
+but at **runtime**, no inference, no models, no guesswork are allowed.
+
+The language must:
+- Be fully defined by human-written grammar rules
+- Execute based on internal logic, not LLM prediction
+- Be inspectable and debuggable at every level
+
+───────────────
+📐 Syntax Example (LangX)
+───────────────
+
+Set x to 10.
+Set y to 5.
+If x is greater than y, print "x is larger."
+Repeat 3 times: print "Hello".
+
+
+───────────────
+📈 Roadmap
+───────────────
+• Phase 1 — Interpreter (Rust, AST walker)  
+• Phase 2 — REPL + CLI runner  
+• Phase 3 — Function definitions, scoping, logic expansion  
+• Phase 4 — Compile to bytecode or WebAssembly (optional)  
+• Phase 5 — Standard library written in English-based syntax
+
+───────────────
+💡 Vision
+───────────────
+LangX makes English code **real**.  
+Not parsed by a model. Not answered by a chatbot.  
+Parsed, executed, and governed by grammar you control.
+
+A language for clarity. For humans.  
+And for the machine — but on your terms.
+
+──────────────────────────────────────────────

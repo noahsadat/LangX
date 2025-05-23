@@ -1,0 +1,23 @@
+print "Subtraction Example".
+
+Set a to 10.
+Set b to 5.
+
+print "Basic subtraction:".
+Set difference to a minus b.
+print "a minus b =".
+print difference.
+
+print "Subtract from a number:".
+Set result to 20 minus 7.
+print "20 minus 7 =".
+print result.
+
+print "Function with subtraction:".
+Define subtract with parameters x and y:
+    Return x minus y.
+End definition.
+
+Set result to Call subtract with 8 and 3.
+print "subtract(8, 3) =".
+print result. 
