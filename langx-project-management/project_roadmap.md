@@ -81,7 +81,7 @@ Milestone 1: Basic Language Implementation (Target: Q3 2023)
 - [x] Complete interpreter with basic language features
 - [x] Function support with parameters and return values
 - [x] Arithmetic operations (addition, subtraction, multiplication, division)
-- [ ] Operator precedence for arithmetic operations
+- [x] Operator precedence for arithmetic operations
 - [ ] Comprehensive test suite
 - [ ] Initial documentation
 - [x] Example programs demonstrating language capabilities

@@ -23,10 +23,10 @@ pub Statement: Statement = {
         Statement::Print(expr)
     },
     
-    "Repeat" <count:Expression> "times" ":" <body:Statement> => {
-        Statement::Repeat { 
-            count, 
-            body: Box::new(body) 
+    "Repeat" <count:PrimaryExpression> "times" ":" <body:Statement> => {
+        Statement::Repeat {
+            count,
+            body: Box::new(body)
         }
     },
     
@@ -77,80 +77,54 @@ Condition: Expression = {
     },
 };
 
-// Simplified expression grammar with all arithmetic operations
+// Atom: highest precedence
+Atom: Expression = {
+    "(" <expr:Expression> ")" => expr,
+    <n:Number> => Expression::Number(n),
+    <s:StringLiteral> => Expression::String(s),
+    <id:Identifier> => Expression::Variable(id),
+    FunctionCall,
+};
+
+// Factor: multiplication/division (left-associative, warning-free)
+Factor: Expression = {
+    <first:Atom> <rest:FactorOp*> => {
+        rest.into_iter().fold(first, |acc, (op, rhs)| {
+            Expression::BinaryOp {
+                left: Box::new(acc),
+                operator: op,
+                right: Box::new(rhs),
+            }
+        })
+    }
+};
+
+FactorOp: (BinaryOperator, Expression) = {
+    "times" <rhs:Atom> => (BinaryOperator::Times, rhs),
+    "divided" "by" <rhs:Atom> => (BinaryOperator::Divide, rhs),
+};
+
+// Term: addition/subtraction (left-associative, warning-free)
+Term: Expression = {
+    <first:Factor> <rest:TermOp*> => {
+        rest.into_iter().fold(first, |acc, (op, rhs)| {
+            Expression::BinaryOp {
+                left: Box::new(acc),
+                operator: op,
+                right: Box::new(rhs),
+            }
+        })
+    }
+};
+
+TermOp: (BinaryOperator, Expression) = {
+    "plus" <rhs:Factor> => (BinaryOperator::Plus, rhs),
+    "minus" <rhs:Factor> => (BinaryOperator::Minus, rhs),
+};
+
+// Top-level
 Expression: Expression = {
-    <n:Number> => Expression::Number(n),
-    <s:StringLiteral> => Expression::String(s),
-    <id:Identifier> => Expression::Variable(id),
-    FunctionCall,
-    <left:Expression> "plus" <right:PrimaryExpression> => {
-        Expression::BinaryOp {
-            left: Box::new(left),
-            operator: BinaryOperator::Plus,
-            right: Box::new(right),
-        }
-    },
-    <left:Expression> "minus" <right:PrimaryExpression> => {
-        Expression::BinaryOp {
-            left: Box::new(left),
-            operator: BinaryOperator::Minus,
-            right: Box::new(right),
-        }
-    },
-    <left:Expression> "times" <right:PrimaryExpression> => {
-        Expression::BinaryOp {
-            left: Box::new(left),
-            operator: BinaryOperator::Times,
-            right: Box::new(right),
-        }
-    },
-    <left:Expression> "divided" "by" <right:PrimaryExpression> => {
-        Expression::BinaryOp {
-            left: Box::new(left),
-            operator: BinaryOperator::Divide,
-            right: Box::new(right),
-        }
-    },
-};
-
-// Primary expressions (values that can be on the right side of operators)
-PrimaryExpression: Expression = {
-    <n:Number> => Expression::Number(n),
-    <id:Identifier> => Expression::Variable(id),
-    FunctionCall,
-};
-
-FunctionCall: Expression = {
-    // Function call with no arguments
-    "Call" <name:Identifier> => {
-        Expression::FunctionCall {
-            name,
-            arguments: Vec::new(),
-        }
-    },
-    
-    // Function call with one argument
-    "Call" <name:Identifier> "with" <arg:BasicExpression> => {
-        Expression::FunctionCall {
-            name,
-            arguments: vec![arg],
-        }
-    },
-    
-    // Function call with two arguments
-    "Call" <name:Identifier> "with" <arg1:BasicExpression> "and" <arg2:BasicExpression> => {
-        Expression::FunctionCall {
-            name,
-            arguments: vec![arg1, arg2],
-        }
-    },
-};
-
-// Basic expressions that can't include function calls (to avoid recursion)
-BasicExpression: Expression = {
-    <n:Number> => Expression::Number(n),
-    <s:StringLiteral> => Expression::String(s),
-    <id:Identifier> => Expression::Variable(id),
+    <term:Term> => term,
 };
 
 Number: i64 = {
@@ -163,6 +137,37 @@ StringLiteral: String = {
 
 Identifier: String = {
     <id:"Identifier"> => id,
+};
+
+FunctionCall: Expression = {
+    // Function call with no arguments
+    "Call" <name:Identifier> => {
+        Expression::FunctionCall {
+            name,
+            arguments: Vec::new(),
+        }
+    },
+    // Function call with one argument
+    "Call" <name:Identifier> "with" <arg:PrimaryExpression> => {
+        Expression::FunctionCall {
+            name,
+            arguments: vec![arg],
+        }
+    },
+    // Function call with two arguments
+    "Call" <name:Identifier> "with" <arg1:PrimaryExpression> "and" <arg2:PrimaryExpression> => {
+        Expression::FunctionCall {
+            name,
+            arguments: vec![arg1, arg2],
+        }
+    },
+};
+
+// Add a new nonterminal for primary expressions (numbers, variables, parentheses)
+PrimaryExpression: Expression = {
+    "(" <expr:Expression> ")" => expr,
+    <n:Number> => Expression::Number(n),
+    <id:Identifier> => Expression::Variable(id),
 };
 
 extern {

@@ -21,13 +21,13 @@
 - [x] Implement subtraction operation
 - [x] Implement multiplication operation
 - [x] Implement division operation
+- [x] Implement operator precedence
+  - [x] Update grammar structure for precedence
+  - [x] Add tests for operator precedence
+  - [x] Update example programs to demonstrate precedence
+- [x] Add support for parentheses in expressions
 
 ### In Progress
-- [ ] Implement operator precedence
-  - [ ] Update grammar structure for precedence
-  - [ ] Add tests for operator precedence
-  - [ ] Update example programs to demonstrate precedence
-- [ ] Add support for parentheses in expressions
 - [ ] Improve error messages and error handling
 
 ### Upcoming Tasks
@@ -45,15 +45,13 @@
 ## Known Issues
 1. No proper error recovery in parser
 2. Limited expression types (only numbers, strings, and variables)
-3. Arithmetic operations don't respect operator precedence yet
-4. Missing standard library functions
+3. Missing standard library functions
 
 ## Next Features to Implement
-1. Operator precedence
-2. Boolean expressions and logical operators
-3. String concatenation and manipulation
-4. Lists and basic data structures
-5. File I/O operations
+1. Boolean expressions and logical operators
+2. String concatenation and manipulation
+3. Lists and basic data structures
+4. File I/O operations
 
 ## Development Workflow
 1. Feature planning and specification

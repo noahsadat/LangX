@@ -181,18 +181,54 @@ impl Interpreter {
         }
     }
     
-    fn evaluate_expression(&self, expr: &Expression) -> Result<Value, String> {
+    /// Take a left-associative tree of +,−,×,÷ and re-group it so ×,÷ bind tighter than +,−.
+    fn apply_precedence(&self, expr: Expression) -> Expression {
         match expr {
-            Expression::Number(n) => Ok(Value::Number(*n)),
-            Expression::String(s) => Ok(Value::String(s.clone())),
+            Expression::BinaryOp { left, operator, right } => {
+                // Recursively fix children
+                let left = Box::new(self.apply_precedence(*left));
+                let right = Box::new(self.apply_precedence(*right));
+                // If this is a +/−, we just rebuild
+                if matches!(operator, BinaryOperator::Plus | BinaryOperator::Minus) {
+                    Expression::BinaryOp { left, operator, right }
+                }
+                // If this is a ×/÷, we need to pull up any +/− on the left
+                else {
+                    if let Expression::BinaryOp { left: ref ll, operator: ref lop, right: ref lr } = *left {
+                        if matches!(lop, BinaryOperator::Plus | BinaryOperator::Minus) {
+                            // a + (b × c)
+                            let new_right = Box::new(Expression::BinaryOp {
+                                left: lr.clone(),
+                                operator: operator.clone(),
+                                right,
+                            });
+                            return Expression::BinaryOp {
+                                left: ll.clone(),
+                                operator: lop.clone(),
+                                right: Box::new(self.apply_precedence(*new_right)),
+                            };
+                        }
+                    }
+                    Expression::BinaryOp { left, operator, right }
+                }
+            }
+            other => other,
+        }
+    }
+    
+    fn evaluate_expression(&self, expr: &Expression) -> Result<Value, String> {
+        // Before we do anything, regroup the tree for correct precedence:
+        let expr = self.apply_precedence(expr.clone());
+        match expr {
+            Expression::Number(n) => Ok(Value::Number(n)),
+            Expression::String(s) => Ok(Value::String(s)),
             Expression::Variable(name) => {
-                self.env.get(name)
+                self.env.get(&name)
                     .ok_or_else(|| format!("Undefined variable: {}", name))
             }
             Expression::BinaryOp { left, operator, right } => {
-                let left_val = self.evaluate_expression(left)?;
-                let right_val = self.evaluate_expression(right)?;
-                
+                let left_val = self.evaluate_expression(&left)?;
+                let right_val = self.evaluate_expression(&right)?;
                 match operator {
                     BinaryOperator::GreaterThan => {
                         if let (Value::Number(l), Value::Number(r)) = (&left_val, &right_val) {
@@ -250,12 +286,12 @@ impl Interpreter {
             }
             Expression::FunctionCall { name, arguments } => {
                 // Get the function definition
-                let function = self.env.get_function(name)
+                let function = self.env.get_function(&name)
                     .ok_or_else(|| format!("Undefined function: {}", name))?;
                 
                 // Evaluate arguments
                 let mut arg_values = Vec::new();
-                for arg in arguments {
+                for arg in &arguments {
                     arg_values.push(self.evaluate_expression(arg)?);
                 }
                 
