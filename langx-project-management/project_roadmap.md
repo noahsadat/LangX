@@ -86,5 +86,8 @@ Milestone 1: Basic Language Implementation (Target: Q3 2023)
 - [ ] Initial documentation
 - [x] Example programs demonstrating language capabilities
 
+## Milestone (May 2025)
+- Operator precedence for arithmetic expressions implemented and grammar made warning-free.
+
 ## Long-term Vision
 LangX aims to bridge the gap between natural language and programming languages, making code more readable and accessible while maintaining the precision and determinism of traditional programming languages. 

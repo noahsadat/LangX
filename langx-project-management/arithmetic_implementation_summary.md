@@ -1,6 +1,6 @@
 # Arithmetic Implementation Summary
 
-## Operator Precedence Implementation (2024-06)
+## Operator Precedence Implementation (2025-05)
 
 - **Operator precedence** for arithmetic expressions (addition, subtraction, multiplication, division) is now fully implemented in LangX.
 - The parser grammar was refactored to use a loop-based (fold) style for left-associative operators, eliminating all LALRPOP shift/reduce and ambiguity warnings.
