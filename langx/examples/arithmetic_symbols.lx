@@ -1,0 +1,18 @@
+# Arithmetic operations with symbols
+
+Set a to 10.
+Set b to 5.
+
+print a + b.
+print a - b.
+print a * b.
+print a / b.
+
+# Order of operations
+Set result to 2 + 3 * 4.
+print result.
+
+Set result2 to (2 + 3) * 4.
+print result2.
+
+

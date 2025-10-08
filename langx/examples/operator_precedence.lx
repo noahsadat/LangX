@@ -1,11 +1,11 @@
-Set a to 2 plus 3 times 4.
+Set a to 2 + 3 * 4.
 print a.
 
-Set b to (2 plus 3) times 4.
+Set b to (2 + 3) * 4.
 print b.
 
-Set c to 20 divided by 2 minus 3.
+Set c to 20 / 2 - 3.
 print c.
 
-Set d to 20 divided by (2 minus 3).
+Set d to 20 / (2 - 3).
 print d. 

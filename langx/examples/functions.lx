@@ -3,20 +3,19 @@ Define greet with parameter name:
     print name.
 End definition.
 
-Define add with parameters a and b:
+Define add with parameters a, b:
     Return a.
 End definition.
 
 print "Testing functions:".
 Call greet with "World".
 
-Set result to Call add with 5 and 10.
+Set result to Call add with 5, 10.
 print "Result is:".
 print result.
 
 Define factorial with parameter n:
-    If n is greater than 1,
-        Return n.
+    If n is greater than 1 then Return n.
     Return 1.
 End definition.
 

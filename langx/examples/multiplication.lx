@@ -4,20 +4,20 @@ Set a to 6.
 Set b to 7.
 
 print "Basic multiplication:".
-Set product to a times b.
-print "a times b =".
+Set product to a * b.
+print "a * b =".
 print product.
 
 print "Multiply a number:".
-Set result to 5 times 12.
-print "5 times 12 =".
+Set result to 5 * 12.
+print "5 * 12 =".
 print result.
 
 print "Function with multiplication:".
-Define multiply with parameters x and y:
-    Return x times y.
+Define multiply with parameters x, y:
+    Return x * y.
 End definition.
 
-Set result to Call multiply with 4 and 6.
+Set result to Call multiply with 4, 6.
 print "multiply(4, 6) =".
 print result. 

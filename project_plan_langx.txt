@@ -1,53 +1,53 @@
 ──────────────────────────────────────────────
-LangX — A Programming Language That Understands English
+LangX — A Programming Language That Blends English with Symbols
 ──────────────────────────────────────────────
 
-LangX is a new programming language, built entirely in Rust,  
-designed to interpret **structured English** as real, executable code.
+LangX is a programming language, built entirely in Rust,  
+designed to interpret **structured English combined with mathematical symbols** as real, executable code.
 
 This is not a chatbot.  
 Not an AI agent.  
 Not a natural-language interface duct-taped to Python.  
 
-LangX is a **real language** — with grammar, syntax, and a runtime — where English *is* the code.
+LangX is a **real language** — with grammar, syntax, and a runtime — where clarity meets precision.
 
 ───────────────
 🛠 Purpose
 ───────────────
 LangX exists to answer one question:  
-**Can we write programs in English that compile like code — and behave like code — without AI?**
+**Can we create a language that's as clear as English but as precise as traditional programming?**
 
 This project aims to:
-- Treat English as a valid programming language
-- Define its grammar strictly using parser generators
-- Interpret and run structured English statements deterministically
-- Avoid IR or bytecode (initially) — just parse and run
+- Combine English clarity with symbolic precision
+- Define grammar strictly using parser generators (LALRPOP)
+- Interpret and run statements deterministically
+- Eliminate ambiguity through smart syntax design
 
 ───────────────
-🧠 What It Is (and Isn’t)
+🧠 What It Is (and Isn't)
 ───────────────
-✔ A real programming language, not an AI prompt format  
+✔ A real programming language with hybrid syntax  
 ✔ Built in Rust, with real tools: `logos` for lexing, `lalrpop` for parsing  
-✔ Executes statements like “Set x to 5” or “If x is greater than 3, print 'Hello'”  
-✔ English as formal code — not freeform, not conversational  
+✔ Executes statements with English keywords and mathematical operators  
+✔ Structured and formal — not freeform, not conversational  
 
 ✘ Not dependent on LLMs or AI at runtime  
 ✘ Not fuzzy or probabilistic — deterministic behavior only  
 ✘ Not just a transpiler — LangX has its own runtime and execution engine
 
 ───────────────
-🔧 Architecture (High-Level)
+🔧 Architecture
 ───────────────
-1. **Lexical Analysis** — Tokenize structured English into syntax elements  
+1. **Lexical Analysis** — Tokenize English keywords and symbols  
 2. **Parsing** — Convert token stream into an Abstract Syntax Tree (AST)  
 3. **Interpreter** — Walk the AST and execute commands directly  
 4. **Runtime** — Manage memory, variables, scopes, and control flow  
-5. **CLI / Runner** — Execute `.lx` files or run interactive REPL (optional)
+5. **CLI / Runner** — Execute `.lx` files or run interactive REPL
 
 ───────────────
 🚫 No AI During Execution
 ───────────────
-LangX may be developed with AI support (editing, suggestions, architecture),  
+LangX may be developed with AI assistance (editing, suggestions, architecture),  
 but at **runtime**, no inference, no models, no guesswork are allowed.
 
 The language must:
@@ -59,26 +59,83 @@ The language must:
 📐 Syntax Example (LangX)
 ───────────────
 
-Set x to 10.
-Set y to 5.
-If x is greater than y, print "x is larger."
+# Variables and arithmetic
+Set x to 10 + 5.
+Set y to x * 2.
+
+# Logic with words
+Set flag to true and false.
+
+# Conditionals
+If x is greater than y then print "x is larger".
+
+# Functions
+Define add with parameters a, b:
+    Return a + b.
+End definition.
+
+Set result to Call add with 5, 10.
+print result.
+
+# Loops
 Repeat 3 times: print "Hello".
 
 
 ───────────────
-📈 Roadmap
+✨ Syntax Design Philosophy
 ───────────────
-• Phase 1 — Interpreter (Rust, AST walker)  
-• Phase 2 — REPL + CLI runner  
-• Phase 3 — Function definitions, scoping, logic expansion  
-• Phase 4 — Compile to bytecode or WebAssembly (optional)  
-• Phase 5 — Standard library written in English-based syntax
+LangX uses a **hybrid approach** that solved the classic parser ambiguity:
+
+• **Arithmetic**: Mathematical symbols (+ - * /)
+  - Universal, precise, unambiguous
+  - Example: `Set x to 5 + 3 * 2.`
+
+• **Logic**: English words (and, or, not)
+  - Clear intent, readable conditions
+  - Example: `Set flag to a and b.`
+
+• **Control Flow**: Natural language
+  - If...then, Repeat...times, Define...End
+  - Example: `If x > 5 then print "yes".`
+
+• **Function Calls**: Commas separate arguments
+  - Example: `Call add with 5, 10`
+  - Parentheses for complex expressions: `Call func with (a and b), (x or y)`
+
+This design eliminates ambiguity while keeping code readable and maintainable.
+
+───────────────
+📈 Implementation Status
+───────────────
+✅ **Phase 1** — Fully functional interpreter
+✅ **Phase 2** — REPL + CLI runner operational  
+✅ **Phase 3** — Functions, scoping, logic complete
+
+**Current Features:**
+• Variables and assignments
+• Arithmetic with operator precedence (+ - * /)
+• Boolean literals (true, false) and logic (and, or, not)
+• Comparisons (is greater than, is less than, is equal to, is not equal to)
+• Conditionals (If...then)
+• Loops (Repeat...times)
+• Functions (0-2 parameters with return values)
+• Comments (# prefix)
+• Parentheses for grouping expressions
+
+**Next Steps:**
+• Phase 4 — Bytecode VM or WebAssembly compilation
+• Phase 5 — Standard library in LangX syntax
+• Extended function support (variadic arguments)
+• Advanced control flow (while, for, match/case)
 
 ───────────────
 💡 Vision
 ───────────────
-LangX makes English code **real**.  
-Not parsed by a model. Not answered by a chatbot.  
+LangX proves that programming languages can be both:
+- **Readable** like English
+- **Precise** like mathematics
+
+Not parsed by AI. Not guessed by models.  
 Parsed, executed, and governed by grammar you control.
 
 A language for clarity. For humans.  

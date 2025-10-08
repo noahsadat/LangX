@@ -1,0 +1,26 @@
+# Logical operations with "and", "or", "not"
+
+Set a to true.
+Set b to false.
+
+print a and b.
+print a or b.
+print not a.
+print not b.
+
+# Combined logic
+print (a or b) and (not b).
+
+# Comparisons
+Set x to 10.
+Set y to 5.
+
+print x is greater than y.
+print x is less than y.
+print x is equal to x.
+
+# If statements with "then"
+If x is greater than y then print "x is bigger".
+If y is greater than x then print "y is bigger".
+If a or b then print "At least one is true".
+

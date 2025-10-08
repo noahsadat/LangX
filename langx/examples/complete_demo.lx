@@ -1,0 +1,56 @@
+# LangX Complete Demo - New Syntax
+# Arithmetic uses symbols: + - * /
+# Logic uses words: and, or, not
+# Functions use commas: Call func with x, y
+# If uses "then": If condition then statement
+
+print "=== LangX Demo ===".
+
+# 1. Variables and Arithmetic
+print "1. Arithmetic with symbols:".
+Set x to 10.
+Set y to 3.
+print x + y.
+print x - y.
+print x * y.
+print x / y.
+
+# 2. Order of operations
+print "2. Order of operations:".
+Set result to 2 + 3 * 4.
+print result.
+
+# 3. Boolean values and logic
+print "3. Boolean logic:".
+Set a to true.
+Set b to false.
+print a and b.
+print a or b.
+print not a.
+
+# 4. Comparisons
+print "4. Comparisons:".
+print x is greater than y.
+print x is equal to 10.
+
+# 5. Functions
+print "5. Functions:".
+
+Define multiply with parameters a, b:
+    Return a * b.
+End definition.
+
+Set product to Call multiply with 5, 7.
+print product.
+
+# 6. If statements
+print "6. Conditionals:".
+If x is greater than 5 then print "x is large".
+If a or b then print "At least one true".
+
+# 7. Loops
+print "7. Loops:".
+Repeat 3 times: print "Hello!".
+
+print "=== Demo Complete ===".
+

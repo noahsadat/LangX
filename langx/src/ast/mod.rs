@@ -9,6 +9,9 @@ pub enum Expression {
     /// A string literal (e.g., "Hello")
     String(String),
     
+    /// A boolean literal (e.g., true, false)
+    Boolean(bool),
+    
     /// A variable reference (e.g., x)
     Variable(String),
     
@@ -98,6 +101,7 @@ impl fmt::Display for Expression {
         match self {
             Expression::Number(n) => write!(f, "{}", n),
             Expression::String(s) => write!(f, "\"{}\"", s),
+            Expression::Boolean(b) => write!(f, "{}", b),
             Expression::Variable(name) => write!(f, "{}", name),
             Expression::BinaryOp { left, operator, right } => {
                 write!(f, "({} {} {})", left, operator, right)

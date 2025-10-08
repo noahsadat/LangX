@@ -1,0 +1,39 @@
+# Test new syntax with symbols and comma
+
+Define add with parameters a, b:
+    Return a + b.
+End definition.
+
+Set x to 5.
+Set y to 10.
+
+# Arithmetic with symbols
+Set sum to x + y.
+print sum.
+
+Set product to x * y.
+print product.
+
+# Function call with comma
+Set result to Call add with 3, 7.
+print result.
+
+# Logical and still uses "and"
+Set a to true.
+Set b to false.
+Set logic to a and b.
+print logic.
+
+# If uses "then" now
+If x is greater than 3 then print "x is large".
+
+# Complex expression
+Set complex to 2 + 3 * 4.
+print complex.
+
+# Function call in expression
+Set nested to 5 + Call add with 10, 20.
+print nested.
+
+
+

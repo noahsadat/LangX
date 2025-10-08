@@ -1,4 +1,4 @@
-use crate::ast::{Expression, BinaryOperator, Statement, Program};
+use crate::ast::{Expression, BinaryOperator, UnaryOperator, Statement, Program};
 use crate::lexer::Token;
 
 grammar;
@@ -12,7 +12,7 @@ pub Statement: Statement = {
         Statement::Assignment { variable, value }
     },
     
-    "If" <condition:LogicalOr> "," <then_branch:Statement> => {
+    "If" <condition:LogicalOr> "then" <then_branch:Statement> => {
         Statement::Conditional { 
             condition, 
             then_branch: Box::new(then_branch) 
@@ -23,7 +23,7 @@ pub Statement: Statement = {
         Statement::Print(expr)
     },
     
-    "Repeat" <count:PrimaryExpression> "times" ":" <body:Statement> => {
+    "Repeat" <count:PrimaryExpression> "times_kw" ":" <body:Statement> => {
         Statement::Repeat {
             count,
             body: Box::new(body)
@@ -49,7 +49,7 @@ pub Statement: Statement = {
     },
     
     // Function definition with two parameters
-    "Define" <name:Identifier> "with" "parameters" <param1:Identifier> "and" <param2:Identifier> ":" <body:Statement*> "End" "definition" "." => {
+    "Define" <name:Identifier> "with" "parameters" <param1:Identifier> "," <param2:Identifier> ":" <body:Statement*> "End" "definition" "." => {
         Statement::FunctionDefinition {
             name,
             parameters: vec![param1, param2],
@@ -118,14 +118,17 @@ LogicalNot: Expression = {
         operator: UnaryOperator::Not,
         operand: Box::new(expr),
     },
-    <expr:Expression> => expr,
+    <expr:Term> => expr,
 };
 
 // Atom: highest precedence
+// Now includes FunctionCall since we removed the ambiguity with "and"
 Atom: Expression = {
-    "(" <expr:Expression> ")" => expr,
+    "(" <expr:LogicalOr> ")" => expr,
     <n:Number> => Expression::Number(n),
     <s:StringLiteral> => Expression::String(s),
+    "true" => Expression::Boolean(true),
+    "false" => Expression::Boolean(false),
     <id:Identifier> => Expression::Variable(id),
     FunctionCall,
 };
@@ -144,8 +147,8 @@ Factor: Expression = {
 };
 
 FactorOp: (BinaryOperator, Expression) = {
-    "times" <rhs:Atom> => (BinaryOperator::Times, rhs),
-    "divided" "by" <rhs:Atom> => (BinaryOperator::Divide, rhs),
+    "*" <rhs:Atom> => (BinaryOperator::Times, rhs),
+    "/" <rhs:Atom> => (BinaryOperator::Divide, rhs),
 };
 
 // Term: addition/subtraction (left-associative, warning-free)
@@ -162,8 +165,8 @@ Term: Expression = {
 };
 
 TermOp: (BinaryOperator, Expression) = {
-    "plus" <rhs:Factor> => (BinaryOperator::Plus, rhs),
-    "minus" <rhs:Factor> => (BinaryOperator::Minus, rhs),
+    "+" <rhs:Factor> => (BinaryOperator::Plus, rhs),
+    "-" <rhs:Factor> => (BinaryOperator::Minus, rhs),
 };
 
 Number: i64 = {
@@ -178,6 +181,7 @@ Identifier: String = {
     <id:"Identifier"> => id,
 };
 
+// Function call - handles all cases (0, 1, or 2 arguments)
 FunctionCall: Expression = {
     // Function call with no arguments
     "Call" <name:Identifier> => {
@@ -186,26 +190,27 @@ FunctionCall: Expression = {
             arguments: Vec::new(),
         }
     },
-    // Function call with one argument
-    "Call" <name:Identifier> "with" <arg:PrimaryExpression> => {
-        Expression::FunctionCall {
-            name,
-            arguments: vec![arg],
+    // Function call with arguments (one or two)
+    "Call" <name:Identifier> "with" <arg1:PrimaryExpression> <arg2:("," <PrimaryExpression>)?> => {
+        let mut args = vec![arg1];
+        if let Some(a2) = arg2 {
+            args.push(a2);
         }
-    },
-    // Function call with two arguments
-    "Call" <name:Identifier> "with" <arg1:PrimaryExpression> "and" <arg2:PrimaryExpression> => {
         Expression::FunctionCall {
             name,
-            arguments: vec![arg1, arg2],
+            arguments: args,
         }
     },
 };
 
-// Add a new nonterminal for primary expressions (numbers, variables, parentheses)
+// Add a new nonterminal for primary expressions (numbers, variables, strings, booleans, parentheses)
+// Used for function arguments - allows parenthesized complex expressions
 PrimaryExpression: Expression = {
-    "(" <expr:Expression> ")" => expr,
+    "(" <expr:LogicalOr> ")" => expr,
     <n:Number> => Expression::Number(n),
+    <s:StringLiteral> => Expression::String(s),
+    "true" => Expression::Boolean(true),
+    "false" => Expression::Boolean(false),
     <id:Identifier> => Expression::Variable(id),
 };
 
@@ -222,12 +227,13 @@ extern {
         "Set" => Token::Set,
         "to" => Token::To,
         "If" => Token::If,
+        "then" => Token::Then,
         "is" => Token::Is,
         "greater" => Token::Greater,
         "than" => Token::Than,
         "print" => Token::Print,
         "Repeat" => Token::Repeat,
-        "times" => Token::Times,
+        "times_kw" => Token::TimesKeyword,
         "Define" => Token::Define,
         "with" => Token::With,
         "parameters" => Token::Parameters,
@@ -237,11 +243,10 @@ extern {
         "definition" => Token::Definition,
         "Call" => Token::Call,
         "Return" => Token::Return,
-        "plus" => Token::Plus,
-        "minus" => Token::Minus,
-        "times" => Token::Times,
-        "divided" => Token::Divided,
-        "by" => Token::By,
+        "+" => Token::Plus,
+        "-" => Token::Minus,
+        "*" => Token::Times,
+        "/" => Token::Divide,
         "(" => Token::LeftParen,
         ")" => Token::RightParen,
         "." => Token::Period,
@@ -254,5 +259,7 @@ extern {
         "equal" => Token::Equal,
         "not" => Token::Not,
         "or" => Token::Or,
+        "true" => Token::True,
+        "false" => Token::False,
     }
 } 

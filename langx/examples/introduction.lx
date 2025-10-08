@@ -8,7 +8,7 @@ print name.
 print age.
 
 print "2. Conditional Statements:".
-If age is greater than 40, print "Over 40.".
+If age is greater than 40 then print "Over 40.".
 
 print "3. Loops:".
 Repeat 3 times: print "Loop iteration.".
@@ -21,29 +21,29 @@ End definition.
 
 Call greet with name.
 
-Define add with parameters a and b:
-    Return a plus b.
+Define add with parameters a, b:
+    Return a + b.
 End definition.
 
 print "5. Arithmetic Operations:".
 print "Addition:".
-Set result to Call add with 5 and 7.
+Set result to Call add with 5, 7.
 print result.
 
 print "Subtraction:".
-Set result to 10 minus 3.
+Set result to 10 - 3.
 print result.
 
 print "Multiplication:".
-Set result to 6 times 4.
+Set result to 6 * 4.
 print result.
 
 print "Division:".
-Set result to 20 divided by 5.
+Set result to 20 / 5.
 print result.
 
-print "Complex operation (without precedence yet):".
-Set result to 2 plus 3 times 4.
+print "Complex operation with operator precedence:".
+Set result to 2 + 3 * 4.
 print result.
 
 print "End of introduction.". 

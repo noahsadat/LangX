@@ -4,38 +4,38 @@ Set a to 10.
 Set b to 5.
 
 print "Basic operations:".
-Set sum to a plus b.
+Set sum to a + b.
 print "Sum:".
 print sum.
 
-Set difference to a minus b.
+Set difference to a - b.
 print "Difference:".
 print difference.
 
-Set product to a times b.
+Set product to a * b.
 print "Product:".
 print product.
 
-Set quotient to a divided by b.
+Set quotient to a / b.
 print "Quotient:".
 print quotient.
 
 print "Complex expressions:".
-Set result to 2 plus 3 times 4.
+Set result to 2 + 3 * 4.
 print "2 + 3 * 4 =".
 print result.
 
-Set result to 10 minus 2 times 3.
+Set result to 10 - 2 * 3.
 print "10 - 2 * 3 =".
 print result.
 
 print "Function with arithmetic:".
-Define calculate with parameters x and y:
-    Set sum to x plus y.
-    Set product to x times y.
-    Return sum plus product.
+Define calculate with parameters x, y:
+    Set sum to x + y.
+    Set product to x * y.
+    Return sum + product.
 End definition.
 
-Set result to Call calculate with 3 and 4.
+Set result to Call calculate with 3, 4.
 print "calculate(3, 4) =".
 print result. 

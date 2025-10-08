@@ -1,0 +1,26 @@
+# Functions with new syntax
+
+Define greet:
+    print "Hello, World!".
+End definition.
+
+Call greet.
+
+Define square with parameter x:
+    Return x * x.
+End definition.
+
+Set num to 7.
+Set squared to Call square with num.
+print squared.
+
+Define add with parameters a, b:
+    Return a + b.
+End definition.
+
+Set sum to Call add with 10, 20.
+print sum.
+
+# Nested function calls (need parentheses for complex expressions)
+Set nested to Call add with 5, (Call square with 3).
+print nested.

@@ -222,6 +222,7 @@ impl Interpreter {
         match expr {
             Expression::Number(n) => Ok(Value::Number(n)),
             Expression::String(s) => Ok(Value::String(s)),
+            Expression::Boolean(b) => Ok(Value::Boolean(b)),
             Expression::Variable(name) => {
                 self.env.get(&name)
                     .ok_or_else(|| format!(
@@ -375,7 +376,7 @@ impl Interpreter {
                 Ok(result)
             }
             Expression::UnaryOp { operator, operand } => {
-                let value = self.evaluate_expression(operand)?;
+                let value = self.evaluate_expression(&operand)?;
                 match operator {
                     UnaryOperator::Not => {
                         if let Value::Boolean(b) = value {

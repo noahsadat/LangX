@@ -1,12 +1,12 @@
-Define add with parameters a and b:
-    Return a plus b.
+Define add with parameters a, b:
+    Return a + b.
 End definition.
 
 Set a to true.
 Set b to false.
 
-# Function call with and
-Set sum to Call add with 5 and 10.
+# Function call with comma separator
+Set sum to Call add with 5, 10.
 print sum.
 
 # Logical and
@@ -14,9 +14,9 @@ Set logic_result to a and b.
 print logic_result.
 
 # Function call with logical expressions as arguments
-Define foo with parameters x and y:
+Define foo with parameters x, y:
     print x.
     print y.
 End definition.
 
-Call foo with (a and b) and (a or b). 
+Call foo with (a and b), (a or b). 

@@ -14,6 +14,9 @@ pub enum Token {
     #[token("If")]
     If,
     
+    #[token("then")]
+    Then,
+    
     #[token("is")]
     Is,
     
@@ -30,7 +33,7 @@ pub enum Token {
     Repeat,
     
     #[token("times")]
-    Times,
+    TimesKeyword,
     
     #[token("Define")]
     Define,
@@ -59,18 +62,18 @@ pub enum Token {
     #[token("Return")]
     Return,
     
-    // Arithmetic operators
-    #[token("plus")]
+    // Arithmetic operators (using symbols)
+    #[token("+")]
     Plus,
     
-    #[token("minus")]
+    #[token("-")]
     Minus,
     
-    #[token("divided")]
-    Divided,
+    #[token("*")]
+    Times,
     
-    #[token("by")]
-    By,
+    #[token("/")]
+    Divide,
     
     // Punctuation
     #[token(".")]
@@ -105,7 +108,11 @@ pub enum Token {
     }, priority = 2)]
     StringLiteral(String),
     
-    // Whitespace and comments
+    // Comments (lines starting with #)
+    #[regex(r"#[^\n]*", logos::skip)]
+    Comment,
+    
+    // Whitespace
     #[regex(r"[ \t\n\f]+", logos::skip, priority = 1)]
     Whitespace,
     
@@ -124,6 +131,13 @@ pub enum Token {
     
     #[token("or")]
     Or,
+    
+    // Boolean literals
+    #[token("true")]
+    True,
+    
+    #[token("false")]
+    False,
 }
 
 impl fmt::Display for Token {
@@ -132,12 +146,13 @@ impl fmt::Display for Token {
             Token::Set => write!(f, "Set"),
             Token::To => write!(f, "to"),
             Token::If => write!(f, "If"),
+            Token::Then => write!(f, "then"),
             Token::Is => write!(f, "is"),
             Token::Greater => write!(f, "greater"),
             Token::Than => write!(f, "than"),
             Token::Print => write!(f, "print"),
             Token::Repeat => write!(f, "Repeat"),
-            Token::Times => write!(f, "times"),
+            Token::TimesKeyword => write!(f, "times"),
             Token::Define => write!(f, "Define"),
             Token::With => write!(f, "with"),
             Token::Parameters => write!(f, "parameters"),
@@ -147,10 +162,10 @@ impl fmt::Display for Token {
             Token::Definition => write!(f, "definition"),
             Token::Call => write!(f, "Call"),
             Token::Return => write!(f, "Return"),
-            Token::Plus => write!(f, "plus"),
-            Token::Minus => write!(f, "minus"),
-            Token::Divided => write!(f, "divided"),
-            Token::By => write!(f, "by"),
+            Token::Plus => write!(f, "+"),
+            Token::Minus => write!(f, "-"),
+            Token::Times => write!(f, "*"),
+            Token::Divide => write!(f, "/"),
             Token::Period => write!(f, "."),
             Token::Comma => write!(f, ","),
             Token::Colon => write!(f, ":"),
@@ -166,6 +181,9 @@ impl fmt::Display for Token {
             Token::Equal => write!(f, "equal"),
             Token::Not => write!(f, "not"),
             Token::Or => write!(f, "or"),
+            Token::Comment => write!(f, "#"),
+            Token::True => write!(f, "true"),
+            Token::False => write!(f, "false"),
         }
     }
 }

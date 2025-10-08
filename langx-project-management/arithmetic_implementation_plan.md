@@ -1,94 +1,116 @@
 # Arithmetic Operations Implementation Plan
 
 ## Overview
-This document outlines the plan for implementing arithmetic operations in LangX.
+This document outlines the implementation of arithmetic operations in LangX using mathematical symbols.
 
 ## Current Status
-- [x] Addition operation is implemented and working
+- [x] **All arithmetic operations implemented with symbols (+ - * /)**
+- [x] Addition operation
 - [x] Subtraction operation
 - [x] Multiplication operation
 - [x] Division operation
+- [x] Operator precedence (multiplication/division before addition/subtraction)
+- [x] Parentheses for grouping expressions
 
-## Implementation Challenges
-We encountered issues with the LALRPOP grammar when trying to implement all operations at once with proper operator precedence. The current solution is to implement operations one by one, starting with addition.
+## Major Design Decision (October 2025)
+**Switched from English words to mathematical symbols for arithmetic operations.**
+
+### Rationale:
+1. **Eliminated parser ambiguity** - Using symbols for arithmetic and "and" exclusively for logic/function args
+2. **Universal understanding** - Math symbols are recognized globally
+3. **Cleaner syntax** - More concise and familiar to programmers
+4. **Better precedence** - Standard mathematical precedence rules apply naturally
 
 ## Syntax Design
 
-### Addition (Implemented)
+### Addition
 ```
-[expr1] plus [expr2]
+[expr1] + [expr2]
 ```
+Example: `Set x to 5 + 3.`
 
-### Subtraction (Implemented)
+### Subtraction
 ```
-[expr1] minus [expr2]
+[expr1] - [expr2]
 ```
+Example: `Set y to 10 - 7.`
 
-### Multiplication (Implemented)
+### Multiplication
 ```
-[expr1] times [expr2]
+[expr1] * [expr2]
 ```
+Example: `Set z to 6 * 4.`
 
-### Division (Implemented)
+### Division
 ```
-[expr1] divided by [expr2]
+[expr1] / [expr2]
+```
+Example: `Set result to 20 / 5.`
+
+### Operator Precedence
+Standard mathematical precedence applies:
+1. **Parentheses** - highest priority
+2. **Multiplication and Division** - left to right
+3. **Addition and Subtraction** - left to right
+
+Examples:
+```
+Set a to 2 + 3 * 4.        # Result: 14 (not 20)
+Set b to (2 + 3) * 4.      # Result: 20
+Set c to 20 / 2 - 3.       # Result: 7
+Set d to 20 / (2 - 3).     # Result: -20
 ```
 
 ## Implementation Steps
 
-### 1. Addition (Completed)
-- [x] Added Plus token to lexer
-- [x] Added Plus binary operator to AST
-- [x] Updated grammar to parse addition expressions
-- [x] Updated interpreter to evaluate addition expressions
-- [x] Added tests for addition
-- [x] Created example program (addition.lx)
+### 1. Lexer Updates [COMPLETED]
+- [x] Replaced word tokens with symbol tokens
+- [x] Added `+` token (Plus)
+- [x] Added `-` token (Minus)
+- [x] Added `*` token (Times)
+- [x] Added `/` token (Divide)
+- [x] Kept "times" keyword for `Repeat N times:`
 
-### 2. Subtraction (Completed)
-- [x] Update the grammar to handle subtraction
-- [x] Update the interpreter to evaluate subtraction expressions
-- [x] Add tests for subtraction
-- [x] Update example programs
+### 2. Parser Updates [COMPLETED]
+- [x] Updated grammar to use symbol tokens
+- [x] Implemented proper operator precedence
+- [x] Used fold-based approach for left-associativity
+- [x] Eliminated all LALRPOP ambiguity warnings
+- [x] Added parentheses support
 
-### 3. Multiplication (Completed)
-- [x] Update the grammar to handle multiplication
-- [x] Update the interpreter to evaluate multiplication expressions
-- [x] Add tests for multiplication
-- [x] Update example programs
+### 3. Interpreter Updates [COMPLETED]
+- [x] Updated evaluation logic for new AST structure
+- [x] Added zero-division error handling
+- [x] Ensured correct precedence evaluation
 
-### 4. Division (Completed)
-- [x] Update the grammar to handle division
-- [x] Update the interpreter to evaluate division expressions with zero-division checks
-- [x] Add tests for division
-- [x] Update example programs
+### 4. Testing [COMPLETED]
+- [x] Unit tests for all operators
+- [x] Tests for operator precedence
+- [x] Tests for parenthesized expressions
+- [x] Integration tests with example programs
 
-### 5. Operator Precedence (Next)
-- [ ] Reorganize grammar to implement correct operator precedence
-  - Multiplication and division have higher precedence than addition and subtraction
-  - Left-to-right associativity within the same precedence level
-- [ ] Add tests for complex expressions with mixed operators
+### 5. Documentation [COMPLETED]
+- [x] Updated all example files to use new syntax
+- [x] Updated language reference
+- [x] Updated project descriptions
 
-### 6. Documentation
-- [ ] Update language syntax documentation
-- [ ] Add examples showing all arithmetic operations
-- [ ] Document operator precedence rules
+## Benefits Achieved
+1. ✅ **Zero parser ambiguities** - Clean LR(1) grammar
+2. ✅ **Familiar syntax** - Standard math notation
+3. ✅ **Clear separation** - Symbols for math, words for logic
+4. ✅ **Proper precedence** - Mathematical rules apply
+5. ✅ **Maintainable** - Easy to extend and debug
 
 ## Future Enhancements
-1. Parentheses for grouping expressions
-2. Unary operations (negation)
-3. Support for more complex expressions (variables, function calls in all positions)
-4. String concatenation with the plus operator
+1. Modulo operator (%)
+2. Exponentiation operator (**)
+3. Unary operations (negation: -x)
+4. Bitwise operators (if needed)
 5. Type conversion operations
-
-## Timeline
-- Addition: Completed
-- Subtraction: Completed
-- Multiplication: Completed
-- Division: Completed
-- Operator precedence: 2 days
-- Documentation: 1 day
+6. String concatenation with +
 
 ## Lessons Learned
-- Implementing a grammar with operator precedence in LALRPOP is challenging
-- A simplified approach (implementing one operation at a time) was more successful
-- Once all operations are working independently, we can focus on improving the grammar structure for operator precedence 
+- Hybrid syntax (symbols + words) can be superior to pure English
+- Parser ambiguity should drive design decisions
+- Sometimes the "programming way" is the right way
+- Mathematical symbols are a universal language

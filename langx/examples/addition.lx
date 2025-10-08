@@ -4,27 +4,27 @@ Set a to 10.
 Set b to 5.
 
 print "Addition:".
-Set result to a plus b.
+Set result to a + b.
 print result.
 
 print "Subtraction:".
-Set result to a minus b.
+Set result to a - b.
 print result.
 
 print "Multiplication:".
-Set result to a times b.
+Set result to a * b.
 print result.
 
 print "Division:".
-Set result to a divided by b.
+Set result to a / b.
 print result.
 
 print "Function with multiple operations:".
-Define calculate with parameters x and y:
-    Set sum to x plus y.
-    Set product to x times y.
-    Return sum plus product.
+Define calculate with parameters x, y:
+    Set sum to x + y.
+    Set product to x * y.
+    Return sum + product.
 End definition.
 
-Set result to Call calculate with 3 and 4.
+Set result to Call calculate with 3, 4.
 print result. 
