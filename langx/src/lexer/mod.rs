@@ -401,4 +401,164 @@ mod tests {
             Token::Period,
         ]);
     }
+    
+    #[test]
+    fn test_empty_string_tokenization() {
+        let input = "Set x to \"\".";
+        let tokens: Vec<Token> = tokenize(input).into_iter().map(|(_, t, _)| t).collect();
+        
+        assert_eq!(tokens, vec![
+            Token::Set,
+            Token::Identifier("x".to_string()),
+            Token::To,
+            Token::StringLiteral("".to_string()),
+            Token::Period,
+        ]);
+    }
+    
+    #[test]
+    fn test_string_with_spaces() {
+        let input = "Set x to \"hello world\".";
+        let tokens: Vec<Token> = tokenize(input).into_iter().map(|(_, t, _)| t).collect();
+        
+        assert_eq!(tokens, vec![
+            Token::Set,
+            Token::Identifier("x".to_string()),
+            Token::To,
+            Token::StringLiteral("hello world".to_string()),
+            Token::Period,
+        ]);
+    }
+    
+    #[test]
+    fn test_boolean_literals() {
+        let input = "Set x to true. Set y to false.";
+        let tokens: Vec<Token> = tokenize(input).into_iter().map(|(_, t, _)| t).collect();
+        
+        assert_eq!(tokens, vec![
+            Token::Set,
+            Token::Identifier("x".to_string()),
+            Token::To,
+            Token::True,
+            Token::Period,
+            Token::Set,
+            Token::Identifier("y".to_string()),
+            Token::To,
+            Token::False,
+            Token::Period,
+        ]);
+    }
+    
+    #[test]
+    fn test_comments_skipped() {
+        let input = "# This is a comment\nSet x to 5.";
+        let tokens: Vec<Token> = tokenize(input).into_iter().map(|(_, t, _)| t).collect();
+        
+        // Comment should be skipped
+        assert_eq!(tokens, vec![
+            Token::Set,
+            Token::Identifier("x".to_string()),
+            Token::To,
+            Token::Number(5),
+            Token::Period,
+        ]);
+    }
+    
+    #[test]
+    fn test_list_brackets() {
+        let input = "Set list to [1, 2, 3].";
+        let tokens: Vec<Token> = tokenize(input).into_iter().map(|(_, t, _)| t).collect();
+        
+        assert_eq!(tokens, vec![
+            Token::Set,
+            Token::Identifier("list".to_string()),
+            Token::To,
+            Token::LeftBracket,
+            Token::Number(1),
+            Token::Comma,
+            Token::Number(2),
+            Token::Comma,
+            Token::Number(3),
+            Token::RightBracket,
+            Token::Period,
+        ]);
+    }
+    
+    #[test]
+    fn test_logical_operators() {
+        let input = "Set x to true and false or not true.";
+        let tokens: Vec<Token> = tokenize(input).into_iter().map(|(_, t, _)| t).collect();
+        
+        assert_eq!(tokens, vec![
+            Token::Set,
+            Token::Identifier("x".to_string()),
+            Token::To,
+            Token::True,
+            Token::And,
+            Token::False,
+            Token::Or,
+            Token::Not,
+            Token::True,
+            Token::Period,
+        ]);
+    }
+    
+    #[test]
+    fn test_comparison_keywords() {
+        let input = "If x is greater than 5 then Set y to 10.";
+        let tokens: Vec<Token> = tokenize(input).into_iter().map(|(_, t, _)| t).collect();
+        
+        assert_eq!(tokens, vec![
+            Token::If,
+            Token::Identifier("x".to_string()),
+            Token::Is,
+            Token::Greater,
+            Token::Than,
+            Token::Number(5),
+            Token::Then,
+            Token::Set,
+            Token::Identifier("y".to_string()),
+            Token::To,
+            Token::Number(10),
+            Token::Period,
+        ]);
+    }
+    
+    #[test]
+    fn test_break_continue_keywords() {
+        let input = "Break loop. Continue to next iteration.";
+        let tokens: Vec<Token> = tokenize(input).into_iter().map(|(_, t, _)| t).collect();
+        
+        assert_eq!(tokens, vec![
+            Token::Break,
+            Token::Loop,
+            Token::Period,
+            Token::Continue,
+            Token::To,
+            Token::Next,
+            Token::Iteration,
+            Token::Period,
+        ]);
+    }
+    
+    #[test]
+    fn test_for_loop_keywords() {
+        let input = "For each elem in list: print elem. End for.";
+        let tokens: Vec<Token> = tokenize(input).into_iter().map(|(_, t, _)| t).collect();
+        
+        assert_eq!(tokens, vec![
+            Token::For,
+            Token::Each,
+            Token::Identifier("elem".to_string()),
+            Token::In,
+            Token::Identifier("list".to_string()),
+            Token::Colon,
+            Token::Print,
+            Token::Identifier("elem".to_string()),
+            Token::Period,
+            Token::End,
+            Token::ForLower,
+            Token::Period,
+        ]);
+    }
 } 
