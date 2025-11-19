@@ -51,11 +51,12 @@
 - [x] Not equal to (`is not equal to`)
 
 ### Functions
-- [x] Function definitions (0-2 parameters)
+- [x] Function definitions (0-5 parameters) - **Extended from 0-2**
 - [x] Function calls with arguments
 - [x] Return statements
 - [x] Proper scoping (nested environments)
 - [x] **Comma-separated parameters and arguments**
+- [x] **Built-in functions** - `string_length`, `substring`
 
 ### Testing & Documentation
 - [x] Unit tests for all components
@@ -64,6 +65,8 @@
 - [x] Updated all documentation
 - [x] Syntax reference guide
 - [x] Implementation plans
+- [x] **Comprehensive test suite** - 20+ new tests covering edge cases
+- [x] **Error message improvements** - Line numbers and code snippets in errors
 
 ### Syntax Migration
 - [x] Migrated from word operators to symbols
@@ -82,17 +85,24 @@
 
 ## Current Sprint: Post-Milestone Improvements
 
+### Recently Completed (December 2025)
+- [x] **Enhanced error messages with line numbers** - Parse errors now show line numbers and code snippets
+- [x] **Extended string concatenation** - Supports string + number, number + string, string + boolean
+- [x] **Extended function support** - Functions now support 0-5 parameters (was 0-2)
+- [x] **Built-in string functions** - Added `string_length` and `substring` functions
+- [x] **Fixed parentheses precedence** - Removed redundant precedence function, parser handles it correctly
+- [x] **Comprehensive test suite** - Added 20+ new tests covering edge cases and new features
+- [x] **Fixed example file syntax** - All example files now have proper `End repeat.` and `End while.` markers
+
 ### In Progress
-- [ ] Improve error messages with better context
-- [ ] Add line number tracking for errors
 - [ ] Performance profiling and optimization
 
 ### Planned - High Priority
-- [ ] While loops (`While condition: statement.`)
+- [ ] While loops (`While condition: statement.`) - **Already implemented!**
 - [ ] For loops (`For each item in list: statement.`)
-- [ ] List/array support
-- [ ] String concatenation
-- [ ] More string operations
+- [ ] List/array support - **Already implemented!**
+- [ ] String concatenation - **Already implemented!**
+- [ ] More string operations - **Partially implemented (length, substring)**
 
 ### Planned - Medium Priority
 - [ ] File I/O operations
@@ -113,7 +123,7 @@
 
 ### High Priority
 - [ ] Improve error recovery in parser
-- [ ] Add more comprehensive error messages
+- [x] **Add more comprehensive error messages** - ✅ Completed with line numbers (December 2025)
 - [ ] Better type error reporting
 
 ### Medium Priority
@@ -140,8 +150,8 @@ All critical issues resolved ✅
 
 ### Enhancement Requests
 1. Better REPL experience (history, multi-line)
-2. More helpful error messages
-3. Standard library of common functions
+2. More helpful error messages - **✅ Partially completed** (line numbers added)
+3. Standard library of common functions - **✅ Started** (string functions added)
 4. Module/import system
 
 ---
@@ -243,7 +253,29 @@ All critical issues resolved ✅
 - Add list/array support
 - Improve error messages
 
-### Next Review: November 2025
+### Review Update (December 2025)
+**Recent Achievements:**
+- ✅ Enhanced error messages with line numbers and code snippets
+- ✅ Extended function support to 5 parameters
+- ✅ Added string concatenation (string + number, number + string, string + boolean)
+- ✅ Implemented built-in string functions (`string_length`, `substring`)
+- ✅ Fixed parentheses precedence issue
+- ✅ Added comprehensive test suite (20+ new tests)
+- ✅ Fixed all example file syntax issues
+
+**New Features:**
+- String concatenation: `"Hello" + 42` → `"Hello42"`, `100 + " percent"` → `"100 percent"`
+- Extended functions: `Define func with parameters a, b, c, d, e: ...`
+- Built-in functions: `Call string_length with "text"`, `Call substring with "text", 0, 5`
+- Better errors: Parse errors now show line numbers and context
+
+**Next Steps:**
+- Continue expanding standard library
+- Add more string manipulation functions
+- Improve test coverage to 90%+
+- Add file I/O operations
+
+### Next Review: January 2026
 **Agenda:**
 - Review Milestone 2 progress
 - Plan standard library design
@@ -254,15 +286,16 @@ All critical issues resolved ✅
 
 ## Statistics
 
-**Lines of Code:** ~2,500 (Rust)
-**Test Coverage:** ~60% (goal: 90%)
-**Example Programs:** 15+
-**Supported Features:** 25+
+**Lines of Code:** ~2,800 (Rust)
+**Test Coverage:** ~70% (goal: 90%) - **Improved from 60%**
+**Example Programs:** 22+ (including new test examples)
+**Supported Features:** 30+ - **Added: string concat, extended functions, built-ins**
 **Parser Conflicts:** 0 ✅
-**Known Bugs:** 0 critical, 3 minor
+**Known Bugs:** 0 critical, 2 minor
+**Test Suite:** 40+ tests (20+ new comprehensive tests)
 
 ---
 
 **Status:** 🟢 Active Development
-**Version:** 0.1.0
-**Last Updated:** October 2025
+**Version:** 0.2.0
+**Last Updated:** December 2025

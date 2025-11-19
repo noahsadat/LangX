@@ -81,9 +81,21 @@ End definition.
 Define [name] with parameters [param1], [param2]:
     [statements]
 End definition.
+
+Define [name] with parameters [param1], [param2], [param3]:
+    [statements]
+End definition.
+
+Define [name] with parameters [param1], [param2], [param3], [param4]:
+    [statements]
+End definition.
+
+Define [name] with parameters [param1], [param2], [param3], [param4], [param5]:
+    [statements]
+End definition.
 ```
 
-**Note:** Parameters separated by commas.
+**Note:** Parameters separated by commas. Functions support 0-5 parameters.
 
 Examples:
 ```
@@ -95,6 +107,14 @@ End definition.
 Define add with parameters a, b:
     Return a + b.
 End definition.
+
+Define sum_three with parameters a, b, c:
+    Return a + b + c.
+End definition.
+
+Define multiply_four with parameters a, b, c, d:
+    Return a * b * c * d.
+End definition.
 ```
 
 ### Function Calls
@@ -102,14 +122,19 @@ End definition.
 Call [name].
 Call [name] with [arg].
 Call [name] with [arg1], [arg2].
+Call [name] with [arg1], [arg2], [arg3].
+Call [name] with [arg1], [arg2], [arg3], [arg4].
+Call [name] with [arg1], [arg2], [arg3], [arg4], [arg5].
 ```
 
-**Note:** Arguments separated by commas.
+**Note:** Arguments separated by commas. Functions support 0-5 arguments.
 
 Examples:
 ```
 Call greet with "World".
 Set sum to Call add with 5, 10.
+Set total to Call sum_three with 1, 2, 3.
+Set product to Call multiply_four with 2, 3, 4, 5.
 ```
 
 ### Return Statements
@@ -164,7 +189,7 @@ Add 3 to list.
 
 ### Arithmetic Operations (Symbols)
 ```
-[expr1] + [expr2]     # Addition
+[expr1] + [expr2]     # Addition (numbers) or concatenation (strings)
 [expr1] - [expr2]     # Subtraction
 [expr1] * [expr2]     # Multiplication
 [expr1] / [expr2]     # Division
@@ -178,6 +203,15 @@ Set product to 6 * 7.
 Set quotient to 100 / 4.
 Set complex to 2 + 3 * 4.      # = 14 (precedence)
 Set grouped to (2 + 3) * 4.    # = 20 (parentheses)
+```
+
+**String Concatenation:**
+The `+` operator also works for string concatenation:
+```
+Set text to "Hello" + ", " + "World".     # = "Hello, World"
+Set message to "The answer is " + 42.     # = "The answer is 42"
+Set text2 to 100 + " percent".            # = "100 percent"
+Set status to "Status: " + true.          # = "Status: true"
 ```
 
 ### Logical Operations (Words)
@@ -229,10 +263,13 @@ Supported expression types:
 - **Booleans**: `true`, `false`
 - **Variables**: `x`, `myVar`
 - **Arithmetic**: `5 + 3`, `x * y`, `(a + b) / c`
+- **String concatenation**: `"Hello" + 42`, `100 + " percent"`
 - **Logic**: `a and b`, `x or y`, `not flag`
 - **Comparisons**: `x is greater than 5`
-- **Function calls**: `Call add with 5, 10`
+- **Function calls**: `Call add with 5, 10`, `Call string_length with "text"`
 - **Parenthesized expressions**: `(2 + 3) * 4`
+- **List literals**: `[1, 2, 3]`
+- **List indexing**: `item 0 of list`
 
 ### Operator Precedence
 **From highest to lowest:**
@@ -324,10 +361,38 @@ print larger.
 Repeat 3 times: print x * 2.
 ```
 
+## Built-in Functions
+
+### String Functions
+
+#### `string_length`
+Get the length of a string.
+```
+Call string_length with [string]
+```
+Example:
+```
+Set text to "Hello, World!".
+Set len to Call string_length with text.
+print len.  # Prints: 13
+```
+
+#### `substring`
+Extract a substring from a string.
+```
+Call substring with [string], [start], [length]
+```
+Example:
+```
+Set text to "Hello, World!".
+Set sub to Call substring with text, 0, 5.
+print sub.  # Prints: "Hello"
+```
+
 ## Future Syntax Extensions
-- **While loops**: `While [condition]: [statement]`
 - **For loops**: `For each [item] in [list]: [statement]`
-- **Lists**: `Set list to [1, 2, 3, 4, 5].`
 - **String interpolation**: `"Hello, {name}!"`
 - **Match expressions**: `Match [value] with [patterns]`
 - **Lambda functions**: `Set func to function with x: Return x * 2.`
+- **More string functions**: split, join, replace
+- **Math functions**: sqrt, pow, abs

@@ -73,6 +73,33 @@ pub Statement: Statement = {
         }
     },
     
+    // Function definition with three parameters
+    "Define" <name:Identifier> "with" "parameters" <param1:Identifier> "," <param2:Identifier> "," <param3:Identifier> ":" <body:Statement*> "End" "definition" "." => {
+        Statement::FunctionDefinition {
+            name,
+            parameters: vec![param1, param2, param3],
+            body,
+        }
+    },
+    
+    // Function definition with four parameters
+    "Define" <name:Identifier> "with" "parameters" <param1:Identifier> "," <param2:Identifier> "," <param3:Identifier> "," <param4:Identifier> ":" <body:Statement*> "End" "definition" "." => {
+        Statement::FunctionDefinition {
+            name,
+            parameters: vec![param1, param2, param3, param4],
+            body,
+        }
+    },
+    
+    // Function definition with five parameters
+    "Define" <name:Identifier> "with" "parameters" <param1:Identifier> "," <param2:Identifier> "," <param3:Identifier> "," <param4:Identifier> "," <param5:Identifier> ":" <body:Statement*> "End" "definition" "." => {
+        Statement::FunctionDefinition {
+            name,
+            parameters: vec![param1, param2, param3, param4, param5],
+            body,
+        }
+    },
+    
     "Return" <expr:LogicalOr?> "." => {
         Statement::Return(expr)
     },
@@ -278,7 +305,7 @@ Identifier: String = {
     <id:"Identifier"> => id,
 };
 
-// Function call - handles all cases (0, 1, or 2 arguments)
+// Function call - handles all cases (0, 1, 2, 3, 4, or 5 arguments)
 FunctionCall: Expression = {
     // Function call with no arguments
     "Call" <name:Identifier> => {
@@ -287,15 +314,39 @@ FunctionCall: Expression = {
             arguments: Vec::new(),
         }
     },
-    // Function call with arguments (one or two)
-    "Call" <name:Identifier> "with" <arg1:PrimaryExpression> <arg2:("," <PrimaryExpression>)?> => {
-        let mut args = vec![arg1];
-        if let Some(a2) = arg2 {
-            args.push(a2);
-        }
+    // Function call with one argument
+    "Call" <name:Identifier> "with" <arg1:PrimaryExpression> => {
         Expression::FunctionCall {
             name,
-            arguments: args,
+            arguments: vec![arg1],
+        }
+    },
+    // Function call with two arguments
+    "Call" <name:Identifier> "with" <arg1:PrimaryExpression> "," <arg2:PrimaryExpression> => {
+        Expression::FunctionCall {
+            name,
+            arguments: vec![arg1, arg2],
+        }
+    },
+    // Function call with three arguments
+    "Call" <name:Identifier> "with" <arg1:PrimaryExpression> "," <arg2:PrimaryExpression> "," <arg3:PrimaryExpression> => {
+        Expression::FunctionCall {
+            name,
+            arguments: vec![arg1, arg2, arg3],
+        }
+    },
+    // Function call with four arguments
+    "Call" <name:Identifier> "with" <arg1:PrimaryExpression> "," <arg2:PrimaryExpression> "," <arg3:PrimaryExpression> "," <arg4:PrimaryExpression> => {
+        Expression::FunctionCall {
+            name,
+            arguments: vec![arg1, arg2, arg3, arg4],
+        }
+    },
+    // Function call with five arguments
+    "Call" <name:Identifier> "with" <arg1:PrimaryExpression> "," <arg2:PrimaryExpression> "," <arg3:PrimaryExpression> "," <arg4:PrimaryExpression> "," <arg5:PrimaryExpression> => {
+        Expression::FunctionCall {
+            name,
+            arguments: vec![arg1, arg2, arg3, arg4, arg5],
         }
     },
 };

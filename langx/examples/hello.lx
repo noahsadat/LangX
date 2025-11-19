@@ -4,4 +4,5 @@ print greeting.
 Set counter to 1.
 If counter is greater than 0 then print "Counter is positive.".
 
-Repeat 3 times: print "Looping...". 
+Repeat 3 times: print "Looping...".
+End repeat. 

@@ -62,12 +62,12 @@ Set greeting to "Hello, world!".
 ### Conditional Statements
 
 ```
-If [condition], [statement].
+If [condition] then [statement].
 ```
 
 Example:
 ```
-If x is greater than 5, print "x is large".
+If x is greater than 5 then print "x is large".
 ```
 
 ### Loops
@@ -75,16 +75,19 @@ If x is greater than 5, print "x is large".
 #### Repeat Loop
 ```
 Repeat [count] times: [statement].
+End repeat.
 ```
 
 Example:
 ```
 Repeat 3 times: print "Hello".
+End repeat.
 ```
 
 #### While Loop
 ```
 While [condition]: [statement].
+End while.
 ```
 
 Example:
@@ -93,22 +96,36 @@ Set x to 0.
 While x is less than 5:
     print x.
     Set x to x + 1.
+End while.
 ```
 
 ### Functions
 
+Functions support 0-5 parameters:
 ```
+Define [name]:
+    [statements]
+End definition.
+
+Define [name] with parameter [param]:
+    [statements]
+End definition.
+
 Define [name] with parameters [param1], [param2]:
     [statements]
 End definition.
 
-Call [name] with [arg1], [arg2].
+Define [name] with parameters [param1], [param2], [param3]:
+    [statements]
+End definition.
+
+Call [name] with [arg1], [arg2], [arg3].
 ```
 
 Example:
 ```
 Define add with parameters a, b:
-    Return a.
+    Return a + b.
 End definition.
 
 Set result to Call add with 5, 10.
@@ -190,48 +207,79 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Uses Logos for lexical analysis
 - Uses LALRPOP for parsing 
 
-## Current Capabilities (May 2025)
+## Current Capabilities (December 2025)
 
 LangX supports:
 - Variables and assignment
-- Arithmetic and logical expressions (plus, minus, times, divided by, and, or, not, comparisons)
+- Arithmetic with symbols: `+`, `-`, `*`, `/`
+- Logical expressions with words: `and`, `or`, `not`
+- Comparisons: `is greater than`, `is less than`, `is equal to`, `is not equal to`
 - Parentheses and operator precedence
-- Conditional statements (if)
-- Loops (repeat)
-- Functions (0, 1, or 2 parameters)
-- Function calls with natural 'and' separator (e.g., Call add with 5 and 10)
+- Conditional statements: `If condition then statement`
+- Loops: `Repeat N times: ... End repeat.`, `While condition: ... End while.`
+- Functions: 0-5 parameters with return values
+- Function calls: `Call func with arg1, arg2, arg3`
+- String concatenation: `"Hello" + 42`, `100 + " percent"`
+- Lists/Arrays: Creation, indexing, appending
+- Built-in functions: `string_length`, `substring`
 - Print statements
+- Comments: `# comment`
 
-### Function Calls and Logical 'and'
-- To call a function with two arguments: `Call add with 5 and 10` (arguments must be simple values, variables, or parenthesized expressions)
-- To use logical 'and': `Set result to a and b`
-- To pass a logical expression as a function argument, use parentheses: `Call print_results with (a and b) and (a or b)`
+### String Concatenation
+The `+` operator works for both arithmetic and string concatenation:
+```
+Set text to "Hello" + ", " + "World".     # = "Hello, World"
+Set message to "The answer is " + 42.     # = "The answer is 42"
+Set text2 to 100 + " percent".            # = "100 percent"
+Set status to "Status: " + true.         # = "Status: true"
+```
+
+### Extended Function Support
+Functions now support up to 5 parameters:
+```
+Define sum_three with parameters a, b, c:
+    Return a + b + c.
+End definition.
+
+Set total to Call sum_three with 1, 2, 3.
+```
+
+### Built-in String Functions
+```
+# Get string length
+Set len to Call string_length with "Hello, World!".
+
+# Extract substring
+Set sub to Call substring with "Hello, World!", 0, 5.
+```
 
 ### Example
 ```
-Define add with parameters a and b:
-    Return a plus b.
+Define add with parameters a, b:
+    Return a + b.
 End definition.
 
-Set a to true.
-Set b to false.
-
-Set sum to Call add with 5 and 10.
+Set sum to Call add with 5, 10.
 print sum.
 
-Set logic_result to a and b.
-print logic_result.
+# String concatenation
+Set greeting to "Hello, " + "World!".
+print greeting.
 
-Define print_results with parameters first and second:
-    print first.
-    print second.
-End definition.
-
-Call print_results with (a and b) and (a or b).
+# Built-in functions
+Set text to "LangX".
+Set len to Call string_length with text.
+Set sub to Call substring with text, 0, 4.
+print len.
+print sub.
 ```
 
-## Recent Improvements
-- Operator precedence and parentheses
-- Logical and comparison operators
-- Natural function call syntax with 'and' (unambiguous for user code)
-- Documentation and examples updated 
+## Recent Improvements (December 2025)
+- ✅ Enhanced error messages with line numbers and code snippets
+- ✅ Extended function support to 5 parameters (was 0-2)
+- ✅ String concatenation with multiple types (string + number, number + string, string + boolean)
+- ✅ Built-in string functions (`string_length`, `substring`)
+- ✅ Fixed parentheses precedence issue
+- ✅ Comprehensive test suite (20+ new tests)
+- ✅ Fixed all example file syntax issues
+- ✅ Improved test coverage to ~70% 

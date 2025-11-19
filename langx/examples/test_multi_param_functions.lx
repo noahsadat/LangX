@@ -1,0 +1,26 @@
+# Test functions with 3+ parameters
+
+# Function with 3 parameters
+Define add_three with parameters a, b, c:
+    Return a + b + c.
+End definition.
+
+Set result to Call add_three with 1, 2, 3.
+print result.
+
+# Function with 4 parameters
+Define multiply_four with parameters a, b, c, d:
+    Return a * b * c * d.
+End definition.
+
+Set product to Call multiply_four with 2, 3, 4, 5.
+print product.
+
+# Function with 5 parameters
+Define sum_five with parameters a, b, c, d, e:
+    Return a + b + c + d + e.
+End definition.
+
+Set total to Call sum_five with 1, 2, 3, 4, 5.
+print total.
+

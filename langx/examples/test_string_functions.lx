@@ -1,0 +1,18 @@
+# Test built-in string functions
+
+# String length
+Set text to "Hello, World!".
+Set len to Call string_length with text.
+print len.
+
+# Substring extraction
+Set sub to Call substring with text, 0, 5.
+print sub.
+
+Set sub2 to Call substring with text, 7, 5.
+print sub2.
+
+# Test with concatenation
+Set full to "The length of '" + text + "' is " + len + " characters.".
+print full.
+

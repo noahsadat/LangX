@@ -220,7 +220,7 @@ impl fmt::Display for Token {
     }
 }
 
-/// Tokenize a string into a vector of tokens
+/// Tokenize a string into a vector of tokens with line numbers
 pub fn tokenize(input: &str) -> Vec<(usize, Token, usize)> {
     let mut lexer = Token::lexer(input);
     let mut tokens = Vec::new();
@@ -233,6 +233,35 @@ pub fn tokenize(input: &str) -> Vec<(usize, Token, usize)> {
     }
     
     tokens
+}
+
+/// Calculate line number from byte position in source code
+pub fn line_number_at_position(source: &str, position: usize) -> usize {
+    source[..position.min(source.len())]
+        .chars()
+        .filter(|&c| c == '\n')
+        .count() + 1
+}
+
+/// Get a snippet of code around a position for error messages
+pub fn get_code_snippet(source: &str, position: usize, context_lines: usize) -> String {
+    let lines: Vec<&str> = source.lines().collect();
+    let line_num = line_number_at_position(source, position);
+    
+    if line_num == 0 || line_num > lines.len() {
+        return format!("Line {}", line_num);
+    }
+    
+    let start_line = (line_num.saturating_sub(context_lines + 1)).max(1);
+    let end_line = (line_num + context_lines).min(lines.len());
+    
+    let mut snippet = String::new();
+    for i in start_line..=end_line {
+        let prefix = if i == line_num { "> " } else { "  " };
+        snippet.push_str(&format!("{}{:3}: {}\n", prefix, i, lines[i - 1]));
+    }
+    
+    snippet
 }
 
 #[cfg(test)]

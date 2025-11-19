@@ -12,6 +12,7 @@ If age is greater than 40 then print "Over 40.".
 
 print "3. Loops:".
 Repeat 3 times: print "Loop iteration.".
+End repeat.
 
 print "4. Functions:".
 Define greet with parameter person:

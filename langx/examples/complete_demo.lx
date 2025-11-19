@@ -51,6 +51,7 @@ If a or b then print "At least one true".
 # 7. Loops
 print "7. Loops:".
 Repeat 3 times: print "Hello!".
+End repeat.
 
 print "=== Demo Complete ===".
 

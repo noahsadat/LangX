@@ -113,9 +113,17 @@ pub struct Interpreter {
 
 impl Interpreter {
     pub fn new() -> Self {
-        Self {
-            env: Environment::new(),
-        }
+        let mut env = Environment::new();
+        
+        // Register built-in string functions
+        Self::register_builtin_functions(&mut env);
+        
+        Self { env }
+    }
+    
+    fn register_builtin_functions(_env: &mut Environment) {
+        // Built-in functions are handled directly in handle_builtin_function
+        // No need to register them as regular functions
     }
     
     pub fn interpret(&mut self, program: &Program) -> Result<(), String> {
@@ -223,48 +231,52 @@ impl Interpreter {
         }
     }
     
-    /// Take a left-associative tree of +,−,×,÷ and re-group it so ×,÷ bind tighter than +,−.
-    fn apply_precedence(&self, expr: Expression) -> Expression {
-        match expr {
-            Expression::BinaryOp { left, operator, right } => {
-                // Recursively fix children
-                let left = Box::new(self.apply_precedence(*left));
-                let right = Box::new(self.apply_precedence(*right));
-                // If this is a +/−, we just rebuild
-                if matches!(operator, BinaryOperator::Plus | BinaryOperator::Minus) {
-                    Expression::BinaryOp { left, operator, right }
-                }
-                // If this is a ×/÷, we need to pull up any +/− on the left
-                else {
-                    if let Expression::BinaryOp { left: ref ll, operator: ref lop, right: ref lr } = *left {
-                        if matches!(lop, BinaryOperator::Plus | BinaryOperator::Minus) {
-                            // a + (b × c)
-                            let new_right = Box::new(Expression::BinaryOp {
-                                left: lr.clone(),
-                                operator: operator.clone(),
-                                right,
-                            });
-                            return Expression::BinaryOp {
-                                left: ll.clone(),
-                                operator: lop.clone(),
-                                right: Box::new(self.apply_precedence(*new_right)),
-                            };
-                        }
-                    }
-                    Expression::BinaryOp { left, operator, right }
-                }
-            }
-            other => other,
-        }
+    fn evaluate_expression(&self, expr: &Expression) -> Result<Value, String> {
+        // The parser already handles precedence correctly through the grammar structure
+        // (Term for +/-, Factor for */), so we can evaluate directly
+        self.evaluate_expression_internal(expr)
     }
     
-    fn evaluate_expression(&self, expr: &Expression) -> Result<Value, String> {
-        // Before we do anything, regroup the tree for correct precedence:
-        // Clone the expression to avoid mutating the original
-        // Apply precedence to ensure correct operator precedence
-        let expr = self.apply_precedence(expr.clone());
-        // Now evaluate the expression, looking up variables fresh each time
-        self.evaluate_expression_internal(&expr)
+    fn handle_builtin_function(&self, name: &str, arguments: &[Expression]) -> Result<Option<Value>, String> {
+        // Evaluate arguments first
+        let mut arg_values = Vec::new();
+        for arg in arguments {
+            arg_values.push(self.evaluate_expression(arg)?);
+        }
+        
+        match name {
+            "string_length" => {
+                if arg_values.len() != 1 {
+                    return Err(format!("Built-in function 'string_length' expects 1 argument, got {}.", arg_values.len()));
+                }
+                if let Value::String(s) = &arg_values[0] {
+                    Ok(Some(Value::Number(s.len() as i64)))
+                } else {
+                    Err(format!("Built-in function 'string_length' expects a string argument, got {:?}.", arg_values[0]))
+                }
+            }
+            "substring" => {
+                if arg_values.len() != 3 {
+                    return Err(format!("Built-in function 'substring' expects 3 arguments (string, start, length), got {}.", arg_values.len()));
+                }
+                if let (Value::String(s), Value::Number(start), Value::Number(len)) = (&arg_values[0], &arg_values[1], &arg_values[2]) {
+                    if *start < 0 || *len < 0 {
+                        return Err("Built-in function 'substring' requires non-negative start and length.".to_string());
+                    }
+                    let start_usize = *start as usize;
+                    let len_usize = *len as usize;
+                    if start_usize > s.len() {
+                        return Err(format!("Start index {} is out of bounds for string of length {}.", start_usize, s.len()));
+                    }
+                    let end = (start_usize + len_usize).min(s.len());
+                    Ok(Some(Value::String(s[start_usize..end].to_string())))
+                } else {
+                    Err(format!("Built-in function 'substring' expects (string, number, number) arguments, got ({:?}, {:?}, {:?}).", 
+                        arg_values[0], arg_values[1], arg_values[2]))
+                }
+            }
+            _ => Ok(None), // Not a built-in function
+        }
     }
     
     fn evaluate_expression_internal(&self, expr: &Expression) -> Result<Value, String> {
@@ -307,7 +319,14 @@ impl Interpreter {
                         match (&left_val, &right_val) {
                             (Value::Number(l), Value::Number(r)) => Ok(Value::Number(l + r)),
                             (Value::String(l), Value::String(r)) => Ok(Value::String(format!("{}{}", l, r))),
-                            _ => Err(format!("Cannot add {:?} and {:?}", left_val, right_val))
+                            (Value::String(l), Value::Number(r)) => Ok(Value::String(format!("{}{}", l, r))),
+                            (Value::Number(l), Value::String(r)) => Ok(Value::String(format!("{}{}", l, r))),
+                            (Value::String(l), Value::Boolean(r)) => Ok(Value::String(format!("{}{}", l, r))),
+                            (Value::Boolean(l), Value::String(r)) => Ok(Value::String(format!("{}{}", l, r))),
+                            _ => Err(format!(
+                                "Runtime error: Cannot add {:?} and {:?}.\nHint: Use + for numbers or string concatenation.",
+                                left_val, right_val
+                            ))
                         }
                     }
                     BinaryOperator::Minus => {
@@ -377,6 +396,11 @@ impl Interpreter {
                 }
             }
             Expression::FunctionCall { name, arguments } => {
+                // Handle built-in functions first
+                if let Some(result) = self.handle_builtin_function(&name, arguments)? {
+                    return Ok(result);
+                }
+                
                 // Get the function definition
                 let function = self.env.get_function(&name)
                     .ok_or_else(|| format!(

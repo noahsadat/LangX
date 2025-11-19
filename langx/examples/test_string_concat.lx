@@ -1,0 +1,18 @@
+# Test string concatenation
+Set greeting to "Hello".
+Set name to "World".
+Set message to greeting + ", " + name + "!".
+print message.
+
+# String + number
+Set text to "The answer is " + 42.
+print text.
+
+# Number + string
+Set text2 to 100 + " percent".
+print text2.
+
+# String + boolean
+Set text3 to "Status: " + true.
+print text3.
+
