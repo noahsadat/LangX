@@ -173,7 +173,13 @@ LangX is a programming language that combines structured English with mathematic
   - [x] Parser performance benchmarks (simple, arithmetic, complex, loops, functions, data structures)
   - [x] Interpreter performance benchmarks (simple execution, arithmetic, loops, functions, recursive functions, list/map operations, string operations)
   - [x] Criterion benchmark suite integrated with HTML reports
-- [ ] VS Code extension
+- [x] **VS Code extension** - ✅ Completed November 2025
+  - [x] Syntax highlighting with TextMate grammar
+  - [x] Language configuration (comments, brackets, auto-closing pairs)
+  - [x] Code folding for blocks (Repeat, While, For, Define, If)
+  - [x] Smart indentation rules
+  - [x] Bracket matching and auto-closing
+  - [x] Support for `.lx` file extension
 - [ ] Online playground
 - [x] **Comprehensive test suite (90%+ coverage)** - ✅ Completed November 2025
   - [x] Added 40+ new tests covering edge cases and error paths

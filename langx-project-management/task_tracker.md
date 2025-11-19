@@ -137,9 +137,12 @@
 - [x] Escape sequences in strings - **✅ Completed** (`\n`, `\t`, `\r`, `\"`, `\\`, `\0`)
 
 ### Planned - Low Priority  
-- [ ] REPL improvements (history, auto-complete)
-- [ ] Syntax highlighting for terminal
-- [ ] VS Code extension
+- [x] **VS Code extension** - ✅ Completed November 2025
+  - [x] Syntax highlighting with TextMate grammar
+  - [x] Language configuration (comments, brackets, auto-closing pairs)
+  - [x] Code folding and smart indentation
+- [ ] REPL improvements (history, auto-complete) - ✅ Partially completed (history and auto-complete done)
+- [ ] Syntax highlighting for terminal - ✅ Completed (REPL has syntax highlighting)
 - [ ] Online playground
 
 ---

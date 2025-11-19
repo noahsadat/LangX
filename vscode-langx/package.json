@@ -1,0 +1,41 @@
+{
+  "name": "langx",
+  "displayName": "LangX",
+  "description": "Syntax highlighting and language support for LangX programming language",
+  "version": "0.1.0",
+  "publisher": "langx",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "langx",
+        "aliases": [
+          "LangX",
+          "langx"
+        ],
+        "extensions": [
+          ".lx"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "langx",
+        "scopeName": "source.langx",
+        "path": "./syntaxes/langx.tmLanguage.json"
+      }
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/noahsadat/LangX.git"
+  },
+  "license": "MIT"
+}
+
