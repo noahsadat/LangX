@@ -33,6 +33,37 @@ fn process_escape_sequences(input: &str) -> String {
     result
 }
 
+/// Parse a triple-quoted string manually
+/// The lexer is at the position of the first " of """
+fn parse_triple_quoted_string(lexer: &mut logos::Lexer<Token>) -> String {
+    let source = lexer.source();
+    let start = lexer.span().start;
+    
+    // We're at the first " of """, so the content starts at start + 3
+    // Find the closing """
+    let mut chars = source[start + 3..].char_indices();
+    
+    while let Some((idx, ch)) = chars.next() {
+        if ch == '"' {
+            // Check if this is the start of """
+            let check_pos = start + 3 + idx;
+            if check_pos + 2 < source.len() && &source[check_pos..check_pos + 3] == "\"\"\"" {
+                // Found closing """
+                let content = &source[start + 3..check_pos];
+                // Update lexer position to after the closing """
+                // The lexer is at start + 1 (after the first " matched by regex)
+                // We need to advance to check_pos + 3
+                // So bump by: (check_pos + 3) - (start + 1) = check_pos - start + 2
+                lexer.bump(check_pos - start + 2);
+                return process_escape_sequences(content);
+            }
+        }
+    }
+    
+    // No closing """ found - return empty string (will cause parse error later)
+    String::new()
+}
+
 /// Token types for the LangX language
 #[derive(Logos, Debug, PartialEq, Clone)]
 pub enum Token {
@@ -181,14 +212,55 @@ pub enum Token {
     #[regex(r"[a-zA-Z_][a-zA-Z0-9_]*", |lex| lex.slice().to_string(), priority = 2)]
     Identifier(String),
     
-    // String literal with escape sequences
-    // Single-line strings: handles escaped quotes and backslashes
-    // Note: Multi-line strings (triple-quoted) not yet supported due to regex limitations
-    #[regex(r#""(?:[^"\\]|\\.)*""#, |lex| {
-        let slice = lex.slice();
-        // Remove the quotes
-        let content = &slice[1..slice.len()-1];
-        process_escape_sequences(content)
+    // String literals - handle both single and triple-quoted
+    // Match " and check if it's triple-quoted or single-quoted
+    #[regex(r#"""#, |lex| {
+        let source = lex.source();
+        let start = lex.span().start;
+        
+        // Check if this is the start of a triple-quoted string
+        if start + 2 < source.len() && &source[start..start + 3] == "\"\"\"" {
+            // Triple-quoted string - the regex matched the first ", but we need to handle all three
+            // Reset to start and parse the full triple-quoted string
+            parse_triple_quoted_string(lex)
+        } else {
+            // Single-quoted string - parse normally
+            let remaining = &source[start + 1..];
+            let mut chars = remaining.char_indices();
+            let mut content = String::new();
+            let mut escaped = false;
+            
+            while let Some((char_idx, ch)) = chars.next() {
+                if escaped {
+                    match ch {
+                        'n' => content.push('\n'),
+                        't' => content.push('\t'),
+                        'r' => content.push('\r'),
+                        '\\' => content.push('\\'),
+                        '"' => content.push('"'),
+                        '0' => content.push('\0'),
+                        c => {
+                            content.push('\\');
+                            content.push(c);
+                        }
+                    }
+                    escaped = false;
+                } else if ch == '\\' {
+                    escaped = true;
+                } else if ch == '"' {
+                    // Found closing quote
+                    // char_idx is byte offset within remaining
+                    // The lexer is at start + 1, we want to advance to start + 1 + char_idx + ch.len_utf8()
+                    lex.bump(char_idx + ch.len_utf8());
+                    return content;
+                } else {
+                    content.push(ch);
+                }
+            }
+            
+            // No closing quote found
+            String::new()
+        }
     }, priority = 3)]
     StringLiteral(String),
     
@@ -590,6 +662,82 @@ mod tests {
             Token::Period,
             Token::End,
             Token::ForLower,
+            Token::Period,
+        ]);
+    }
+    
+    #[test]
+    fn test_multiline_string_basic() {
+        let input = "Set text to \"\"\"Hello\nWorld\"\"\".";
+        let tokens: Vec<Token> = tokenize(input).into_iter().map(|(_, t, _)| t).collect();
+        
+        assert_eq!(tokens, vec![
+            Token::Set,
+            Token::Identifier("text".to_string()),
+            Token::To,
+            Token::StringLiteral("Hello\nWorld".to_string()),
+            Token::Period,
+        ]);
+    }
+    
+    #[test]
+    fn test_multiline_string_with_quotes() {
+        let input = "Set text to \"\"\"Say \"Hello\" to me\"\"\".";
+        let tokens: Vec<Token> = tokenize(input).into_iter().map(|(_, t, _)| t).collect();
+        
+        assert_eq!(tokens, vec![
+            Token::Set,
+            Token::Identifier("text".to_string()),
+            Token::To,
+            Token::StringLiteral("Say \"Hello\" to me".to_string()),
+            Token::Period,
+        ]);
+    }
+    
+    #[test]
+    fn test_multiline_string_empty() {
+        let input = "Set text to \"\"\"\"\"\".";
+        let tokens: Vec<Token> = tokenize(input).into_iter().map(|(_, t, _)| t).collect();
+        
+        assert_eq!(tokens, vec![
+            Token::Set,
+            Token::Identifier("text".to_string()),
+            Token::To,
+            Token::StringLiteral("".to_string()),
+            Token::Period,
+        ]);
+    }
+    
+    #[test]
+    fn test_multiline_string_with_escape_sequences() {
+        let input = "Set text to \"\"\"Line 1\\nLine 2\\tTabbed\"\"\".";
+        let tokens: Vec<Token> = tokenize(input).into_iter().map(|(_, t, _)| t).collect();
+        
+        assert_eq!(tokens, vec![
+            Token::Set,
+            Token::Identifier("text".to_string()),
+            Token::To,
+            Token::StringLiteral("Line 1\nLine 2\tTabbed".to_string()),
+            Token::Period,
+        ]);
+    }
+    
+    #[test]
+    fn test_multiline_string_vs_single_quoted() {
+        // Test that """ is parsed as triple-quoted, not as three single-quoted strings
+        let input = "Set text1 to \"single\". Set text2 to \"\"\"triple\"\"\".";
+        let tokens: Vec<Token> = tokenize(input).into_iter().map(|(_, t, _)| t).collect();
+        
+        assert_eq!(tokens, vec![
+            Token::Set,
+            Token::Identifier("text1".to_string()),
+            Token::To,
+            Token::StringLiteral("single".to_string()),
+            Token::Period,
+            Token::Set,
+            Token::Identifier("text2".to_string()),
+            Token::To,
+            Token::StringLiteral("triple".to_string()),
             Token::Period,
         ]);
     }

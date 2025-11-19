@@ -373,9 +373,12 @@ Parentheses required for complex expressions as function arguments:
 - **Keywords capitalized** at start: `Set`, `If`, `Define`, etc.
 - **Variable names** are case-sensitive
 - **Comments** start with `#`
-- **Strings** use double quotes: `"text"`
+- **Strings** use double quotes: `"text"` or triple quotes for multi-line: `"""text"""`
+  - **Single-line strings**: `"Hello, World!"`
+  - **Multi-line strings**: `"""Line 1\nLine 2"""` - Can span multiple lines and include quotes
   - **Escape sequences** supported: `\n` (newline), `\t` (tab), `\r` (carriage return), `\"` (quote), `\\` (backslash), `\0` (null)
   - Example: `"Hello\nWorld"` produces a string with a newline between "Hello" and "World"
+  - Example: `"""Say "Hello" to me"""` - Multi-line strings can contain unescaped quotes
 
 ## Grammar Summary
 LangX uses a formal grammar defined with LALRPOP. The language is:
@@ -614,9 +617,38 @@ Set read_data to Call read_file with "myfile.txt".
 print read_data.  # Prints: "This is my data."
 ```
 
+### Multi-line Strings
+LangX supports triple-quoted strings for multi-line content:
+```
+Set text to """Line 1
+Line 2
+Line 3""".
+```
+
+**Features:**
+- Can span multiple lines
+- Can contain unescaped double quotes: `"""Say "Hello" to me"""`
+- Escape sequences still work: `"""Line 1\nLine 2"""` 
+- Useful for long text blocks, JSON-like content, or strings with many quotes
+
+Examples:
+```
+# Multi-line string with newlines
+Set message to """Hello
+World
+From LangX""".
+
+# Multi-line string with quotes
+Set quote to """He said "Hello" to me""".
+
+# Multi-line string with escape sequences
+Set formatted to """Line 1\nLine 2\tTabbed""".
+
+# Empty multi-line string
+Set empty to """""".
+```
+
 ## Future Syntax Extensions
 - **String interpolation**: `"Hello, {name}!"`
 - **Match expressions**: `Match [value] with [patterns]`
 - **Lambda functions**: `Set func to function with x: Return x * 2.`
-- **Escape sequences in strings**: `\n`, `\t`, `\"`, etc.
-- **Multi-line strings**

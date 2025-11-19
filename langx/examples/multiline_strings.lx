@@ -1,0 +1,49 @@
+# Multi-line String Examples
+
+# Example 1: Basic multi-line string
+Set message to """Hello
+World
+From LangX""".
+print message.
+
+# Example 2: Multi-line string with quotes (no escaping needed)
+Set quote to """He said "Hello" to me
+And I replied "Hi there" back""".
+print quote.
+
+# Example 3: Multi-line string with escape sequences
+Set formatted to """Line 1\nLine 2\nLine 3""".
+print formatted.
+
+# Example 4: Empty multi-line string
+Set empty to """""".
+print empty.
+
+# Example 5: Multi-line string in a function
+Define print_multiline:
+    Set text to """This is a
+    multi-line string
+    inside a function""".
+    print text.
+End definition.
+
+Call print_multiline.
+
+# Example 6: Multi-line string with file I/O
+Set content to """This is line 1
+This is line 2
+This is line 3""".
+Call write_file with "multiline_output.txt", content.
+Set read_back to Call read_file with "multiline_output.txt".
+print read_back.
+
+# Example 7: Multi-line string with string functions
+Set long_text to """First line
+Second line
+Third line""".
+Set length to Call string_length with long_text.
+print length.
+
+Set first_part to Call substring with long_text, 0, 10.
+print first_part.
+

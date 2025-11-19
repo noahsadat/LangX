@@ -243,6 +243,7 @@ LangX supports:
 - Print statements
 - Comments: `# comment`
 - String escape sequences: `\n`, `\t`, `\r`, `\"`, `\\`, `\0`
+- Multi-line strings: `"""text"""` - Can span multiple lines and contain unescaped quotes
 
 ### String Concatenation
 The `+` operator works for both arithmetic and string concatenation:
@@ -271,6 +272,27 @@ Supported escape sequences:
 - `\"` - Double quote
 - `\\` - Backslash
 - `\0` - Null character
+
+### Multi-line Strings
+LangX supports triple-quoted strings for multi-line content:
+```
+# Multi-line string with literal newlines
+Set message to """Hello
+World
+From LangX""".
+
+# Multi-line string with unescaped quotes
+Set quote to """He said "Hello" to me""".
+
+# Multi-line string with escape sequences
+Set formatted to """Line 1\nLine 2\tTabbed""".
+```
+
+**Features:**
+- Can span multiple lines
+- Can contain unescaped double quotes (no need to escape `"` inside `"""`)
+- Escape sequences still work (`\n`, `\t`, etc.)
+- Useful for long text blocks, JSON-like content, or strings with many quotes
 
 ### Extended Function Support
 Functions now support up to 5 parameters:
