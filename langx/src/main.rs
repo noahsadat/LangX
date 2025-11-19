@@ -1,10 +1,8 @@
-mod lexer;
-mod parser;
-mod ast;
-mod interpreter;
 mod repl;
 #[cfg(test)]
 mod tests;
+
+use langx::{parser, interpreter};
 
 use std::env;
 use std::fs;

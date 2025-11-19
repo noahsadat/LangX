@@ -115,6 +115,11 @@
   - All 209 tests passing ✅
 
 ### In Progress
+- [x] **Performance benchmarks** - ✅ Completed November 2025
+  - [x] Lexer performance benchmarks (5 benchmarks)
+  - [x] Parser performance benchmarks (6 benchmarks)
+  - [x] Interpreter performance benchmarks (9 benchmarks)
+  - [x] Criterion benchmark suite integrated
 - [ ] Performance profiling and optimization
 
 ### Planned - High Priority
@@ -247,7 +252,7 @@ All critical issues resolved ✅
 
 ### Improvement Areas
 - [ ] Automated testing in CI
-- [ ] Performance benchmarks
+- [x] **Performance benchmarks** - ✅ Completed November 2025
 - [ ] Regular releases with changelogs
 
 ---

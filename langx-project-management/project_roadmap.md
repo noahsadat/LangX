@@ -112,7 +112,11 @@ LangX is a programming language that combines structured English with mathematic
   - [x] Extensive interpreter edge case tests (60+ new tests)
   - [x] Multi-line string tests (5 new tests)
   - [x] All 209 tests passing ✅
-- [ ] Benchmarks
+- [x] **Benchmarks** - ✅ Completed November 2025
+  - [x] Lexer benchmarks (5 benchmarks)
+  - [x] Parser benchmarks (6 benchmarks)
+  - [x] Interpreter benchmarks (9 benchmarks)
+  - [x] Criterion benchmark suite with HTML reports
 - [ ] Fuzzing tests
 - [ ] Code coverage reports (aim for 90%+) - **Current: ~85%+** (improved from ~70%)
 
@@ -156,9 +160,13 @@ LangX is a programming language that combines structured English with mathematic
 - [x] **For loops** - ✅ Implemented (November 2025)
 - [x] **Break/Continue statements** - ✅ Implemented (November 2025)
 
-### 🎯 Milestone 3: Performance & Tooling (Q2 2026)
+### 🎯 Milestone 3: Performance & Tooling (November 2025)
 - [ ] Bytecode compiler
-- [ ] Performance benchmarks
+- [x] **Performance benchmarks** - ✅ Completed November 2025
+  - [x] Lexer performance benchmarks (simple, complex, large, string literals, multi-line strings)
+  - [x] Parser performance benchmarks (simple, arithmetic, complex, loops, functions, data structures)
+  - [x] Interpreter performance benchmarks (simple execution, arithmetic, loops, functions, recursive functions, list/map operations, string operations)
+  - [x] Criterion benchmark suite integrated with HTML reports
 - [ ] VS Code extension
 - [ ] Online playground
 - [ ] Comprehensive test suite (90%+ coverage)

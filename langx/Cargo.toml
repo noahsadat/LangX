@@ -17,3 +17,16 @@ lalrpop = "0.20.0"    # Parser generator
 
 [dev-dependencies]
 pretty_assertions = "1.4.0"  # For better test assertions
+criterion = { version = "0.5", features = ["html_reports"] }
+
+[[bench]]
+name = "lexer_bench"
+harness = false
+
+[[bench]]
+name = "parser_bench"
+harness = false
+
+[[bench]]
+name = "interpreter_bench"
+harness = false
