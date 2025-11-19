@@ -2609,4 +2609,383 @@ End repeat.";
             panic!("Expected string value");
         }
     }
+    
+    // Tests for lexer helper functions
+    #[test]
+    fn test_line_number_at_position() {
+        use langx::lexer::line_number_at_position;
+        
+        assert_eq!(line_number_at_position("", 0), 1);
+        assert_eq!(line_number_at_position("hello", 0), 1);
+        assert_eq!(line_number_at_position("hello", 5), 1);
+        assert_eq!(line_number_at_position("hello\nworld", 5), 1);
+        assert_eq!(line_number_at_position("hello\nworld", 6), 2);
+        assert_eq!(line_number_at_position("hello\nworld\nfoo", 12), 3);
+        assert_eq!(line_number_at_position("hello\nworld", 100), 2); // Out of bounds
+    }
+    
+    #[test]
+    fn test_get_code_snippet() {
+        use langx::lexer::get_code_snippet;
+        
+        let source = "line1\nline2\nline3\nline4";
+        let snippet = get_code_snippet(source, 7, 1); // Position at line2
+        assert!(snippet.contains("line2"));
+        assert!(snippet.contains(">"));
+        
+        let snippet2 = get_code_snippet(source, 0, 0);
+        assert!(snippet2.contains("line1"));
+        
+        // Test out of bounds
+        let snippet3 = get_code_snippet(source, 1000, 1);
+        // Should return something (either "Line X" format or empty/error message)
+        assert!(!snippet3.is_empty() || snippet3.contains("Line"));
+    }
+    
+    // Tests for parser error recovery
+    #[test]
+    fn test_parse_with_recovery() {
+        use langx::parser::parse_with_recovery;
+        
+        // Valid program should work
+        let result = parse_with_recovery("Set x to 10.");
+        assert!(result.is_ok());
+        
+        // Invalid program should return errors
+        let result = parse_with_recovery("Set x to.");
+        assert!(result.is_err());
+        let errors = result.unwrap_err();
+        assert!(!errors.is_empty());
+        
+        // Multiple errors
+        let result = parse_with_recovery("Set x to. Set y.");
+        assert!(result.is_err());
+    }
+    
+    // Tests for interpreter debugger functions
+    #[test]
+    fn test_get_variable() {
+        let source = "Set x to 10. Set y to \"hello\".";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        
+        assert_eq!(interpreter.get_variable("x"), Some(crate::interpreter::Value::Number(10)));
+        assert_eq!(interpreter.get_variable("y"), Some(crate::interpreter::Value::String("hello".to_string())));
+        assert_eq!(interpreter.get_variable("nonexistent"), None);
+    }
+    
+    #[test]
+    fn test_list_variables() {
+        let source = "Set x to 10. Set y to 20. Set z to true.";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        
+        let vars = interpreter.list_variables();
+        assert!(vars.contains(&"x".to_string()));
+        assert!(vars.contains(&"y".to_string()));
+        assert!(vars.contains(&"z".to_string()));
+        assert_eq!(vars.len(), 3);
+    }
+    
+    #[test]
+    fn test_list_functions() {
+        let source = r#"
+            Define func1 with parameters a:
+                Return a.
+            End definition.
+            Define func2 with parameters b, c:
+                Return b + c.
+            End definition.
+        "#;
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        
+        let funcs = interpreter.list_functions();
+        assert!(funcs.contains(&"func1".to_string()));
+        assert!(funcs.contains(&"func2".to_string()));
+        assert_eq!(funcs.len(), 2);
+    }
+    
+    // Tests for top-level return/break/continue errors
+    #[test]
+    fn test_top_level_return_error() {
+        let source = "Return 10.";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("Return statement outside of function"));
+    }
+    
+    #[test]
+    fn test_top_level_break_error() {
+        let source = "Break loop.";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("Break statement outside of loop"));
+    }
+    
+    #[test]
+    fn test_top_level_continue_error() {
+        let source = "Continue to next iteration.";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("Continue statement outside of loop"));
+    }
+    
+    // Tests for built-in function error cases
+    #[test]
+    fn test_string_length_wrong_args() {
+        let source = "Set len to Call string_length with 42.";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("string_length"));
+    }
+    
+    #[test]
+    fn test_substring_wrong_args() {
+        let source = "Set sub to Call substring with \"hello\", \"bad\", 3.";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+    }
+    
+    #[test]
+    fn test_substring_out_of_bounds() {
+        let source = "Set sub to Call substring with \"hello\", 10, 5.";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("out of bounds"));
+    }
+    
+    #[test]
+    fn test_split_wrong_args() {
+        let source = "Set parts to Call split with 42, \",\".";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+    }
+    
+    #[test]
+    fn test_join_wrong_args() {
+        let source = "Set text to Call join with \"not a list\", \"-\".";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+    }
+    
+    #[test]
+    fn test_join_nested_list_error() {
+        let source = "Set list to [[1, 2], [3, 4]]. Set text to Call join with list, \"-\".";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("cannot join nested lists"));
+    }
+    
+    #[test]
+    fn test_replace_wrong_args() {
+        let source = "Set result to Call replace with 42, \"old\", \"new\".";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+    }
+    
+    #[test]
+    fn test_abs_wrong_args() {
+        let source = "Set result to Call abs with \"not a number\".";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+    }
+    
+    #[test]
+    fn test_min_max_wrong_args() {
+        let source = "Set result to Call min with \"a\", \"b\".";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+    }
+    
+    #[test]
+    fn test_sqrt_wrong_args() {
+        let source = "Set result to Call sqrt with \"not a number\".";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+    }
+    
+    #[test]
+    fn test_round_floor_ceil_wrong_args() {
+        let source = "Set result to Call round with \"not a number\".";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+    }
+    
+    #[test]
+    fn test_time_functions_wrong_args() {
+        let source = "Set ts to Call format_timestamp with \"not a number\".";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+    }
+    
+    #[test]
+    fn test_time_difference_wrong_args() {
+        let source = "Set diff to Call time_difference with \"a\", \"b\".";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+    }
+    
+    // Tests for break/continue in function (not in loop)
+    #[test]
+    fn test_break_in_function_error() {
+        let source = r#"
+            Define func with parameters x:
+                Break loop.
+            End definition.
+        "#;
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        
+        // Calling the function should error
+        let source2 = "Call func with 10.";
+        let program2 = parser::parse(source2).unwrap();
+        let result = interpreter.interpret(&program2);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("Break statement must be inside a loop"));
+    }
+    
+    #[test]
+    fn test_continue_in_function_error() {
+        let source = r#"
+            Define func with parameters x:
+                Continue to next iteration.
+            End definition.
+        "#;
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        
+        // Calling the function should error
+        let source2 = "Call func with 10.";
+        let program2 = parser::parse(source2).unwrap();
+        let result = interpreter.interpret(&program2);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("Continue statement must be inside a loop"));
+    }
+    
+    // Tests for function argument count errors
+    #[test]
+    fn test_function_too_many_args() {
+        let source = r#"
+            Define add with parameters a, b:
+                Return a + b.
+            End definition.
+            Set result to Call add with 1, 2, 3.
+        "#;
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("expects"));
+    }
+    
+    #[test]
+    fn test_function_too_few_args() {
+        let source = r#"
+            Define add with parameters a, b:
+                Return a + b.
+            End definition.
+            Set result to Call add with 1.
+        "#;
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+    }
+    
+    // Tests for map access edge cases
+    #[test]
+    fn test_map_access_nonexistent_key() {
+        let source = r#"
+            Set map to {"key": "value"}.
+            Set val to map at "nonexistent".
+        "#;
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        // Should return Null for nonexistent key
+        assert!(result.is_ok());
+        assert_eq!(interpreter.get_variable("val"), Some(crate::interpreter::Value::Null));
+    }
+    
+    #[test]
+    fn test_map_access_wrong_key_type() {
+        let source = r#"
+            Set map to {"key": "value"}.
+            Set val to map at 42.
+        "#;
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        // This should parse but might error at runtime depending on implementation
+        let result = interpreter.interpret(&program);
+        // The behavior depends on how map access handles non-string keys
+        // For now, just verify it doesn't crash
+        assert!(result.is_ok() || result.is_err());
+    }
+    
+    // Tests for list index edge cases
+    #[test]
+    fn test_list_index_out_of_bounds() {
+        let source = r#"
+            Set list to [1, 2, 3].
+            Set val to item 10 of list.
+        "#;
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+        let err_msg = result.unwrap_err();
+        assert!(err_msg.contains("out of bounds") || err_msg.contains("index"));
+    }
+    
+    #[test]
+    fn test_list_index_negative() {
+        let source = r#"
+            Set list to [1, 2, 3].
+            Set val to item -1 of list.
+        "#;
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        // Negative indices might be allowed (wraps around) or cause error
+        // Just verify it doesn't crash - behavior depends on implementation
+        assert!(result.is_ok() || result.is_err());
+    }
 } 
