@@ -1,0 +1,25 @@
+# Test time and date functions
+
+# Get current timestamp
+Set now to Call current_timestamp.
+print "Current timestamp: " + now.
+
+# Get current datetime string
+Set datetime to Call current_datetime.
+print "Current datetime: " + datetime.
+
+# Format a timestamp (default format)
+Set formatted to Call format_timestamp with now.
+print "Formatted timestamp: " + formatted.
+
+# Format a timestamp with custom format
+Set custom_formatted to Call format_timestamp with now, "%Y-%m-%d".
+print "Custom formatted (date only): " + custom_formatted.
+
+# Calculate time difference
+Set start_time to Call current_timestamp.
+# Simulate some time passing (in real usage, this would be actual time)
+Set end_time to start_time + 3600.
+Set diff to Call time_difference with start_time, end_time.
+print "Time difference (seconds): " + diff.
+

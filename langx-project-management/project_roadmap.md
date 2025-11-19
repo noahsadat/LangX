@@ -11,8 +11,8 @@ LangX is a programming language that combines structured English with mathematic
 - [x] Hybrid syntax design (symbols + words)
 - [x] Operator precedence rules
 - [x] Error handling conventions
-- [ ] Extended language features
-- [ ] Standard library functions
+- [x] Core language features (functions, control flow, data structures)
+- Note: Extended features tracked in Milestone 2 & Section 7. Standard library tracked in Section 6.
 
 ### 2. Lexer [COMPLETE]
 - [x] Token definitions
@@ -50,12 +50,12 @@ LangX is a programming language that combines structured English with mathematic
 - [x] Interactive REPL implementation
 - [x] File execution support (.lx files)
 - [x] Command-line interface
-- [ ] Command history (arrow keys)
-- [ ] Auto-completion
-- [ ] Syntax highlighting
-- [ ] Interactive debugger
+- [x] **Command history (arrow keys)** - ✅ Completed January 2026
+- [x] **Auto-completion** - ✅ Completed January 2026 (Tab completion for keywords and built-in functions)
+- [x] **Syntax highlighting** - ✅ Completed January 2026 (Keywords, functions, and numbers highlighted)
+- [x] **Interactive debugger** - ✅ Completed January 2026 (Variable inspection, function listing, debug mode)
 
-### 6. Standard Library [IN PROGRESS]
+### 6. Standard Library [COMPLETE]
 - [x] **Math functions** - ✅ Completed (abs, min, max, pow, sqrt, round, floor, ceil)
 - [x] **String manipulation** - ✅ Completed December 2025
   - [x] `string_length` - Get length of a string
@@ -68,7 +68,11 @@ LangX is a programming language that combines structured English with mathematic
   - [x] Multi-line strings (`"""text"""`)
 - [x] **I/O operations** - ✅ Completed (read_file, write_file)
 - [x] **Data structures** - ✅ Lists implemented
-- [ ] Time and date handling
+- [x] **Time and date handling** - ✅ Completed January 2026
+  - [x] `current_timestamp` - Get current Unix timestamp
+  - [x] `current_datetime` - Get current date/time as formatted string
+  - [x] `format_timestamp` - Format timestamp with optional custom format
+  - [x] `time_difference` - Calculate difference between two timestamps
 
 ### 7. Advanced Features [NOT STARTED]
 - [ ] Module system
@@ -139,6 +143,8 @@ LangX is a programming language that combines structured English with mathematic
 - [x] **String escape sequences** - ✅ Completed (`\n`, `\t`, `\r`, `\"`, `\\`, `\0`)
 - [x] **Multi-line strings** - ✅ Completed (triple-quoted strings: `"""text"""`)
 - [x] **Improved error messages** - ✅ Line numbers and code snippets (December 2025)
+- [x] **Time and date functions** - ✅ Completed (current_timestamp, current_datetime, format_timestamp, time_difference) (January 2026)
+- [x] **REPL command history** - ✅ Arrow keys for command navigation (January 2026)
 - [ ] Variadic function arguments
 - [ ] Default function parameters
 - [x] **For loops** - ✅ Implemented (January 2026)
@@ -183,7 +189,12 @@ LangX is a programming language that combines structured English with mathematic
 ✅ **Built-in string functions**: `string_length`, `substring`, `split`, `join`, `replace`
 ✅ **Built-in math functions**: `abs`, `min`, `max`, `pow`, `sqrt`, `round`, `floor`, `ceil`
 ✅ **File I/O functions**: `read_file`, `write_file`
+✅ **Time and date functions**: `current_timestamp`, `current_datetime`, `format_timestamp`, `time_difference`
 ✅ **Enhanced error messages**: Line numbers and code snippets
+✅ **REPL command history**: Arrow keys to navigate previous commands
+✅ **REPL auto-completion**: Tab completion for keywords and built-in functions
+✅ **REPL syntax highlighting**: Colorized keywords, functions, and numbers
+✅ **Interactive debugger**: Variable inspection and function listing (`debug` command)
 
 ### Key Design Decisions
 1. **Hybrid Syntax** - Symbols for math, words for logic
@@ -259,6 +270,11 @@ By combining the best of natural language with symbolic precision, LangX creates
   - Added 95+ new tests covering edge cases, error handling, and boundary conditions
   - Improved test coverage from ~70% to ~85%+
   - All 209 tests passing ✅
+- ✅ **REPL command history** (January 2026) - Arrow keys to navigate previous commands
+- ✅ **REPL auto-completion** (January 2026) - Tab completion for keywords and built-in functions
+- ✅ **REPL syntax highlighting** (January 2026) - Colorized keywords, functions, and numbers
+- ✅ **Interactive debugger** (January 2026) - Variable inspection and function listing (`debug` command)
+- ✅ **Time and date functions** (January 2026) - `current_timestamp`, `current_datetime`, `format_timestamp`, `time_difference`
 
 ---
 

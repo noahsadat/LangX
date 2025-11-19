@@ -1,6 +1,7 @@
 use crate::ast::{Program, Statement, Expression, BinaryOperator, UnaryOperator};
 use std::collections::HashMap;
 use std::fs;
+use chrono::{DateTime, Utc, Local};
 
 /// Value types that can be stored in variables
 #[derive(Debug, Clone, PartialEq)]
@@ -148,6 +149,38 @@ impl Interpreter {
             }
         }
         Ok(())
+    }
+    
+    /// Get a variable value (for debugger)
+    pub fn get_variable(&self, name: &str) -> Option<Value> {
+        self.env.get(name)
+    }
+    
+    /// List all variable names (for debugger)
+    pub fn list_variables(&self) -> Vec<String> {
+        // Collect variables from current scope and parent scopes
+        let mut vars = Vec::new();
+        let mut current_env = Some(&self.env);
+        while let Some(env) = current_env {
+            vars.extend(env.variables.keys().cloned());
+            current_env = env.parent.as_deref();
+        }
+        vars.sort();
+        vars.dedup();
+        vars
+    }
+    
+    /// List all function names (for debugger)
+    pub fn list_functions(&self) -> Vec<String> {
+        let mut funcs = Vec::new();
+        let mut current_env = Some(&self.env);
+        while let Some(env) = current_env {
+            funcs.extend(env.functions.keys().cloned());
+            current_env = env.parent.as_deref();
+        }
+        funcs.sort();
+        funcs.dedup();
+        funcs
     }
     
     fn execute_statement(&mut self, statement: &Statement) -> Result<ExecutionResult, String> {
@@ -489,6 +522,56 @@ impl Interpreter {
                     }
                 } else {
                     Err(format!("Built-in function 'write_file' expects (string, string) arguments (filename, content), got ({:?}, {:?}).", 
+                        arg_values[0], arg_values[1]))
+                }
+            }
+            // Time and date functions
+            "current_timestamp" => {
+                if arg_values.len() != 0 {
+                    return Err(format!("Built-in function 'current_timestamp' expects 0 arguments, got {}.", arg_values.len()));
+                }
+                let now = Utc::now();
+                Ok(Some(Value::Number(now.timestamp())))
+            }
+            "current_datetime" => {
+                if arg_values.len() != 0 {
+                    return Err(format!("Built-in function 'current_datetime' expects 0 arguments, got {}.", arg_values.len()));
+                }
+                let now = Local::now();
+                Ok(Some(Value::String(now.format("%Y-%m-%d %H:%M:%S").to_string())))
+            }
+            "format_timestamp" => {
+                if arg_values.len() != 1 && arg_values.len() != 2 {
+                    return Err(format!("Built-in function 'format_timestamp' expects 1 or 2 arguments (timestamp, [format]), got {}.", arg_values.len()));
+                }
+                if let Value::Number(timestamp) = &arg_values[0] {
+                    let dt = DateTime::from_timestamp(*timestamp, 0)
+                        .ok_or_else(|| format!("Built-in function 'format_timestamp' received invalid timestamp: {}.", timestamp))?;
+                    
+                    let format_str = if arg_values.len() == 2 {
+                        if let Value::String(fmt) = &arg_values[1] {
+                            fmt.as_str()
+                        } else {
+                            return Err(format!("Built-in function 'format_timestamp' expects format string as second argument, got {:?}.", arg_values[1]));
+                        }
+                    } else {
+                        "%Y-%m-%d %H:%M:%S" // Default format
+                    };
+                    
+                    Ok(Some(Value::String(dt.format(format_str).to_string())))
+                } else {
+                    Err(format!("Built-in function 'format_timestamp' expects a number (timestamp) as first argument, got {:?}.", arg_values[0]))
+                }
+            }
+            "time_difference" => {
+                if arg_values.len() != 2 {
+                    return Err(format!("Built-in function 'time_difference' expects 2 arguments (timestamp1, timestamp2), got {}.", arg_values.len()));
+                }
+                if let (Value::Number(ts1), Value::Number(ts2)) = (&arg_values[0], &arg_values[1]) {
+                    let diff = (ts1 - ts2).abs();
+                    Ok(Some(Value::Number(diff)))
+                } else {
+                    Err(format!("Built-in function 'time_difference' expects two numbers (timestamps), got ({:?}, {:?}).", 
                         arg_values[0], arg_values[1]))
                 }
             }

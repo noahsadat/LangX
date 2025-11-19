@@ -9,6 +9,8 @@ description = "LangX - A programming language that interprets structured English
 logos = "0.13.0"      # For lexical analysis
 lalrpop-util = "0.20.0"  # Runtime support for the LALRPOP parser
 regex = "1.9.1"       # Used by LALRPOP and logos
+rustyline = "11.0"    # For REPL with command history
+chrono = "0.4"        # For time and date handling
 
 [build-dependencies]
 lalrpop = "0.20.0"    # Parser generator
