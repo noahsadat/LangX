@@ -1902,4 +1902,327 @@ End repeat.";
         assert_eq!(interpreter.env.get("result2"), Some(crate::interpreter::Value::Number(5)));
         assert_eq!(interpreter.env.get("counter"), Some(crate::interpreter::Value::Number(5)));
     }
+    
+    // ========== Math Function Tests ==========
+    
+    #[test]
+    fn test_abs_positive() {
+        let source = "
+            Set x to Call abs with 5.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        assert_eq!(interpreter.env.get("x"), Some(crate::interpreter::Value::Number(5)));
+    }
+    
+    #[test]
+    fn test_abs_negative() {
+        let source = "
+            Set neg to 0 - 5.
+            Set x to Call abs with neg.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        assert_eq!(interpreter.env.get("x"), Some(crate::interpreter::Value::Number(5)));
+    }
+    
+    #[test]
+    fn test_abs_zero() {
+        let source = "
+            Set x to Call abs with 0.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        assert_eq!(interpreter.env.get("x"), Some(crate::interpreter::Value::Number(0)));
+    }
+    
+    #[test]
+    fn test_abs_wrong_type() {
+        let source = "
+            Set x to Call abs with \"hello\".
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("number"));
+    }
+    
+    #[test]
+    fn test_min_basic() {
+        let source = "
+            Set result to Call min with 10, 5.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        assert_eq!(interpreter.env.get("result"), Some(crate::interpreter::Value::Number(5)));
+    }
+    
+    #[test]
+    fn test_min_equal() {
+        let source = "
+            Set result to Call min with 5, 5.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        assert_eq!(interpreter.env.get("result"), Some(crate::interpreter::Value::Number(5)));
+    }
+    
+    #[test]
+    fn test_min_reversed() {
+        let source = "
+            Set result to Call min with 5, 10.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        assert_eq!(interpreter.env.get("result"), Some(crate::interpreter::Value::Number(5)));
+    }
+    
+    #[test]
+    fn test_min_wrong_args() {
+        let source = "
+            Set result to Call min with 5.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("expects 2 arguments"));
+    }
+    
+    #[test]
+    fn test_max_basic() {
+        let source = "
+            Set result to Call max with 10, 5.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        assert_eq!(interpreter.env.get("result"), Some(crate::interpreter::Value::Number(10)));
+    }
+    
+    #[test]
+    fn test_max_equal() {
+        let source = "
+            Set result to Call max with 5, 5.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        assert_eq!(interpreter.env.get("result"), Some(crate::interpreter::Value::Number(5)));
+    }
+    
+    #[test]
+    fn test_max_reversed() {
+        let source = "
+            Set result to Call max with 5, 10.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        assert_eq!(interpreter.env.get("result"), Some(crate::interpreter::Value::Number(10)));
+    }
+    
+    #[test]
+    fn test_pow_basic() {
+        let source = "
+            Set result to Call pow with 2, 8.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        assert_eq!(interpreter.env.get("result"), Some(crate::interpreter::Value::Number(256)));
+    }
+    
+    #[test]
+    fn test_pow_zero_exponent() {
+        let source = "
+            Set result to Call pow with 5, 0.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        assert_eq!(interpreter.env.get("result"), Some(crate::interpreter::Value::Number(1)));
+    }
+    
+    #[test]
+    fn test_pow_one_exponent() {
+        let source = "
+            Set result to Call pow with 5, 1.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        assert_eq!(interpreter.env.get("result"), Some(crate::interpreter::Value::Number(5)));
+    }
+    
+    #[test]
+    fn test_pow_negative_exponent_error() {
+        let source = "
+            Set neg_exp to 0 - 1.
+            Set result to Call pow with 2, neg_exp.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("non-negative exponent"));
+    }
+    
+    #[test]
+    fn test_pow_wrong_args() {
+        let source = "
+            Set result to Call pow with 2.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("expects 2 arguments"));
+    }
+    
+    #[test]
+    fn test_sqrt_perfect_square() {
+        let source = "
+            Set result to Call sqrt with 25.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        assert_eq!(interpreter.env.get("result"), Some(crate::interpreter::Value::Number(5)));
+    }
+    
+    #[test]
+    fn test_sqrt_non_perfect_square() {
+        let source = "
+            Set result to Call sqrt with 20.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        // sqrt(20) ≈ 4.47, floor = 4
+        assert_eq!(interpreter.env.get("result"), Some(crate::interpreter::Value::Number(4)));
+    }
+    
+    #[test]
+    fn test_sqrt_zero() {
+        let source = "
+            Set result to Call sqrt with 0.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        assert_eq!(interpreter.env.get("result"), Some(crate::interpreter::Value::Number(0)));
+    }
+    
+    #[test]
+    fn test_sqrt_one() {
+        let source = "
+            Set result to Call sqrt with 1.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        assert_eq!(interpreter.env.get("result"), Some(crate::interpreter::Value::Number(1)));
+    }
+    
+    #[test]
+    fn test_sqrt_negative_error() {
+        let source = "
+            Set neg to 0 - 5.
+            Set result to Call sqrt with neg.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("non-negative"));
+    }
+    
+    #[test]
+    fn test_sqrt_wrong_type() {
+        let source = "
+            Set result to Call sqrt with \"hello\".
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("number"));
+    }
+    
+    #[test]
+    fn test_round_integer() {
+        let source = "
+            Set result to Call round with 42.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        // For integers, round returns the number itself
+        assert_eq!(interpreter.env.get("result"), Some(crate::interpreter::Value::Number(42)));
+    }
+    
+    #[test]
+    fn test_floor_integer() {
+        let source = "
+            Set result to Call floor with 42.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        // For integers, floor returns the number itself
+        assert_eq!(interpreter.env.get("result"), Some(crate::interpreter::Value::Number(42)));
+    }
+    
+    #[test]
+    fn test_ceil_integer() {
+        let source = "
+            Set result to Call ceil with 42.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        // For integers, ceil returns the number itself
+        assert_eq!(interpreter.env.get("result"), Some(crate::interpreter::Value::Number(42)));
+    }
+    
+    #[test]
+    fn test_math_functions_with_variables() {
+        let source = "
+            Set a to 10.
+            Set b to 5.
+            Set min_val to Call min with a, b.
+            Set max_val to Call max with a, b.
+            Set abs_a to Call abs with a.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        assert_eq!(interpreter.env.get("min_val"), Some(crate::interpreter::Value::Number(5)));
+        assert_eq!(interpreter.env.get("max_val"), Some(crate::interpreter::Value::Number(10)));
+        assert_eq!(interpreter.env.get("abs_a"), Some(crate::interpreter::Value::Number(10)));
+    }
+    
+    #[test]
+    fn test_math_functions_nested() {
+        let source = "
+            Set base to 2.
+            Set exp to 3.
+            Set power to Call pow with base, exp.
+            Set root to Call sqrt with power.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        // pow(2, 3) = 8, sqrt(8) = 2 (floor)
+        assert_eq!(interpreter.env.get("power"), Some(crate::interpreter::Value::Number(8)));
+        assert_eq!(interpreter.env.get("root"), Some(crate::interpreter::Value::Number(2)));
+    }
 } 

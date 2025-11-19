@@ -236,7 +236,9 @@ LangX supports:
 - Function calls: `Call func with arg1, arg2, arg3`
 - String concatenation: `"Hello" + 42`, `100 + " percent"`
 - Lists/Arrays: Creation, indexing, appending
-- Built-in functions: `string_length`, `substring`, `split`, `join`, `replace`
+- Built-in functions: 
+  - String: `string_length`, `substring`, `split`, `join`, `replace`
+  - Math: `abs`, `min`, `max`, `pow`, `sqrt`, `round`, `floor`, `ceil`
 - Print statements
 - Comments: `# comment`
 
@@ -281,6 +283,33 @@ Set result to Call replace with "Hello World", "World", "LangX".
 # Returns: "Hello LangX"
 ```
 
+### Built-in Math Functions
+```
+# Absolute value
+Set neg to 0 - 5.
+Set abs_val to Call abs with neg.
+# Returns: 5
+
+# Minimum and maximum
+Set min_val to Call min with 10, 5.
+Set max_val to Call max with 10, 5.
+# min_val = 5, max_val = 10
+
+# Power (base^exponent)
+Set power to Call pow with 2, 8.
+# Returns: 256
+
+# Square root (integer floor)
+Set root to Call sqrt with 25.
+# Returns: 5
+
+# Round, floor, ceil (for integers, these return the number itself)
+Set rounded to Call round with 42.
+Set floored to Call floor with 42.
+Set ceiled to Call ceil with 42.
+# All return: 42
+```
+
 ### Example
 ```
 Define add with parameters a, b:
@@ -302,7 +331,7 @@ print len.
 print sub.
 ```
 
-## Recent Improvements (December 2025)
+## Recent Improvements (December 2025 - January 2026)
 - ✅ Enhanced error messages with line numbers and code snippets
 - ✅ Extended function support to 5 parameters (was 0-2)
 - ✅ String concatenation with multiple types (string + number, number + string, string + boolean)
@@ -310,6 +339,7 @@ print sub.
 - ✅ Fixed parentheses precedence issue
 - ✅ Comprehensive test suite (20+ new tests)
 - ✅ Fixed all example file syntax issues
-- ✅ Improved test coverage to ~70%
+- ✅ Improved test coverage to ~85%+ (January 2026)
 - ✅ **For loops** - Iterate over lists with `For each item in list: ... End for.` (January 2026)
-- ✅ **Break/Continue statements** - Control loop flow with `Break loop.` and `Continue to next iteration.` (January 2026) 
+- ✅ **Break/Continue statements** - Control loop flow with `Break loop.` and `Continue to next iteration.` (January 2026)
+- ✅ **Math functions** - Added `abs`, `min`, `max`, `pow`, `sqrt`, `round`, `floor`, `ceil` (January 2026) 

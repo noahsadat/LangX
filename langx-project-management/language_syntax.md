@@ -479,9 +479,102 @@ Set result2 to Call replace with text2, "cat", "dog".
 # result2 is "dog dog dog"
 ```
 
+### Math Functions
+
+#### `abs`
+Get the absolute value of a number.
+```
+Call abs with [number]
+```
+Example:
+```
+Set neg to 0 - 5.
+Set abs_val to Call abs with neg.
+print abs_val.  # Prints: 5
+```
+
+#### `min`
+Get the minimum of two numbers.
+```
+Call min with [number1], [number2]
+```
+Example:
+```
+Set result to Call min with 10, 5.
+print result.  # Prints: 5
+```
+
+#### `max`
+Get the maximum of two numbers.
+```
+Call max with [number1], [number2]
+```
+Example:
+```
+Set result to Call max with 10, 5.
+print result.  # Prints: 10
+```
+
+#### `pow`
+Raise a number to a power (base^exponent). Exponent must be non-negative.
+```
+Call pow with [base], [exponent]
+```
+Example:
+```
+Set result to Call pow with 2, 8.
+print result.  # Prints: 256
+```
+
+#### `sqrt`
+Get the square root of a number (returns integer floor). Number must be non-negative.
+```
+Call sqrt with [number]
+```
+Example:
+```
+Set result to Call sqrt with 25.
+print result.  # Prints: 5
+
+Set result2 to Call sqrt with 20.
+print result2.  # Prints: 4 (floor of 4.47...)
+```
+
+#### `round`
+Round a number to the nearest integer. For integers, returns the number itself.
+```
+Call round with [number]
+```
+Example:
+```
+Set result to Call round with 42.
+print result.  # Prints: 42
+```
+
+#### `floor`
+Get the floor of a number. For integers, returns the number itself.
+```
+Call floor with [number]
+```
+Example:
+```
+Set result to Call floor with 42.
+print result.  # Prints: 42
+```
+
+#### `ceil`
+Get the ceiling of a number. For integers, returns the number itself.
+```
+Call ceil with [number]
+```
+Example:
+```
+Set result to Call ceil with 42.
+print result.  # Prints: 42
+```
+
 ## Future Syntax Extensions
 - **String interpolation**: `"Hello, {name}!"`
 - **Match expressions**: `Match [value] with [patterns]`
 - **Lambda functions**: `Set func to function with x: Return x * 2.`
-- **Math functions**: sqrt, pow, abs
 - **File I/O operations**: read_file, write_file

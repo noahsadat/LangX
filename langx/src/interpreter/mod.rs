@@ -363,6 +363,106 @@ impl Interpreter {
                         arg_values[0], arg_values[1], arg_values[2]))
                 }
             }
+            // Math functions
+            "abs" => {
+                if arg_values.len() != 1 {
+                    return Err(format!("Built-in function 'abs' expects 1 argument, got {}.", arg_values.len()));
+                }
+                if let Value::Number(n) = &arg_values[0] {
+                    Ok(Some(Value::Number(n.abs())))
+                } else {
+                    Err(format!("Built-in function 'abs' expects a number argument, got {:?}.", arg_values[0]))
+                }
+            }
+            "min" => {
+                if arg_values.len() != 2 {
+                    return Err(format!("Built-in function 'min' expects 2 arguments, got {}.", arg_values.len()));
+                }
+                if let (Value::Number(a), Value::Number(b)) = (&arg_values[0], &arg_values[1]) {
+                    Ok(Some(Value::Number(*a.min(b))))
+                } else {
+                    Err(format!("Built-in function 'min' expects (number, number) arguments, got ({:?}, {:?}).", 
+                        arg_values[0], arg_values[1]))
+                }
+            }
+            "max" => {
+                if arg_values.len() != 2 {
+                    return Err(format!("Built-in function 'max' expects 2 arguments, got {}.", arg_values.len()));
+                }
+                if let (Value::Number(a), Value::Number(b)) = (&arg_values[0], &arg_values[1]) {
+                    Ok(Some(Value::Number(*a.max(b))))
+                } else {
+                    Err(format!("Built-in function 'max' expects (number, number) arguments, got ({:?}, {:?}).", 
+                        arg_values[0], arg_values[1]))
+                }
+            }
+            "pow" => {
+                if arg_values.len() != 2 {
+                    return Err(format!("Built-in function 'pow' expects 2 arguments (base, exponent), got {}.", arg_values.len()));
+                }
+                if let (Value::Number(base), Value::Number(exp)) = (&arg_values[0], &arg_values[1]) {
+                    if *exp < 0 {
+                        return Err("Built-in function 'pow' requires non-negative exponent.".to_string());
+                    }
+                    if *exp == 0 {
+                        return Ok(Some(Value::Number(1)));
+                    }
+                    // Handle potential overflow
+                    let result = base.pow(*exp as u32);
+                    Ok(Some(Value::Number(result)))
+                } else {
+                    Err(format!("Built-in function 'pow' expects (number, number) arguments, got ({:?}, {:?}).", 
+                        arg_values[0], arg_values[1]))
+                }
+            }
+            "sqrt" => {
+                if arg_values.len() != 1 {
+                    return Err(format!("Built-in function 'sqrt' expects 1 argument, got {}.", arg_values.len()));
+                }
+                if let Value::Number(n) = &arg_values[0] {
+                    if *n < 0 {
+                        return Err("Built-in function 'sqrt' requires non-negative number.".to_string());
+                    }
+                    // Integer square root (floor of actual sqrt)
+                    let result = (*n as f64).sqrt().floor() as i64;
+                    Ok(Some(Value::Number(result)))
+                } else {
+                    Err(format!("Built-in function 'sqrt' expects a number argument, got {:?}.", arg_values[0]))
+                }
+            }
+            "round" => {
+                if arg_values.len() != 1 {
+                    return Err(format!("Built-in function 'round' expects 1 argument, got {}.", arg_values.len()));
+                }
+                if let Value::Number(n) = &arg_values[0] {
+                    // For integers, round is just the number itself
+                    Ok(Some(Value::Number(*n)))
+                } else {
+                    Err(format!("Built-in function 'round' expects a number argument, got {:?}.", arg_values[0]))
+                }
+            }
+            "floor" => {
+                if arg_values.len() != 1 {
+                    return Err(format!("Built-in function 'floor' expects 1 argument, got {}.", arg_values.len()));
+                }
+                if let Value::Number(n) = &arg_values[0] {
+                    // For integers, floor is just the number itself
+                    Ok(Some(Value::Number(*n)))
+                } else {
+                    Err(format!("Built-in function 'floor' expects a number argument, got {:?}.", arg_values[0]))
+                }
+            }
+            "ceil" => {
+                if arg_values.len() != 1 {
+                    return Err(format!("Built-in function 'ceil' expects 1 argument, got {}.", arg_values.len()));
+                }
+                if let Value::Number(n) = &arg_values[0] {
+                    // For integers, ceil is just the number itself
+                    Ok(Some(Value::Number(*n)))
+                } else {
+                    Err(format!("Built-in function 'ceil' expects a number argument, got {:?}.", arg_values[0]))
+                }
+            }
             _ => Ok(None), // Not a built-in function
         }
     }
