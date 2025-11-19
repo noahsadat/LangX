@@ -42,6 +42,7 @@ Repeat 3 times: print "Hello".
 #### While Loop
 ```
 While [condition]: [statement].
+End while.
 ```
 Example:
 ```
@@ -49,6 +50,22 @@ Set x to 0.
 While x is less than 5:
     print x.
     Set x to x + 1.
+End while.
+```
+
+#### For Loop
+```
+For each [variable] in [list]: [statement].
+End for.
+```
+Example:
+```
+Set sum to 0.
+Set numbers to [1, 2, 3, 4, 5].
+For each num in numbers:
+    Set sum to sum + num.
+End for.
+print sum.
 ```
 
 ### Print Statements
@@ -434,7 +451,6 @@ Set result2 to Call replace with text2, "cat", "dog".
 ```
 
 ## Future Syntax Extensions
-- **For loops**: `For each [item] in [list]: [statement]`
 - **String interpolation**: `"Hello, {name}!"`
 - **Match expressions**: `Match [value] with [patterns]`
 - **Lambda functions**: `Set func to function with x: Return x * 2.`

@@ -123,14 +123,14 @@ LangX is a programming language that combines structured English with mathematic
 
 ### 🎯 Milestone 2: Enhanced Features (Q1 2026) [IN PROGRESS]
 - [x] **Extended function support** - ✅ Now supports 0-5 parameters (December 2025)
-- [x] **Advanced control flow** - ✅ While loops implemented
+- [x] **Advanced control flow** - ✅ While loops and For loops implemented (January 2026)
 - [x] **List/array data structures** - ✅ Implemented
 - [x] **String manipulation functions** - ✅ Completed (length, substring, split, join, replace, concatenation)
 - [ ] File I/O operations
 - [x] **Improved error messages** - ✅ Line numbers and code snippets (December 2025)
 - [ ] Variadic function arguments
 - [ ] Default function parameters
-- [ ] For loops
+- [x] **For loops** - ✅ Implemented (January 2026)
 
 ### 🎯 Milestone 3: Performance & Tooling (Q2 2026)
 - [ ] Bytecode compiler
@@ -156,7 +156,7 @@ LangX is a programming language that combines structured English with mathematic
 ✅ **Booleans**: `true`, `false`
 ✅ **Comparisons**: `is greater than`, `is less than`, `is equal to`, `is not equal to`
 ✅ **Conditionals**: `If...then`
-✅ **Loops**: `Repeat...times`, `While...End while`
+✅ **Loops**: `Repeat...times`, `While...End while`, `For each...in...End for`
 ✅ **Functions**: 0-5 parameters with return values - **Extended from 0-2**
 ✅ **Comments**: `#` prefix
 ✅ **Operator precedence**: Correct mathematical precedence
@@ -186,10 +186,11 @@ LangX is a programming language that combines structured English with mathematic
 ### Immediate (Next 2 weeks)
 1. ~~Add while loops~~ - ✅ **Completed**
 2. ~~Implement lists/arrays~~ - ✅ **Completed**
-3. ~~String manipulation functions~~ - ✅ **Partially completed** (length, substring, concat)
+3. ~~String manipulation functions~~ - ✅ **Completed** (length, substring, split, join, replace, concat)
 4. ~~Enhanced error messages~~ - ✅ **Completed**
 5. ~~Add more string functions (split, join, replace)~~ - ✅ **Completed**
-6. Improve test coverage to 90%+
+6. ~~Add For loops~~ - ✅ **Completed January 2026**
+7. Improve test coverage to 90%+
 
 ### Short-term (Next 2 months)
 1. Standard library core functions
@@ -236,6 +237,6 @@ By combining the best of natural language with symbolic precision, LangX creates
 
 ---
 
-**Last Updated:** December 2025
-**Current Version:** 0.2.0
-**Status:** Milestone 2 In Progress (40% complete)
+**Last Updated:** January 2026
+**Current Version:** 0.2.1
+**Status:** Milestone 2 In Progress (50% complete)

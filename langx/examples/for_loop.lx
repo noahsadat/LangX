@@ -1,0 +1,48 @@
+# For Loop Examples in LangX
+
+# Basic for loop - summing numbers
+Set sum to 0.
+Set numbers to [1, 2, 3, 4, 5].
+For each num in numbers:
+    Set sum to sum + num.
+End for.
+print sum.
+
+# For loop with strings
+Set result to "".
+Set words to ["Hello", ", ", "World", "!"].
+For each word in words:
+    Set result to result + word.
+End for.
+print result.
+
+# For loop building a new list
+Set doubled to [].
+Set original to [1, 2, 3, 4].
+For each num in original:
+    Set value to num * 2.
+    Add value to doubled.
+End for.
+print doubled.
+
+# For loop with function calls
+Define square with parameter x:
+    Return x * x.
+End definition.
+
+Set squares to [].
+Set numbers to [1, 2, 3, 4, 5].
+For each num in numbers:
+    Set sq to Call square with num.
+    Add sq to squares.
+End for.
+print squares.
+
+# Empty list handling
+Set count to 0.
+Set empty to [].
+For each elem in empty:
+    Set count to count + 1.
+End for.
+print count.
+

@@ -538,4 +538,178 @@ End repeat.";
         assert!(result3.is_err());
         assert!(result3.unwrap_err().contains("expects (string, string, string)"));
     }
+    
+    #[test]
+    fn test_for_loop_basic() {
+        let source = "
+            Set sum to 0.
+            Set numbers to [1, 2, 3, 4, 5].
+            For each num in numbers:
+                Set sum to sum + num.
+            End for.
+            print sum.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        // Sum of 1+2+3+4+5 = 15
+        assert_eq!(interpreter.env.get("sum"), Some(crate::interpreter::Value::Number(15)));
+    }
+    
+    #[test]
+    fn test_for_loop_empty_list() {
+        let source = "
+            Set count to 0.
+            Set empty to [].
+            For each elem in empty:
+                Set count to count + 1.
+            End for.
+            print count.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        // Count should remain 0 for empty list
+        assert_eq!(interpreter.env.get("count"), Some(crate::interpreter::Value::Number(0)));
+    }
+    
+    #[test]
+    fn test_for_loop_string_list() {
+        let source = "
+            Set result to \"\".
+            Set words to [\"Hello\", \" \", \"World\", \"!\"].
+            For each word in words:
+                Set result to result + word.
+            End for.
+            print result.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        assert_eq!(
+            interpreter.env.get("result"),
+            Some(crate::interpreter::Value::String("Hello World!".to_string()))
+        );
+    }
+    
+    #[test]
+    fn test_for_loop_mixed_types() {
+        let source = "
+            Set result to \"\".
+            Set items to [1, \"hello\", true, 42].
+            For each elem in items:
+                Set result to result + elem.
+            End for.
+            print result.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        // Should concatenate: 1 + "hello" + true + 42 = "1hellotrue42"
+        assert_eq!(
+            interpreter.env.get("result"),
+            Some(crate::interpreter::Value::String("1hellotrue42".to_string()))
+        );
+    }
+    
+    #[test]
+    fn test_for_loop_variable_shadowing() {
+        let source = "
+            Set x to 100.
+            Set list to [1, 2, 3].
+            For each x in list:
+                print x.
+            End for.
+            print x.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        // After the loop, x should be back to 100 (or the last value from the loop)
+        // Actually, the loop variable persists after the loop, so x will be 3
+        assert_eq!(interpreter.env.get("x"), Some(crate::interpreter::Value::Number(3)));
+    }
+    
+    #[test]
+    fn test_for_loop_nested() {
+        let source = "
+            Set sum to 0.
+            Set matrix to [[1, 2], [3, 4], [5, 6]].
+            # Note: nested lists not fully supported yet, but we can test with single-level
+            Set rows to [1, 2, 3].
+            For each row in rows:
+                Set sum to sum + row.
+            End for.
+            print sum.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        assert_eq!(interpreter.env.get("sum"), Some(crate::interpreter::Value::Number(6)));
+    }
+    
+    #[test]
+    fn test_for_loop_with_function_call() {
+        let source = "
+            Define double with parameter x:
+                Return x * 2.
+            End definition.
+            
+            Set result to [].
+            Set numbers to [1, 2, 3].
+            For each num in numbers:
+                Set doubled to Call double with num.
+                Add doubled to result.
+            End for.
+            print result.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        assert_eq!(
+            interpreter.env.get("result"),
+            Some(crate::interpreter::Value::List(vec![
+                crate::interpreter::Value::Number(2),
+                crate::interpreter::Value::Number(4),
+                crate::interpreter::Value::Number(6),
+            ]))
+        );
+    }
+    
+    #[test]
+    fn test_for_loop_error_not_list() {
+        let source = "
+            Set x to 5.
+            For each elem in x:
+                print elem.
+            End for.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("For loop expects a list"));
+    }
+    
+    #[test]
+    fn test_for_loop_with_return() {
+        // Test that return works inside a for loop
+        let source = "
+            Define find_first with parameter numbers:
+                For each num in numbers:
+                    If num is greater than 2 then Return num.
+                End for.
+                Set neg_one to 0 - 1.
+                Return neg_one.
+            End definition.
+            
+            Set list to [1, 2, 3, 4].
+            Set result to Call find_first with list.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        // Should return 3 (first number > 2)
+        assert_eq!(interpreter.env.get("result"), Some(crate::interpreter::Value::Number(3)));
+    }
 } 

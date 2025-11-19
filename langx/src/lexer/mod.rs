@@ -35,11 +35,23 @@ pub enum Token {
     #[token("While")]
     While,
     
+    #[token("For")]
+    For,
+    
+    #[token("each")]
+    Each,
+    
+    #[token("in")]
+    In,
+    
     #[token("repeat")]
     RepeatLower,
     
     #[token("while")]
     WhileLower,
+    
+    #[token("for")]
+    ForLower,
     
     #[token("times")]
     TimesKeyword,
@@ -177,8 +189,12 @@ impl fmt::Display for Token {
             Token::Print => write!(f, "print"),
             Token::Repeat => write!(f, "Repeat"),
             Token::While => write!(f, "While"),
+            Token::For => write!(f, "For"),
+            Token::Each => write!(f, "each"),
+            Token::In => write!(f, "in"),
             Token::RepeatLower => write!(f, "repeat"),
             Token::WhileLower => write!(f, "while"),
+            Token::ForLower => write!(f, "for"),
             Token::TimesKeyword => write!(f, "times"),
             Token::Define => write!(f, "Define"),
             Token::With => write!(f, "with"),

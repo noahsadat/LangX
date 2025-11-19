@@ -92,6 +92,13 @@ pub enum Statement {
         body: Box<Statement>,
     },
     
+    /// For loop statement (e.g., For each item in list: statement)
+    For {
+        variable: String,
+        list: Expression,
+        body: Box<Statement>,
+    },
+    
     /// Block of statements
     Block(Vec<Statement>),
     
@@ -196,6 +203,9 @@ impl fmt::Display for Statement {
             }
             Statement::While { condition, body } => {
                 write!(f, "While {}: {}", condition, body)
+            }
+            Statement::For { variable, list, body } => {
+                write!(f, "For each {} in {}: {}", variable, list, body)
             }
             Statement::Block(statements) => {
                 write!(f, "{{")?;

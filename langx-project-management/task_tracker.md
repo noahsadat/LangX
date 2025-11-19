@@ -85,7 +85,7 @@
 
 ## Current Sprint: Post-Milestone Improvements
 
-### Recently Completed (December 2025)
+### Recently Completed (December 2025 - January 2026)
 - [x] **Enhanced error messages with line numbers** - Parse errors now show line numbers and code snippets
 - [x] **Extended string concatenation** - Supports string + number, number + string, string + boolean
 - [x] **Extended function support** - Functions now support 0-5 parameters (was 0-2)
@@ -93,15 +93,16 @@
 - [x] **Fixed parentheses precedence** - Removed redundant precedence function, parser handles it correctly
 - [x] **Comprehensive test suite** - Added 30+ new tests covering edge cases and new features
 - [x] **Fixed example file syntax** - All example files now have proper `End repeat.` and `End while.` markers
+- [x] **For loops** - Implemented `For each item in list: ... End for.` syntax with full support for lists, strings, and mixed types (January 2026)
 
 ### In Progress
 - [ ] Performance profiling and optimization
 
 ### Planned - High Priority
-- [ ] While loops (`While condition: statement.`) - **Already implemented!**
-- [ ] For loops (`For each item in list: statement.`)
-- [ ] List/array support - **Already implemented!**
-- [ ] String concatenation - **Already implemented!**
+- [x] While loops (`While condition: statement.`) - **✅ Already implemented!**
+- [x] For loops (`For each item in list: statement.`) - **✅ Completed January 2026**
+- [x] List/array support - **✅ Already implemented!**
+- [x] String concatenation - **✅ Already implemented!**
 - [x] More string operations - **✅ Completed** (length, substring, split, join, replace)
 
 ### Planned - Medium Priority
@@ -159,13 +160,14 @@ All critical issues resolved ✅
 ## Next Features to Implement
 
 ### Phase 1: Control Flow Extensions
-1. **While loops**
+1. **While loops** - ✅ **Completed**
    ```
    While condition: statement.
    ```
-2. **For loops**
+2. **For loops** - ✅ **Completed January 2026**
    ```
    For each item in list: statement.
+   End for.
    ```
 3. **Break/Continue**
    ```
@@ -274,6 +276,7 @@ All critical issues resolved ✅
 - Add more string manipulation functions
 - Improve test coverage to 90%+
 - Add file I/O operations
+- Add Break/Continue statements for loops
 
 ### Next Review: January 2026
 **Agenda:**
@@ -292,10 +295,10 @@ All critical issues resolved ✅
 **Supported Features:** 30+ - **Added: string concat, extended functions, built-ins**
 **Parser Conflicts:** 0 ✅
 **Known Bugs:** 0 critical, 2 minor
-**Test Suite:** 40+ tests (20+ new comprehensive tests)
+**Test Suite:** 50+ tests (30+ new comprehensive tests including For loop tests)
 
 ---
 
 **Status:** 🟢 Active Development
-**Version:** 0.2.0
-**Last Updated:** December 2025
+**Version:** 0.2.1
+**Last Updated:** January 2026

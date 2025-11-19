@@ -46,6 +46,18 @@ pub Statement: Statement = {
         }
     },
     
+    "For" "each" <variable:Identifier> "in" <list:LogicalOr> ":" <body:Statement*> "End" "for" "." => {
+        Statement::For {
+            variable,
+            list,
+            body: Box::new(if body.len() == 1 {
+                body.into_iter().next().unwrap()
+            } else {
+                Statement::Block(body)
+            })
+        }
+    },
+    
     // Function definition with no parameters
     "Define" <name:Identifier> ":" <body:Statement*> "End" "definition" "." => {
         Statement::FunctionDefinition {
@@ -384,9 +396,13 @@ extern {
         "print" => Token::Print,
         "Repeat" => Token::Repeat,
         "While" => Token::While,
+        "For" => Token::For,
+        "each" => Token::Each,
+        "in" => Token::In,
         "times_kw" => Token::TimesKeyword,
         "repeat" => Token::RepeatLower,
         "while" => Token::WhileLower,
+        "for" => Token::ForLower,
         "Define" => Token::Define,
         "with" => Token::With,
         "parameters" => Token::Parameters,

@@ -101,6 +101,22 @@ While x is less than 5:
 End while.
 ```
 
+#### For Loop
+```
+For each [variable] in [list]: [statement].
+End for.
+```
+
+Example:
+```
+Set sum to 0.
+Set numbers to [1, 2, 3, 4, 5].
+For each num in numbers:
+    Set sum to sum + num.
+End for.
+print sum.
+```
+
 ### Functions
 
 ```
@@ -189,7 +205,7 @@ LangX supports:
 - Comparisons: `is greater than`, `is less than`, `is equal to`, `is not equal to`
 - Parentheses and operator precedence
 - Conditional statements: `If condition then statement`
-- Loops: `Repeat N times: ... End repeat.`, `While condition: ... End while.`
+- Loops: `Repeat N times: ... End repeat.`, `While condition: ... End while.`, `For each item in list: ... End for.`
 - Functions: 0-5 parameters with return values
 - Function calls: `Call func with arg1, arg2, arg3`
 - String concatenation: `"Hello" + 42`, `100 + " percent"`
@@ -264,8 +280,9 @@ print sub.
 - ✅ Enhanced error messages with line numbers and code snippets
 - ✅ Extended function support to 5 parameters (was 0-2)
 - ✅ String concatenation with multiple types (string + number, number + string, string + boolean)
-- ✅ Built-in string functions (`string_length`, `substring`)
+- ✅ Built-in string functions (`string_length`, `substring`, `split`, `join`, `replace`)
 - ✅ Fixed parentheses precedence issue
 - ✅ Comprehensive test suite (20+ new tests)
 - ✅ Fixed all example file syntax issues
-- ✅ Improved test coverage to ~70% 
+- ✅ Improved test coverage to ~70%
+- ✅ **For loops** - Iterate over lists with `For each item in list: ... End for.` (January 2026) 

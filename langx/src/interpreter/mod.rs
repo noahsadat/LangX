@@ -191,6 +191,24 @@ impl Interpreter {
                 }
                 Ok(ExecutionResult::Normal)
             }
+            Statement::For { variable, list, body } => {
+                let list_value = self.evaluate_expression(list)?;
+                if let Value::List(items) = list_value {
+                    for item in items {
+                        // Set the loop variable to the current item
+                        self.env.set(variable, item);
+                        
+                        // Execute the body
+                        match self.execute_statement(body)? {
+                            ExecutionResult::Normal => {},
+                            result @ ExecutionResult::Return(_) => return Ok(result),
+                        }
+                    }
+                    Ok(ExecutionResult::Normal)
+                } else {
+                    Err(format!("For loop expects a list, got {:?}", list_value))
+                }
+            }
             Statement::Block(statements) => {
                 for stmt in statements {
                     match self.execute_statement(stmt)? {
