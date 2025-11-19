@@ -389,10 +389,54 @@ Set sub to Call substring with text, 0, 5.
 print sub.  # Prints: "Hello"
 ```
 
+#### `split`
+Split a string into a list by a delimiter.
+```
+Call split with [string], [delimiter]
+```
+Example:
+```
+Set text to "a,b,c".
+Set parts to Call split with text, ",".
+# parts is now ["a", "b", "c"]
+```
+
+#### `join`
+Join a list into a string with a delimiter.
+```
+Call join with [list], [delimiter]
+```
+Example:
+```
+Set list to ["a", "b", "c"].
+Set result to Call join with list, ",".
+# result is "a,b,c"
+
+Set numbers to [1, 2, 3].
+Set text to Call join with numbers, "-".
+# text is "1-2-3"
+```
+
+#### `replace`
+Replace all occurrences of a substring in a string.
+```
+Call replace with [string], [old], [new]
+```
+Example:
+```
+Set text to "Hello World".
+Set result to Call replace with text, "World", "LangX".
+# result is "Hello LangX"
+
+Set text2 to "cat cat dog".
+Set result2 to Call replace with text2, "cat", "dog".
+# result2 is "dog dog dog"
+```
+
 ## Future Syntax Extensions
 - **For loops**: `For each [item] in [list]: [statement]`
 - **String interpolation**: `"Hello, {name}!"`
 - **Match expressions**: `Match [value] with [patterns]`
 - **Lambda functions**: `Set func to function with x: Return x * 2.`
-- **More string functions**: split, join, replace
 - **Math functions**: sqrt, pow, abs
+- **File I/O operations**: read_file, write_file

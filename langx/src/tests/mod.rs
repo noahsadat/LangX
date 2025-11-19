@@ -106,8 +106,8 @@ End repeat.";
             Set index to 0.
             Set sum to 0.
             While index is less than 5:
-                Set item to item (index) of list.
-                Set sum to sum + item.
+                Set current_item to item (index) of list.
+                Set sum to sum + current_item.
                 Set index to index + 1.
             End while.
             print sum.
@@ -356,5 +356,186 @@ End repeat.";
             interpreter.env.get("bool"),
             Some(crate::interpreter::Value::Boolean(true))
         );
+    }
+    
+    #[test]
+    fn test_split_function() {
+        let source = "
+            Set text to \"a,b,c\".
+            Set parts to Call split with text, \",\".
+            Set first to item 0 of parts.
+            Set second to item 1 of parts.
+            Set third to item 2 of parts.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        assert_eq!(
+            interpreter.env.get("first"),
+            Some(crate::interpreter::Value::String("a".to_string()))
+        );
+        assert_eq!(
+            interpreter.env.get("second"),
+            Some(crate::interpreter::Value::String("b".to_string()))
+        );
+        assert_eq!(
+            interpreter.env.get("third"),
+            Some(crate::interpreter::Value::String("c".to_string()))
+        );
+    }
+    
+    #[test]
+    fn test_split_with_space() {
+        let source = "
+            Set text to \"hello world langx\".
+            Set parts to Call split with text, \" \".
+            Set first to item 0 of parts.
+            Set second to item 1 of parts.
+            Set third to item 2 of parts.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        if let Some(crate::interpreter::Value::List(items)) = interpreter.env.get("parts") {
+            assert_eq!(items.len(), 3);
+        } else {
+            panic!("split should return a list");
+        }
+        assert_eq!(
+            interpreter.env.get("first"),
+            Some(crate::interpreter::Value::String("hello".to_string()))
+        );
+        assert_eq!(
+            interpreter.env.get("second"),
+            Some(crate::interpreter::Value::String("world".to_string()))
+        );
+        assert_eq!(
+            interpreter.env.get("third"),
+            Some(crate::interpreter::Value::String("langx".to_string()))
+        );
+    }
+    
+    #[test]
+    fn test_join_function() {
+        let source = "
+            Set list to [\"a\", \"b\", \"c\"].
+            Set result to Call join with list, \",\".
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        assert_eq!(
+            interpreter.env.get("result"),
+            Some(crate::interpreter::Value::String("a,b,c".to_string()))
+        );
+    }
+    
+    #[test]
+    fn test_join_with_space() {
+        let source = "
+            Set list to [\"hello\", \"world\", \"langx\"].
+            Set result to Call join with list, \" \".
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        assert_eq!(
+            interpreter.env.get("result"),
+            Some(crate::interpreter::Value::String("hello world langx".to_string()))
+        );
+    }
+    
+    #[test]
+    fn test_join_with_numbers() {
+        let source = "
+            Set list to [1, 2, 3].
+            Set result to Call join with list, \"-\".
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        assert_eq!(
+            interpreter.env.get("result"),
+            Some(crate::interpreter::Value::String("1-2-3".to_string()))
+        );
+    }
+    
+    #[test]
+    fn test_replace_function() {
+        let source = "
+            Set text to \"Hello World\".
+            Set result to Call replace with text, \"World\", \"LangX\".
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        assert_eq!(
+            interpreter.env.get("result"),
+            Some(crate::interpreter::Value::String("Hello LangX".to_string()))
+        );
+    }
+    
+    #[test]
+    fn test_replace_multiple_occurrences() {
+        let source = "
+            Set text to \"cat cat dog cat\".
+            Set result to Call replace with text, \"cat\", \"dog\".
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        assert_eq!(
+            interpreter.env.get("result"),
+            Some(crate::interpreter::Value::String("dog dog dog dog".to_string()))
+        );
+    }
+    
+    #[test]
+    fn test_replace_empty_string() {
+        let source = "
+            Set text to \"hello\".
+            Set result to Call replace with text, \"\", \"X\".
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        // Empty string replacement should insert X between each character
+        assert_eq!(
+            interpreter.env.get("result"),
+            Some(crate::interpreter::Value::String("XhXeXlXlXoX".to_string()))
+        );
+    }
+    
+    #[test]
+    fn test_string_functions_error_handling() {
+        // Test split with wrong argument types
+        let source = "
+            Set result to Call split with 123, \",\".
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("expects (string, string)"));
+        
+        // Test join with wrong argument types
+        let source2 = "
+            Set result to Call join with \"not a list\", \",\".
+        ";
+        let program2 = parser::parse(source2).unwrap();
+        let mut interpreter2 = Interpreter::new();
+        let result2 = interpreter2.interpret(&program2);
+        assert!(result2.is_err());
+        assert!(result2.unwrap_err().contains("expects (list, string)"));
+        
+        // Test replace with wrong argument types
+        let source3 = "
+            Set result to Call replace with \"text\", 123, \"new\".
+        ";
+        let program3 = parser::parse(source3).unwrap();
+        let mut interpreter3 = Interpreter::new();
+        let result3 = interpreter3.interpret(&program3);
+        assert!(result3.is_err());
+        assert!(result3.unwrap_err().contains("expects (string, string, string)"));
     }
 } 

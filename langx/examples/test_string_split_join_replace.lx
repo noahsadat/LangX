@@ -1,0 +1,60 @@
+# Test new string functions: split, join, replace
+
+print "=== String Split Function ===".
+Set csv to "apple,banana,cherry".
+Set fruits to Call split with csv, ",".
+print "Split CSV:".
+print fruits.
+
+Set sentence to "hello world langx".
+Set words to Call split with sentence, " ".
+print "Split sentence:".
+print words.
+
+print "".
+print "=== String Join Function ===".
+Set list1 to ["a", "b", "c"].
+Set joined1 to Call join with list1, ",".
+print "Joined with comma:".
+print joined1.
+
+Set list2 to ["hello", "world", "langx"].
+Set joined2 to Call join with list2, " ".
+print "Joined with space:".
+print joined2.
+
+Set numbers to [1, 2, 3, 4, 5].
+Set joined3 to Call join with numbers, "-".
+print "Joined numbers:".
+print joined3.
+
+print "".
+print "=== String Replace Function ===".
+Set text1 to "Hello World".
+Set result1 to Call replace with text1, "World", "LangX".
+print "Replace World with LangX:".
+print result1.
+
+Set text2 to "cat cat dog cat".
+Set result2 to Call replace with text2, "cat", "dog".
+print "Replace all cats:".
+print result2.
+
+Set text3 to "The quick brown fox".
+Set result3 to Call replace with text3, "quick", "slow".
+print "Replace quick with slow:".
+print result3.
+
+print "".
+print "=== Combined Operations ===".
+Set data to "name:John,age:30,city:NYC".
+Set pairs to Call split with data, ",".
+print "Split pairs:".
+print pairs.
+
+Set first_pair to item 0 of pairs.
+Set name_parts to Call split with first_pair, ":".
+Set name to item 1 of name_parts.
+print "Extracted name:".
+print name.
+

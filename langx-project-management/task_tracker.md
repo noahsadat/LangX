@@ -56,7 +56,7 @@
 - [x] Return statements
 - [x] Proper scoping (nested environments)
 - [x] **Comma-separated parameters and arguments**
-- [x] **Built-in functions** - `string_length`, `substring`
+- [x] **Built-in functions** - `string_length`, `substring`, `split`, `join`, `replace`
 
 ### Testing & Documentation
 - [x] Unit tests for all components
@@ -89,9 +89,9 @@
 - [x] **Enhanced error messages with line numbers** - Parse errors now show line numbers and code snippets
 - [x] **Extended string concatenation** - Supports string + number, number + string, string + boolean
 - [x] **Extended function support** - Functions now support 0-5 parameters (was 0-2)
-- [x] **Built-in string functions** - Added `string_length` and `substring` functions
+- [x] **Built-in string functions** - Added `string_length`, `substring`, `split`, `join`, and `replace` functions
 - [x] **Fixed parentheses precedence** - Removed redundant precedence function, parser handles it correctly
-- [x] **Comprehensive test suite** - Added 20+ new tests covering edge cases and new features
+- [x] **Comprehensive test suite** - Added 30+ new tests covering edge cases and new features
 - [x] **Fixed example file syntax** - All example files now have proper `End repeat.` and `End while.` markers
 
 ### In Progress
@@ -102,7 +102,7 @@
 - [ ] For loops (`For each item in list: statement.`)
 - [ ] List/array support - **Already implemented!**
 - [ ] String concatenation - **Already implemented!**
-- [ ] More string operations - **Partially implemented (length, substring)**
+- [x] More string operations - **✅ Completed** (length, substring, split, join, replace)
 
 ### Planned - Medium Priority
 - [ ] File I/O operations

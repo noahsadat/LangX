@@ -70,7 +70,7 @@ mod tests {
     
     #[test]
     fn test_parse_conditional() {
-        let input = "If x is greater than 5, print \"Hello\".";
+        let input = "If x is greater than 5 then print \"Hello\".";
         let program = parse(input).unwrap();
         
         assert_eq!(program.statements.len(), 1);

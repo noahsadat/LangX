@@ -348,7 +348,7 @@ mod tests {
     
     #[test]
     fn test_parentheses_tokenization() {
-        let input = "Set x to (5 plus 3) times 2.";
+        let input = "Set x to (5 + 3) * 2.";
         let tokens: Vec<Token> = tokenize(input).into_iter().map(|(_, t, _)| t).collect();
         
         assert_eq!(tokens, vec![

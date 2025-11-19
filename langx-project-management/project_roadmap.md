@@ -57,11 +57,13 @@ LangX is a programming language that combines structured English with mathematic
 
 ### 6. Standard Library [IN PROGRESS]
 - [ ] Math functions (sqrt, pow, abs, etc.)
-- [x] **String manipulation** - ✅ Started December 2025
+- [x] **String manipulation** - ✅ Completed December 2025
   - [x] `string_length` - Get length of a string
   - [x] `substring` - Extract substring (string, start, length)
+  - [x] `split` - Split string into list by delimiter
+  - [x] `join` - Join list into string with delimiter
+  - [x] `replace` - Replace all occurrences of substring
   - [x] String concatenation with `+` operator
-- [ ] More string functions (split, join, replace)
 - [ ] I/O operations (file read/write)
 - [x] **Data structures** - ✅ Lists implemented
 - [ ] Time and date handling
@@ -123,7 +125,7 @@ LangX is a programming language that combines structured English with mathematic
 - [x] **Extended function support** - ✅ Now supports 0-5 parameters (December 2025)
 - [x] **Advanced control flow** - ✅ While loops implemented
 - [x] **List/array data structures** - ✅ Implemented
-- [x] **String manipulation functions** - ✅ Started (length, substring, concatenation)
+- [x] **String manipulation functions** - ✅ Completed (length, substring, split, join, replace, concatenation)
 - [ ] File I/O operations
 - [x] **Improved error messages** - ✅ Line numbers and code snippets (December 2025)
 - [ ] Variadic function arguments
@@ -163,7 +165,7 @@ LangX is a programming language that combines structured English with mathematic
 ✅ **File execution**: Run `.lx` files
 ✅ **String concatenation**: `"text" + 42`, `100 + " percent"`, `"Status: " + true`
 ✅ **Lists/Arrays**: Creation, indexing, appending
-✅ **Built-in functions**: `string_length`, `substring`
+✅ **Built-in functions**: `string_length`, `substring`, `split`, `join`, `replace`
 ✅ **Enhanced error messages**: Line numbers and code snippets
 
 ### Key Design Decisions
@@ -186,7 +188,7 @@ LangX is a programming language that combines structured English with mathematic
 2. ~~Implement lists/arrays~~ - ✅ **Completed**
 3. ~~String manipulation functions~~ - ✅ **Partially completed** (length, substring, concat)
 4. ~~Enhanced error messages~~ - ✅ **Completed**
-5. Add more string functions (split, join, replace)
+5. ~~Add more string functions (split, join, replace)~~ - ✅ **Completed**
 6. Improve test coverage to 90%+
 
 ### Short-term (Next 2 months)

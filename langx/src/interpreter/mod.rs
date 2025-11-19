@@ -275,6 +275,52 @@ impl Interpreter {
                         arg_values[0], arg_values[1], arg_values[2]))
                 }
             }
+            "split" => {
+                if arg_values.len() != 2 {
+                    return Err(format!("Built-in function 'split' expects 2 arguments (string, delimiter), got {}.", arg_values.len()));
+                }
+                if let (Value::String(s), Value::String(delimiter)) = (&arg_values[0], &arg_values[1]) {
+                    let parts: Vec<Value> = s.split(delimiter)
+                        .map(|part| Value::String(part.to_string()))
+                        .collect();
+                    Ok(Some(Value::List(parts)))
+                } else {
+                    Err(format!("Built-in function 'split' expects (string, string) arguments, got ({:?}, {:?}).", 
+                        arg_values[0], arg_values[1]))
+                }
+            }
+            "join" => {
+                if arg_values.len() != 2 {
+                    return Err(format!("Built-in function 'join' expects 2 arguments (list, delimiter), got {}.", arg_values.len()));
+                }
+                if let (Value::List(items), Value::String(delimiter)) = (&arg_values[0], &arg_values[1]) {
+                    let mut parts = Vec::new();
+                    for item in items {
+                        match item {
+                            Value::String(s) => parts.push(s.clone()),
+                            Value::Number(n) => parts.push(n.to_string()),
+                            Value::Boolean(b) => parts.push(b.to_string()),
+                            Value::Null => parts.push("null".to_string()),
+                            Value::List(_) => return Err("Built-in function 'join' cannot join nested lists.".to_string()),
+                        }
+                    }
+                    Ok(Some(Value::String(parts.join(delimiter))))
+                } else {
+                    Err(format!("Built-in function 'join' expects (list, string) arguments, got ({:?}, {:?}).", 
+                        arg_values[0], arg_values[1]))
+                }
+            }
+            "replace" => {
+                if arg_values.len() != 3 {
+                    return Err(format!("Built-in function 'replace' expects 3 arguments (string, old, new), got {}.", arg_values.len()));
+                }
+                if let (Value::String(s), Value::String(old), Value::String(new)) = (&arg_values[0], &arg_values[1], &arg_values[2]) {
+                    Ok(Some(Value::String(s.replace(old, new))))
+                } else {
+                    Err(format!("Built-in function 'replace' expects (string, string, string) arguments, got ({:?}, {:?}, {:?}).", 
+                        arg_values[0], arg_values[1], arg_values[2]))
+                }
+            }
             _ => Ok(None), // Not a built-in function
         }
     }
@@ -545,7 +591,7 @@ mod tests {
     
     #[test]
     fn test_addition() {
-        let source = "Set x to 5 plus 3. print x.";
+        let source = "Set x to 5 + 3. print x.";
         let program = parser::parse(source).unwrap();
         let mut interpreter = Interpreter::new();
         interpreter.interpret(&program).unwrap();
@@ -554,7 +600,7 @@ mod tests {
     
     #[test]
     fn test_subtraction() {
-        let source = "Set x to 10 minus 4. print x.";
+        let source = "Set x to 10 - 4. print x.";
         let program = parser::parse(source).unwrap();
         let mut interpreter = Interpreter::new();
         interpreter.interpret(&program).unwrap();
@@ -563,7 +609,7 @@ mod tests {
     
     #[test]
     fn test_multiplication() {
-        let source = "Set x to 6 times 7. print x.";
+        let source = "Set x to 6 * 7. print x.";
         let program = parser::parse(source).unwrap();
         let mut interpreter = Interpreter::new();
         interpreter.interpret(&program).unwrap();
@@ -572,7 +618,7 @@ mod tests {
     
     #[test]
     fn test_division() {
-        let source = "Set x to 20 divided by 5. print x.";
+        let source = "Set x to 20 / 5. print x.";
         let program = parser::parse(source).unwrap();
         let mut interpreter = Interpreter::new();
         interpreter.interpret(&program).unwrap();
@@ -581,7 +627,7 @@ mod tests {
     
     #[test]
     fn test_complex_expression() {
-        let source = "Set x to 2 plus 3 times 4. print x.";
+        let source = "Set x to 2 + 3 * 4. print x.";
         let program = parser::parse(source).unwrap();
         let mut interpreter = Interpreter::new();
         interpreter.interpret(&program).unwrap();
@@ -594,6 +640,7 @@ mod tests {
             Set x to 0.
             While x is less than 3:
                 Set x to x + 1.
+            End while.
             print x.
         ";
         let program = parser::parse(source).unwrap();
@@ -608,6 +655,7 @@ mod tests {
             Set x to 5.
             While x is less than 3:
                 Set x to x + 1.
+            End while.
             print x.
         ";
         let program = parser::parse(source).unwrap();
@@ -625,6 +673,7 @@ mod tests {
             While counter is less than 5:
                 Set sum to sum + counter.
                 Set counter to counter + 1.
+            End while.
             print sum.
         ";
         let program = parser::parse(source).unwrap();

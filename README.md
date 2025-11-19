@@ -194,7 +194,7 @@ LangX supports:
 - Function calls: `Call func with arg1, arg2, arg3`
 - String concatenation: `"Hello" + 42`, `100 + " percent"`
 - Lists/Arrays: Creation, indexing, appending
-- Built-in functions: `string_length`, `substring`
+- Built-in functions: `string_length`, `substring`, `split`, `join`, `replace`
 - Print statements
 - Comments: `# comment`
 
@@ -224,6 +224,19 @@ Set len to Call string_length with "Hello, World!".
 
 # Extract substring
 Set sub to Call substring with "Hello, World!", 0, 5.
+
+# Split string into list
+Set parts to Call split with "a,b,c", ",".
+# Returns: ["a", "b", "c"]
+
+# Join list into string
+Set list to ["hello", "world"].
+Set text to Call join with list, " ".
+# Returns: "hello world"
+
+# Replace substring
+Set result to Call replace with "Hello World", "World", "LangX".
+# Returns: "Hello LangX"
 ```
 
 ### Example
