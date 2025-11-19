@@ -1,3 +1,25 @@
+//! # Lexer Module
+//!
+//! The lexer module provides lexical analysis for LangX source code.
+//! It converts raw source code into a sequence of tokens that can be parsed.
+//!
+//! ## Features
+//!
+//! - Tokenizes LangX keywords, operators, literals, and identifiers
+//! - Handles string literals with escape sequences
+//! - Supports triple-quoted multi-line strings
+//! - Provides utility functions for error reporting (line numbers, code snippets)
+//!
+//! ## Example
+//!
+//! ```rust
+//! use langx::lexer;
+//!
+//! let source = "Set x to 10.";
+//! let tokens = lexer::tokenize(source);
+//! // Returns: [(0, Token::Set, 3), (4, Token::Identifier("x"), 5), ...]
+//! ```
+
 use logos::Logos;
 use std::fmt;
 
@@ -64,7 +86,31 @@ fn parse_triple_quoted_string(lexer: &mut logos::Lexer<Token>) -> String {
     String::new()
 }
 
-/// Token types for the LangX language
+/// Token types for the LangX language.
+///
+/// Tokens represent the smallest meaningful units of LangX source code.
+/// The lexer converts source code into a sequence of tokens.
+///
+/// # Variants
+///
+/// - **Keywords**: Language keywords like `Set`, `If`, `Define`, etc.
+/// - **Operators**: Arithmetic (`+`, `-`, `*`, `/`) and logical (`and`, `or`, `not`) operators
+/// - **Literals**: Numbers, strings, booleans, and identifiers
+/// - **Punctuation**: Periods, commas, brackets, braces, etc.
+///
+/// # Example
+///
+/// ```rust
+/// use langx::lexer::Token;
+///
+/// // Keywords
+/// assert_eq!(Token::Set, Token::Set);
+/// assert_eq!(Token::If, Token::If);
+///
+/// // Literals
+/// let num_token = Token::Number(42);
+/// let str_token = Token::StringLiteral("hello".to_string());
+/// ```
 #[derive(Logos, Debug, PartialEq, Clone)]
 pub enum Token {
     // Keywords
@@ -380,7 +426,32 @@ impl fmt::Display for Token {
     }
 }
 
-/// Tokenize a string into a vector of tokens with line numbers
+/// Tokenize source code into a sequence of tokens.
+///
+/// This function takes LangX source code and converts it into a vector of tokens.
+/// Each token includes its start position, the token itself, and its end position.
+///
+/// # Arguments
+///
+/// * `input` - The source code to tokenize
+///
+/// # Returns
+///
+/// A vector of tuples containing:
+/// - Start byte position
+/// - The token
+/// - End byte position
+///
+/// # Example
+///
+/// ```rust
+/// use langx::lexer::{tokenize, Token};
+///
+/// let source = "Set x to 10.";
+/// let tokens = tokenize(source);
+///
+/// // tokens contains: [(0, Token::Set, 3), (4, Token::Identifier("x"), 5), ...]
+/// ```
 pub fn tokenize(input: &str) -> Vec<(usize, Token, usize)> {
     let mut lexer = Token::lexer(input);
     let mut tokens = Vec::new();
@@ -395,7 +466,30 @@ pub fn tokenize(input: &str) -> Vec<(usize, Token, usize)> {
     tokens
 }
 
-/// Calculate line number from byte position in source code
+/// Calculate the line number for a given byte position in source code.
+///
+/// This is useful for error reporting, as it converts a byte offset
+/// into a human-readable line number.
+///
+/// # Arguments
+///
+/// * `source` - The source code
+/// * `position` - Byte position in the source code
+///
+/// # Returns
+///
+/// The 1-based line number (first line is 1, not 0)
+///
+/// # Example
+///
+/// ```rust
+/// use langx::lexer::line_number_at_position;
+///
+/// let source = "Line 1\nLine 2\nLine 3";
+/// assert_eq!(line_number_at_position(source, 0), 1);
+/// assert_eq!(line_number_at_position(source, 8), 2);
+/// assert_eq!(line_number_at_position(source, 15), 3);
+/// ```
 pub fn line_number_at_position(source: &str, position: usize) -> usize {
     source[..position.min(source.len())]
         .chars()
@@ -403,7 +497,31 @@ pub fn line_number_at_position(source: &str, position: usize) -> usize {
         .count() + 1
 }
 
-/// Get a snippet of code around a position for error messages
+/// Get a code snippet around a given position for error messages.
+///
+/// This function extracts a portion of source code centered around a specific
+/// position, including a specified number of context lines above and below.
+///
+/// # Arguments
+///
+/// * `source` - The source code
+/// * `position` - Byte position to center the snippet around
+/// * `context_lines` - Number of lines to include above and below the target line
+///
+/// # Returns
+///
+/// A string containing the code snippet with line numbers, formatted for display
+/// in error messages.
+///
+/// # Example
+///
+/// ```rust
+/// use langx::lexer::get_code_snippet;
+///
+/// let source = "Line 1\nLine 2\nLine 3\nLine 4";
+/// let snippet = get_code_snippet(source, 10, 1);
+/// // Returns formatted snippet showing line 2 with context
+/// ```
 pub fn get_code_snippet(source: &str, position: usize, context_lines: usize) -> String {
     let lines: Vec<&str> = source.lines().collect();
     let line_num = line_number_at_position(source, position);

@@ -1,6 +1,47 @@
+//! # Abstract Syntax Tree (AST) Module
+//!
+//! This module defines the Abstract Syntax Tree representation of LangX programs.
+//! The AST is the output of the parser and the input to both the interpreter
+//! and bytecode compiler.
+//!
+//! ## Structure
+//!
+//! The AST consists of:
+//! - **Expressions**: Values, operations, function calls, data structure access
+//! - **Statements**: Assignments, conditionals, loops, function definitions, prints
+//! - **Program**: Top-level container for a complete LangX program
+//!
+//! ## Example
+//!
+//! ```rust
+//! use langx::ast::{Program, Statement, Expression};
+//!
+//! // A simple program: Set x to 10. print x.
+//! let program = Program {
+//!     statements: vec![
+//!         Statement::Assignment {
+//!             variable: "x".to_string(),
+//!             value: Expression::Number(10),
+//!         },
+//!         Statement::Print(Expression::Variable("x".to_string())),
+//!     ],
+//! };
+//! ```
+
 use std::fmt;
 
-/// A function parameter with optional default value and variadic flag
+/// A function parameter with optional default value and variadic flag.
+///
+/// Parameters can be:
+/// - Regular parameters: `name`
+/// - Parameters with default values: `name default value`
+/// - Variadic parameters: `...name` (accepts variable number of arguments)
+///
+/// # Fields
+///
+/// * `name` - The parameter name
+/// * `default_value` - Optional default value expression
+/// * `is_variadic` - Whether this parameter accepts variable arguments
 #[derive(Debug, PartialEq, Clone)]
 pub struct Parameter {
     pub name: String,
@@ -34,7 +75,19 @@ impl Parameter {
     }
 }
 
-/// The AST node types for LangX
+/// Expression nodes in the LangX AST.
+///
+/// Expressions represent values and operations that can be evaluated to produce a value.
+/// This includes literals, variables, binary/unary operations, function calls, and
+/// data structure access.
+///
+/// # Variants
+///
+/// - **Literals**: `Number`, `String`, `Boolean`
+/// - **Variables**: `Variable(name)`
+/// - **Operations**: `BinaryOp`, `UnaryOp`
+/// - **Function Calls**: `FunctionCall`
+/// - **Data Structures**: `List`, `ListIndex`, `Map`, `MapIndex`
 #[derive(Debug, PartialEq, Clone)]
 pub enum Expression {
     /// A numeric literal (e.g., 42)
@@ -87,6 +140,10 @@ pub enum Expression {
     },
 }
 
+/// Binary operators in LangX expressions.
+///
+/// These operators combine two expressions to produce a result.
+/// Includes arithmetic, comparison, and logical operators.
 #[derive(Debug, PartialEq, Clone)]
 pub enum BinaryOperator {
     GreaterThan,
@@ -101,11 +158,27 @@ pub enum BinaryOperator {
     Or,
 }
 
+/// Unary operators in LangX expressions.
+///
+/// These operators operate on a single expression.
 #[derive(Debug, PartialEq, Clone)]
 pub enum UnaryOperator {
+    /// Logical negation: `not x`
     Not,
 }
 
+/// Statement nodes in the LangX AST.
+///
+/// Statements represent actions and control flow constructs that don't necessarily
+/// produce values (unlike expressions). This includes assignments, conditionals,
+/// loops, function definitions, and prints.
+///
+/// # Variants
+///
+/// - **Assignments**: `Assignment`, `MapAssignment`, `ListAppend`
+/// - **Control Flow**: `Conditional`, `Repeat`, `While`, `For`, `Break`, `Continue`
+/// - **Functions**: `FunctionDefinition`, `Return`
+/// - **I/O**: `Print`
 #[derive(Debug, PartialEq, Clone)]
 pub enum Statement {
     /// Assignment statement (e.g., Set x to 10)
@@ -175,6 +248,14 @@ pub enum Statement {
     Continue,
 }
 
+/// A complete LangX program.
+///
+/// This is the top-level AST node representing an entire LangX program.
+/// It contains a sequence of statements that are executed in order.
+///
+/// # Fields
+///
+/// * `statements` - Vector of statements that make up the program
 #[derive(Debug, PartialEq)]
 pub struct Program {
     pub statements: Vec<Statement>,

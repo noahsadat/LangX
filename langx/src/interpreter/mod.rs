@@ -47,14 +47,35 @@ impl std::fmt::Display for Value {
     }
 }
 
-/// A function definition
+/// A user-defined function in LangX.
+///
+/// Functions contain a list of parameters and a body of statements.
+/// Functions can be called with arguments and can return values.
+///
+/// # Fields
+///
+/// * `parameters` - List of function parameters (may include defaults and variadic params)
+/// * `body` - Vector of statements that make up the function body
 #[derive(Debug, Clone)]
 pub struct Function {
     pub parameters: Vec<Parameter>,
     pub body: Vec<Statement>,
 }
 
-/// Environment for storing variables and functions
+/// Environment for storing variables and functions with scoping support.
+///
+/// Environments form a chain through parent references, allowing for
+/// proper variable scoping in nested functions and blocks.
+///
+/// # Scoping
+///
+/// When a variable is accessed, the environment searches:
+/// 1. Its own variables map
+/// 2. Parent environment (if exists)
+/// 3. Parent's parent, etc.
+///
+/// This allows inner scopes to access outer scope variables while
+/// maintaining proper isolation.
 #[derive(Clone)]
 pub struct Environment {
     variables: HashMap<String, Value>,
@@ -143,6 +164,40 @@ impl Interpreter {
         // No need to register them as regular functions
     }
     
+    /// Interpret and execute a LangX program.
+    ///
+    /// This method executes all statements in the program sequentially,
+    /// maintaining variable state and function definitions throughout execution.
+    ///
+    /// # Arguments
+    ///
+    /// * `program` - The parsed AST program to execute
+    ///
+    /// # Returns
+    ///
+    /// - `Ok(())` - If execution completed successfully
+    /// - `Err(String)` - If a runtime error occurred
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if:
+    /// - A variable is accessed before being defined
+    /// - A function is called that doesn't exist
+    /// - A type error occurs (e.g., adding a string to a number incorrectly)
+    /// - A control flow statement is used incorrectly (e.g., return outside function)
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use langx::{parser, interpreter};
+    ///
+    /// let source = "Set x to 10. print x.";
+    /// let program = parser::parse(source)?;
+    ///
+    /// let mut interpreter = interpreter::Interpreter::new();
+    /// interpreter.interpret(&program)?;
+    /// # Ok::<(), String>(())
+    /// ```
     pub fn interpret(&mut self, program: &Program) -> Result<(), String> {
         for statement in &program.statements {
             match self.execute_statement(statement)? {
@@ -164,12 +219,62 @@ impl Interpreter {
         Ok(())
     }
     
-    /// Get a variable value (for debugger)
+    /// Get the value of a variable (for debugger and introspection).
+    ///
+    /// This method searches the environment chain to find a variable,
+    /// returning its value if found.
+    ///
+    /// # Arguments
+    ///
+    /// * `name` - The name of the variable to look up
+    ///
+    /// # Returns
+    ///
+    /// - `Some(Value)` - The variable's value if found
+    /// - `None` - If the variable doesn't exist
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use langx::{parser, interpreter};
+    ///
+    /// let source = "Set x to 42.";
+    /// let program = parser::parse(source)?;
+    /// let mut interpreter = interpreter::Interpreter::new();
+    /// interpreter.interpret(&program)?;
+    ///
+    /// if let Some(value) = interpreter.get_variable("x") {
+    ///     println!("x = {:?}", value);
+    /// }
+    /// # Ok::<(), String>(())
+    /// ```
     pub fn get_variable(&self, name: &str) -> Option<Value> {
         self.env.get(name)
     }
     
-    /// List all variable names (for debugger)
+    /// List all variable names in the current scope and parent scopes (for debugger).
+    ///
+    /// This method collects all variable names from the current environment
+    /// and all parent environments, returning a sorted, deduplicated list.
+    ///
+    /// # Returns
+    ///
+    /// A vector of variable names (sorted alphabetically)
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use langx::{parser, interpreter};
+    ///
+    /// let source = "Set x to 1. Set y to 2.";
+    /// let program = parser::parse(source)?;
+    /// let mut interpreter = interpreter::Interpreter::new();
+    /// interpreter.interpret(&program)?;
+    ///
+    /// let vars = interpreter.list_variables();
+    /// println!("Variables: {:?}", vars); // ["x", "y"]
+    /// # Ok::<(), String>(())
+    /// ```
     pub fn list_variables(&self) -> Vec<String> {
         // Collect variables from current scope and parent scopes
         let mut vars = Vec::new();
@@ -183,7 +288,34 @@ impl Interpreter {
         vars
     }
     
-    /// List all function names (for debugger)
+    /// List all user-defined function names (for debugger).
+    ///
+    /// This method collects all function names from the current environment
+    /// and all parent environments, returning a sorted, deduplicated list.
+    /// Built-in functions are not included.
+    ///
+    /// # Returns
+    ///
+    /// A vector of function names (sorted alphabetically)
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use langx::{parser, interpreter};
+    ///
+    /// let source = r#"
+    ///     Define add with parameters a, b:
+    ///         Return a + b.
+    ///     End definition.
+    /// "#;
+    /// let program = parser::parse(source)?;
+    /// let mut interpreter = interpreter::Interpreter::new();
+    /// interpreter.interpret(&program)?;
+    ///
+    /// let funcs = interpreter.list_functions();
+    /// println!("Functions: {:?}", funcs); // ["add"]
+    /// # Ok::<(), String>(())
+    /// ```
     pub fn list_functions(&self) -> Vec<String> {
         let mut funcs = Vec::new();
         let mut current_env = Some(&self.env);

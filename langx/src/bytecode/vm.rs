@@ -1,9 +1,37 @@
+//! # Virtual Machine Module
+//!
+//! This module provides a stack-based virtual machine for executing LangX bytecode.
+
 use crate::bytecode::chunk::{Chunk, OpCode};
 use crate::bytecode::compiler::FunctionInfo;
 use crate::interpreter::{Value, Environment};
 use std::collections::HashMap;
 
-/// Stack-based Virtual Machine for executing bytecode
+/// Stack-based Virtual Machine for executing LangX bytecode.
+///
+/// The VM executes bytecode instructions using a stack-based model.
+/// It maintains:
+/// - An operand stack for values
+/// - Variable environments with scoping
+/// - A call stack for function calls
+/// - Function definitions for user-defined functions
+///
+/// # Example
+///
+/// ```rust
+/// use langx::{parser, bytecode};
+///
+/// let source = "Set x to 10.";
+/// let program = parser::parse(source)?;
+///
+/// let mut compiler = bytecode::Compiler::new();
+/// let chunk = compiler.compile(&program)?;
+/// let functions = compiler.get_functions().clone();
+///
+/// let mut vm = bytecode::VM::new();
+/// vm.execute(chunk, functions)?;
+/// # Ok::<(), String>(())
+/// ```
 pub struct VM {
     stack: Vec<Value>,
     environment: Environment,
@@ -20,6 +48,11 @@ struct CallFrame {
 }
 
 impl VM {
+    /// Create a new virtual machine instance.
+    ///
+    /// # Returns
+    ///
+    /// A new `VM` instance ready to execute bytecode.
     pub fn new() -> Self {
         Self {
             stack: Vec::new(),

@@ -1,7 +1,27 @@
+//! # Bytecode Chunk Module
+//!
+//! This module defines the bytecode instruction set and chunk structure
+//! for the LangX virtual machine.
+
 use crate::interpreter::Value;
 use std::fmt;
 
-/// Bytecode instruction opcodes
+/// Bytecode instruction opcodes for the LangX virtual machine.
+///
+/// OpCodes represent the operations that can be executed by the VM.
+/// The VM uses a stack-based execution model where most operations
+/// pop values from the stack and push results back.
+///
+/// # Categories
+///
+/// - **Constants**: Load values from the constant pool
+/// - **Variables**: Load/store variables
+/// - **Arithmetic**: Add, subtract, multiply, divide
+/// - **Comparisons**: Greater than, less than, equal, not equal
+/// - **Logical**: And, or, not
+/// - **Control Flow**: Jumps, conditional jumps
+/// - **Functions**: Call functions, return
+/// - **Data Structures**: Lists, maps operations
 #[derive(Debug, Clone, PartialEq)]
 pub enum OpCode {
     // Constants
@@ -61,7 +81,18 @@ pub enum OpCode {
     LoadNull,             // Push null value
 }
 
-/// A chunk of bytecode with constants and instructions
+/// A chunk of compiled bytecode with associated metadata.
+///
+/// A chunk contains:
+/// - The sequence of bytecode instructions
+/// - A constant pool for literals
+/// - Line number information for debugging
+///
+/// # Fields
+///
+/// * `code` - Vector of bytecode instructions
+/// * `constants` - Constant pool containing literal values
+/// * `line_numbers` - Line number for each instruction (for error reporting)
 #[derive(Debug, Clone)]
 pub struct Chunk {
     pub code: Vec<OpCode>,

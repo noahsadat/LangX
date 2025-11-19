@@ -1,3 +1,26 @@
+//! # Parser Module
+//!
+//! The parser module converts tokens into an Abstract Syntax Tree (AST).
+//! It uses LALRPOP for LR(1) parsing with zero ambiguity warnings.
+//!
+//! ## Features
+//!
+//! - Converts token sequences into structured AST nodes
+//! - Handles operator precedence correctly
+//! - Provides detailed error messages with line numbers and suggestions
+//! - Supports error recovery to find multiple errors in a single pass
+//!
+//! ## Example
+//!
+//! ```rust
+//! use langx::parser;
+//!
+//! let source = "Set x to 10. print x.";
+//! let program = parser::parse(source)?;
+//! // program.statements contains the parsed statements
+//! # Ok::<(), String>(())
+//! ```
+
 use crate::ast::Program;
 use crate::lexer::{tokenize, Token};
 
@@ -7,7 +30,18 @@ mod grammar {
     include!(concat!(env!("OUT_DIR"), "/parser/grammar.rs"));
 }
 
-/// Parse error with position information
+/// Parse error with detailed position and suggestion information.
+///
+/// This struct contains all information needed to provide helpful error messages
+/// to users, including the error message, position in source code, line number,
+/// and optional suggestions for fixing the error.
+///
+/// # Fields
+///
+/// * `message` - Human-readable error message
+/// * `position` - Byte position in source code where error occurred
+/// * `line_number` - Line number (1-based) where error occurred
+/// * `suggestion` - Optional suggestion for fixing the error
 #[derive(Debug, Clone)]
 pub struct ParseError {
     pub message: String,
@@ -40,7 +74,36 @@ impl ParseError {
     }
 }
 
-/// Parse with advanced error recovery - collects multiple errors
+/// Parse source code with advanced error recovery.
+///
+/// This function attempts to parse the entire source code even if errors are encountered,
+/// collecting all parse errors and returning them together. This is useful for IDEs
+/// and tools that want to show all errors at once rather than stopping at the first error.
+///
+/// # Arguments
+///
+/// * `input` - The source code to parse
+///
+/// # Returns
+///
+/// - `Ok(Program)` - If parsing succeeded
+/// - `Err(Vec<ParseError>)` - A vector of all parse errors found
+///
+/// # Example
+///
+/// ```rust
+/// use langx::parser::parse_with_recovery;
+///
+/// let source = "Set x to 10. Set y to."; // Missing value
+/// match parse_with_recovery(source) {
+///     Ok(program) => println!("Parsed successfully"),
+///     Err(errors) => {
+///         for error in errors {
+///             println!("Error: {}", error.message);
+///         }
+///     }
+/// }
+/// ```
 pub fn parse_with_recovery(input: &str) -> Result<Program, Vec<ParseError>> {
     let mut errors = Vec::new();
     let tokens: Vec<(usize, Token, usize)> = tokenize(input);
@@ -277,6 +340,45 @@ fn suggest_token_fix(token: &Token) -> Option<String> {
 }
 
 /// Standard parse function (backward compatible)
+/// Parse LangX source code into an Abstract Syntax Tree (AST).
+///
+/// This is the main entry point for parsing LangX programs. It tokenizes
+/// the source code and converts it into a structured AST representation.
+///
+/// # Arguments
+///
+/// * `input` - The LangX source code to parse
+///
+/// # Returns
+///
+/// - `Ok(Program)` - The parsed program as an AST
+/// - `Err(String)` - A formatted error message if parsing fails
+///
+/// # Errors
+///
+/// Returns an error string if the source code cannot be parsed. The error
+/// message includes line numbers and code snippets to help identify the issue.
+///
+/// # Example
+///
+/// ```rust
+/// use langx::parser;
+///
+/// let source = r#"
+///     Set x to 10.
+///     Set y to 20.
+///     print x + y.
+/// "#;
+///
+/// match parser::parse(source) {
+///     Ok(program) => {
+///         println!("Parsed {} statements", program.statements.len());
+///     }
+///     Err(e) => {
+///         eprintln!("Parse error: {}", e);
+///     }
+/// }
+/// ```
 pub fn parse(input: &str) -> Result<Program, String> {
     match parse_with_recovery(input) {
         Ok(program) => Ok(program),

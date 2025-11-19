@@ -1,9 +1,29 @@
+//! # Bytecode Compiler Module
+//!
+//! This module provides the compiler that converts LangX AST into bytecode.
+
 use crate::ast::{Program, Statement, Expression, BinaryOperator, UnaryOperator};
 use crate::bytecode::chunk::{Chunk, OpCode};
 use crate::interpreter::Value;
 use std::collections::HashMap;
 
-/// Compiler that converts AST to bytecode
+/// Compiler that converts LangX AST to bytecode.
+///
+/// The compiler traverses the AST and generates bytecode instructions
+/// for each node, maintaining function definitions and handling control flow.
+///
+/// # Example
+///
+/// ```rust
+/// use langx::{parser, bytecode};
+///
+/// let source = "Set x to 10.";
+/// let program = parser::parse(source)?;
+///
+/// let mut compiler = bytecode::Compiler::new();
+/// let chunk = compiler.compile(&program)?;
+/// # Ok::<(), String>(())
+/// ```
 pub struct Compiler {
     chunk: Chunk,
     functions: HashMap<String, FunctionInfo>,
@@ -19,6 +39,11 @@ pub struct FunctionInfo {
 }
 
 impl Compiler {
+    /// Create a new bytecode compiler.
+    ///
+    /// # Returns
+    ///
+    /// A new `Compiler` instance ready to compile AST programs.
     pub fn new() -> Self {
         Self {
             chunk: Chunk::new(),
