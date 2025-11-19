@@ -109,7 +109,7 @@ fn run_repl() -> Result<(), String> {
 }
 
 fn run_debugger(interpreter: &mut interpreter::Interpreter) -> Result<(), String> {
-    use rustyline::{Editor, DefaultEditor};
+    use rustyline::DefaultEditor;
     use rustyline::error::ReadlineError;
     
     let mut rl = DefaultEditor::new()

@@ -106,15 +106,6 @@ impl LangXCompleter {
             builtin_functions: BUILTIN_FUNCTIONS.iter().map(|s| s.to_string()).collect(),
         }
     }
-
-    pub fn add_variable(&mut self, _name: String) {
-        // Variables are added dynamically during REPL session
-        // For now, we'll track them in the completer
-    }
-
-    pub fn add_function(&mut self, _name: String) {
-        // User-defined functions can be added here
-    }
 }
 
 impl Completer for LangXCompleter {
