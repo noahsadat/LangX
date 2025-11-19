@@ -63,7 +63,18 @@ fn parse_triple_quoted_string(lexer: &mut logos::Lexer<Token>) -> String {
     
     // We're at the first " of """, so the content starts at start + 3
     // Find the closing """
-    let mut chars = source[start + 3..].char_indices();
+    // Ensure we're at a char boundary before slicing
+    let content_start = if source.is_char_boundary(start + 3) {
+        start + 3
+    } else {
+        // If not at char boundary, find the next char boundary
+        let mut pos = start + 3;
+        while pos < source.len() && !source.is_char_boundary(pos) {
+            pos += 1;
+        }
+        pos
+    };
+    let mut chars = source[content_start..].char_indices();
     
     while let Some((idx, ch)) = chars.next() {
         if ch == '"' {
@@ -280,48 +291,59 @@ pub enum Token {
         let start = lex.span().start;
         
         // Check if this is the start of a triple-quoted string
-        if start + 2 < source.len() && &source[start..start + 3] == "\"\"\"" {
-            // Triple-quoted string - the regex matched the first ", but we need to handle all three
-            // Reset to start and parse the full triple-quoted string
-            parse_triple_quoted_string(lex)
-        } else {
-            // Single-quoted string - parse normally
-            let remaining = &source[start + 1..];
-            let mut chars = remaining.char_indices();
-            let mut content = String::new();
-            let mut escaped = false;
-            
-            while let Some((char_idx, ch)) = chars.next() {
-                if escaped {
-                    match ch {
-                        'n' => content.push('\n'),
-                        't' => content.push('\t'),
-                        'r' => content.push('\r'),
-                        '\\' => content.push('\\'),
-                        '"' => content.push('"'),
-                        '0' => content.push('\0'),
-                        c => {
-                            content.push('\\');
-                            content.push(c);
-                        }
-                    }
-                    escaped = false;
-                } else if ch == '\\' {
-                    escaped = true;
-                } else if ch == '"' {
-                    // Found closing quote
-                    // char_idx is byte offset within remaining
-                    // The lexer is at start + 1, we want to advance to start + 1 + char_idx + ch.len_utf8()
-                    lex.bump(char_idx + ch.len_utf8());
-                    return content;
-                } else {
-                    content.push(ch);
+        // Use char_boundary-safe checking
+        if start + 2 < source.len() {
+            // Check if we can safely slice (at char boundaries)
+            if source.is_char_boundary(start) && source.is_char_boundary(start + 3) {
+                if &source[start..start + 3] == "\"\"\"" {
+                    // Triple-quoted string - the regex matched the first ", but we need to handle all three
+                    // Reset to start and parse the full triple-quoted string
+                    return parse_triple_quoted_string(lex);
                 }
             }
-            
-            // No closing quote found
-            String::new()
         }
+        
+        // Single-quoted string or invalid UTF-8 boundary - parse normally
+        // Ensure we can safely slice
+        if !source.is_char_boundary(start + 1) {
+            // If not at char boundary, return empty string (will cause parse error)
+            return String::new();
+        }
+        let remaining = &source[start + 1..];
+        let mut chars = remaining.char_indices();
+        let mut content = String::new();
+        let mut escaped = false;
+        
+        while let Some((char_idx, ch)) = chars.next() {
+            if escaped {
+                match ch {
+                    'n' => content.push('\n'),
+                    't' => content.push('\t'),
+                    'r' => content.push('\r'),
+                    '\\' => content.push('\\'),
+                    '"' => content.push('"'),
+                    '0' => content.push('\0'),
+                    c => {
+                        content.push('\\');
+                        content.push(c);
+                    }
+                }
+                escaped = false;
+            } else if ch == '\\' {
+                escaped = true;
+            } else if ch == '"' {
+                // Found closing quote
+                // char_idx is byte offset within remaining
+                // The lexer is at start + 1, we want to advance to start + 1 + char_idx + ch.len_utf8()
+                lex.bump(char_idx + ch.len_utf8());
+                return content;
+            } else {
+                content.push(ch);
+            }
+        }
+        
+        // No closing quote found
+        String::new()
     }, priority = 3)]
     StringLiteral(String),
     
@@ -491,7 +513,20 @@ pub fn tokenize(input: &str) -> Vec<(usize, Token, usize)> {
 /// assert_eq!(line_number_at_position(source, 15), 3);
 /// ```
 pub fn line_number_at_position(source: &str, position: usize) -> usize {
-    source[..position.min(source.len())]
+    let safe_pos = position.min(source.len());
+    // Ensure we slice at a char boundary
+    let safe_pos = if safe_pos < source.len() && !source.is_char_boundary(safe_pos) {
+        // Find the previous char boundary
+        let mut pos = safe_pos;
+        while pos > 0 && !source.is_char_boundary(pos) {
+            pos -= 1;
+        }
+        pos
+    } else {
+        safe_pos
+    };
+    
+    source[..safe_pos]
         .chars()
         .filter(|&c| c == '\n')
         .count() + 1

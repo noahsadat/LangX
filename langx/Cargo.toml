@@ -18,6 +18,7 @@ lalrpop = "0.20.0"    # Parser generator
 [dev-dependencies]
 pretty_assertions = "1.4.0"  # For better test assertions
 criterion = { version = "0.5", features = ["html_reports"] }
+proptest = "1.5.0"  # Property-based testing for fuzzing
 
 [[bench]]
 name = "lexer_bench"

@@ -1,4 +1,7 @@
 #[cfg(test)]
+mod fuzz;
+
+#[cfg(test)]
 mod integration_tests {
     use crate::parser;
     use crate::interpreter::Interpreter;

@@ -235,6 +235,22 @@ To run all tests:
 cargo test
 ```
 
+### Fuzzing Tests
+
+LangX includes property-based fuzzing tests using [proptest](https://docs.rs/proptest/) to find edge cases and bugs. These tests generate random inputs and verify that components handle them correctly without panicking.
+
+```bash
+# Run all fuzz tests
+cargo test fuzz
+
+# Run specific fuzz test
+cargo test fuzz_lexer
+cargo test fuzz_parser
+cargo test fuzz_interpreter
+```
+
+Fuzzing has already discovered and fixed several UTF-8 boundary issues. See [FUZZING.md](langx/FUZZING.md) for detailed documentation.
+
 ### Writing Tests
 
 You can write tests for your LangX programs in Rust. Here's an example:
