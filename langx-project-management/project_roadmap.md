@@ -295,5 +295,5 @@ By combining the best of natural language with symbolic precision, LangX creates
 ---
 
 **Last Updated:** November 2025
-**Current Version:** 0.2.1
+**Current Version:** 0.3.0
 **Status:** Milestone 2 Complete ✅ (100%)

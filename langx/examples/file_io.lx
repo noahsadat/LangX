@@ -19,7 +19,7 @@ print saved_numbers.
 
 # Write formatted data
 Set name to "LangX".
-Set version to "0.2.1".
+Set version to "0.3.0".
 Set info to "Language: " + name + ", Version: " + version.
 Call write_file with "info.txt", info.
 
