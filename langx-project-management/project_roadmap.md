@@ -99,7 +99,11 @@ LangX is a programming language that combines structured English with mathematic
 - [x] Updated project descriptions
 - [x] Implementation plans
 - [x] Example programs (23+ examples)
-- [ ] API documentation
+- [x] **API documentation** - ✅ Completed November 2025
+  - [x] Module-level documentation for all public modules
+  - [x] Documentation for all public structs, enums, and functions
+  - [x] Usage examples and parameter documentation
+  - [x] Generated with `cargo doc` (viewable with `cargo doc --open`)
 - [ ] Tutorial series
 - [ ] Video tutorials
 
