@@ -221,7 +221,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Uses Logos for lexical analysis
 - Uses LALRPOP for parsing 
 
-## Current Capabilities (December 2025)
+## Current Capabilities (November 2025)
 
 LangX supports:
 - Variables and assignment
@@ -391,7 +391,7 @@ print len.
 print sub.
 ```
 
-## Recent Improvements (December 2025 - January 2026)
+## Recent Improvements (November 2025)
 - ✅ Enhanced error messages with line numbers and code snippets
 - ✅ Extended function support to 5 parameters (was 0-2)
 - ✅ String concatenation with multiple types (string + number, number + string, string + boolean)
@@ -399,9 +399,9 @@ print sub.
 - ✅ Fixed parentheses precedence issue
 - ✅ Comprehensive test suite (20+ new tests)
 - ✅ Fixed all example file syntax issues
-- ✅ Improved test coverage to ~85%+ (January 2026)
-- ✅ **For loops** - Iterate over lists with `For each item in list: ... End for.` (January 2026)
-- ✅ **Break/Continue statements** - Control loop flow with `Break loop.` and `Continue to next iteration.` (January 2026)
-- ✅ **Math functions** - Added `abs`, `min`, `max`, `pow`, `sqrt`, `round`, `floor`, `ceil` (January 2026)
-- ✅ **File I/O operations** - Added `read_file` and `write_file` built-in functions (January 2026)
-- ✅ **String escape sequences** - Added support for `\n`, `\t`, `\r`, `\"`, `\\`, `\0` in string literals (January 2026) 
+- ✅ Improved test coverage to ~85%+ (November 2025)
+- ✅ **For loops** - Iterate over lists with `For each item in list: ... End for.` (November 2025)
+- ✅ **Break/Continue statements** - Control loop flow with `Break loop.` and `Continue to next iteration.` (November 2025)
+- ✅ **Math functions** - Added `abs`, `min`, `max`, `pow`, `sqrt`, `round`, `floor`, `ceil` (November 2025)
+- ✅ **File I/O operations** - Added `read_file` and `write_file` built-in functions (November 2025)
+- ✅ **String escape sequences** - Added support for `\n`, `\t`, `\r`, `\"`, `\\`, `\0` in string literals (November 2025) 

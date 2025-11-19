@@ -1,4 +1,4 @@
-use crate::ast::{Expression, BinaryOperator, UnaryOperator, Statement, Program};
+use crate::ast::{Expression, BinaryOperator, UnaryOperator, Statement, Program, Parameter};
 use crate::lexer::Token;
 
 grammar;
@@ -58,56 +58,11 @@ pub Statement: Statement = {
         }
     },
     
-    // Function definition with no parameters
-    "Define" <name:Identifier> ":" <body:Statement*> "End" "definition" "." => {
+    // Function definition with parameter list (supports variadic and defaults)
+    "Define" <name:Identifier> <params:ParameterList?> ":" <body:Statement*> "End" "definition" "." => {
         Statement::FunctionDefinition {
             name,
-            parameters: Vec::new(),
-            body,
-        }
-    },
-    
-    // Function definition with one parameter
-    "Define" <name:Identifier> "with" "parameter" <param:Identifier> ":" <body:Statement*> "End" "definition" "." => {
-        Statement::FunctionDefinition {
-            name,
-            parameters: vec![param],
-            body,
-        }
-    },
-    
-    // Function definition with two parameters
-    "Define" <name:Identifier> "with" "parameters" <param1:Identifier> "," <param2:Identifier> ":" <body:Statement*> "End" "definition" "." => {
-        Statement::FunctionDefinition {
-            name,
-            parameters: vec![param1, param2],
-            body,
-        }
-    },
-    
-    // Function definition with three parameters
-    "Define" <name:Identifier> "with" "parameters" <param1:Identifier> "," <param2:Identifier> "," <param3:Identifier> ":" <body:Statement*> "End" "definition" "." => {
-        Statement::FunctionDefinition {
-            name,
-            parameters: vec![param1, param2, param3],
-            body,
-        }
-    },
-    
-    // Function definition with four parameters
-    "Define" <name:Identifier> "with" "parameters" <param1:Identifier> "," <param2:Identifier> "," <param3:Identifier> "," <param4:Identifier> ":" <body:Statement*> "End" "definition" "." => {
-        Statement::FunctionDefinition {
-            name,
-            parameters: vec![param1, param2, param3, param4],
-            body,
-        }
-    },
-    
-    // Function definition with five parameters
-    "Define" <name:Identifier> "with" "parameters" <param1:Identifier> "," <param2:Identifier> "," <param3:Identifier> "," <param4:Identifier> "," <param5:Identifier> ":" <body:Statement*> "End" "definition" "." => {
-        Statement::FunctionDefinition {
-            name,
-            parameters: vec![param1, param2, param3, param4, param5],
+            parameters: params.unwrap_or_else(Vec::new),
             body,
         }
     },
@@ -313,6 +268,28 @@ TermOp: (BinaryOperator, Expression) = {
     "-" <rhs:Factor> => (BinaryOperator::Minus, rhs),
 };
 
+// Parameter list for function definitions
+ParameterList: Vec<Parameter> = {
+    "with" "parameter" <p:Parameter> => vec![p],
+    "with" "parameters" <params:ParameterListItems> => params,
+};
+
+ParameterListItems: Vec<Parameter> = {
+    <p:Parameter> => vec![p],
+    <mut params:ParameterListItems> "," <p:Parameter> => {
+        params.push(p);
+        params
+    },
+};
+
+// Individual parameter (can have default value or be variadic)
+// Note: Default values use PrimaryExpression to avoid ambiguity with function calls
+Parameter: Parameter = {
+    <name:Identifier> => Parameter::new(name),
+    <name:Identifier> "default" <default_value:PrimaryExpression> => Parameter::with_default(name, default_value),
+    "..." <name:Identifier> => Parameter::variadic(name),
+};
+
 Number: i64 = {
     <n:"Number"> => n,
 };
@@ -415,6 +392,7 @@ extern {
         "with" => Token::With,
         "parameters" => Token::Parameters,
         "parameter" => Token::Parameter,
+        "default" => Token::Default,
         "and" => Token::And,
         "End" => Token::End,
         "definition" => Token::Definition,
@@ -428,6 +406,7 @@ extern {
         ")" => Token::RightParen,
         "[" => Token::LeftBracket,
         "]" => Token::RightBracket,
+        "..." => Token::Ellipsis,
         "." => Token::Period,
         "," => Token::Comma,
         ":" => Token::Colon,

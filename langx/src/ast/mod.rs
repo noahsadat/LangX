@@ -1,5 +1,39 @@
 use std::fmt;
 
+/// A function parameter with optional default value and variadic flag
+#[derive(Debug, PartialEq, Clone)]
+pub struct Parameter {
+    pub name: String,
+    pub default_value: Option<Expression>,
+    pub is_variadic: bool,
+}
+
+impl Parameter {
+    pub fn new(name: String) -> Self {
+        Self {
+            name,
+            default_value: None,
+            is_variadic: false,
+        }
+    }
+    
+    pub fn with_default(name: String, default_value: Expression) -> Self {
+        Self {
+            name,
+            default_value: Some(default_value),
+            is_variadic: false,
+        }
+    }
+    
+    pub fn variadic(name: String) -> Self {
+        Self {
+            name,
+            default_value: None,
+            is_variadic: true,
+        }
+    }
+}
+
 /// The AST node types for LangX
 #[derive(Debug, PartialEq, Clone)]
 pub enum Expression {
@@ -105,7 +139,7 @@ pub enum Statement {
     /// Function definition (e.g., Define add with parameters a, b: Return a plus b. End definition.)
     FunctionDefinition {
         name: String,
-        parameters: Vec<String>,
+        parameters: Vec<Parameter>,
         body: Vec<Statement>,
     },
     
@@ -221,7 +255,15 @@ impl fmt::Display for Statement {
                 write!(f, " }}")
             },
             Statement::FunctionDefinition { name, parameters, body } => {
-                write!(f, "Define {} with parameters {}:\n", name, parameters.join(", "))?;
+                write!(f, "Define {} with parameters ", name)?;
+                let param_strs: Vec<String> = parameters.iter().map(|p| {
+                    let mut s = if p.is_variadic { format!("...{}", p.name) } else { p.name.clone() };
+                    if let Some(ref default) = p.default_value {
+                        s.push_str(&format!(" default {}", default));
+                    }
+                    s
+                }).collect();
+                write!(f, "{}:\n", param_strs.join(", "))?;
                 for stmt in body {
                     write!(f, "    {}\n", stmt)?;
                 }

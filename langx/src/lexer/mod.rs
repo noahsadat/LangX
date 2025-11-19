@@ -131,6 +131,9 @@ pub enum Token {
     #[token("parameter")]
     Parameter,
     
+    #[token("default")]
+    Default,
+    
     #[token("and")]
     And,
     
@@ -195,6 +198,9 @@ pub enum Token {
     
     #[token("]")]
     RightBracket,
+    
+    #[token("...")]
+    Ellipsis,
     
     #[token("item")]
     Item,
@@ -356,6 +362,8 @@ impl fmt::Display for Token {
             Token::Comment => write!(f, "#"),
             Token::True => write!(f, "true"),
             Token::False => write!(f, "false"),
+            Token::Default => write!(f, "default"),
+            Token::Ellipsis => write!(f, "..."),
         }
     }
 }

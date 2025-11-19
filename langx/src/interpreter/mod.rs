@@ -1,4 +1,4 @@
-use crate::ast::{Program, Statement, Expression, BinaryOperator, UnaryOperator};
+use crate::ast::{Program, Statement, Expression, BinaryOperator, UnaryOperator, Parameter};
 use std::collections::HashMap;
 use std::fs;
 use chrono::{DateTime, Utc, Local};
@@ -37,7 +37,7 @@ impl std::fmt::Display for Value {
 /// A function definition
 #[derive(Debug, Clone)]
 pub struct Function {
-    pub parameters: Vec<String>,
+    pub parameters: Vec<Parameter>,
     pub body: Vec<Statement>,
 }
 
@@ -271,6 +271,25 @@ impl Interpreter {
                 Ok(ExecutionResult::Normal)
             }
             Statement::FunctionDefinition { name, parameters, body } => {
+                // Check that variadic parameter is last if present
+                let mut found_variadic = false;
+                for (i, param) in parameters.iter().enumerate() {
+                    if param.is_variadic {
+                        if i != parameters.len() - 1 {
+                            return Err(format!(
+                                "Runtime error: Variadic parameter '{}' must be the last parameter in function '{}'.",
+                                param.name, name
+                            ));
+                        }
+                        found_variadic = true;
+                    } else if found_variadic {
+                        return Err(format!(
+                            "Runtime error: Variadic parameter must be the last parameter in function '{}'.",
+                            name
+                        ));
+                    }
+                }
+                
                 let function = Function {
                     parameters: parameters.clone(),
                     body: body.clone(),
@@ -714,22 +733,51 @@ impl Interpreter {
                     arg_values.push(self.evaluate_expression(arg)?);
                 }
                 
-                // Check argument count
-                if arg_values.len() != function.parameters.len() {
-                    return Err(format!(
-                        "Runtime error: Function '{}' expects {} arguments, got {}.\nHint: Check the number of arguments in the function call.",
-                        name,
-                        function.parameters.len(),
-                        arg_values.len()
-                    ));
+                // Handle variadic and default parameters
+                let mut func_env = Environment::with_parent(self.env.clone());
+                let mut arg_iter = arg_values.into_iter();
+                let mut variadic_args = Vec::new();
+                let mut found_variadic = false;
+                
+                for param in &function.parameters {
+                    if param.is_variadic {
+                        // Collect all remaining arguments into a list
+                        found_variadic = true;
+                        while let Some(arg) = arg_iter.next() {
+                            variadic_args.push(arg);
+                        }
+                        func_env.set(&param.name, Value::List(variadic_args));
+                        break;
+                    } else {
+                        // Regular parameter - get from args or use default
+                        if let Some(arg_value) = arg_iter.next() {
+                            func_env.set(&param.name, arg_value);
+                        } else if let Some(ref default_expr) = param.default_value {
+                            // Use default value - evaluate in current context
+                            let temp_interpreter = Interpreter { env: self.env.clone() };
+                            let default_value = temp_interpreter.evaluate_expression(default_expr)?;
+                            func_env.set(&param.name, default_value);
+                        } else {
+                            // Missing required argument
+                            return Err(format!(
+                                "Runtime error: Function '{}' requires argument for parameter '{}'.\nHint: Provide the argument or define a default value.",
+                                name, param.name
+                            ));
+                        }
+                    }
                 }
                 
-                // Create a new environment for the function
-                let mut func_env = Environment::with_parent(self.env.clone());
-                
-                // Bind arguments to parameters
-                for (param, value) in function.parameters.iter().zip(arg_values) {
-                    func_env.set(param, value);
+                // Check if there are extra arguments (only allowed if variadic parameter exists)
+                if !found_variadic {
+                    // Collect remaining args to check
+                    let remaining: Vec<_> = arg_iter.collect();
+                    if !remaining.is_empty() {
+                        let required_count = function.parameters.iter().filter(|p| !p.is_variadic && p.default_value.is_none()).count();
+                        return Err(format!(
+                            "Runtime error: Function '{}' expects at most {} arguments, got more.\nHint: Use variadic parameter (...) to accept multiple arguments.",
+                            name, required_count
+                        ));
+                    }
                 }
                 
                 // Execute the function body
@@ -833,7 +881,7 @@ mod tests {
         // Define a function that returns its argument
         let func_def = Statement::FunctionDefinition {
             name: "identity".to_string(),
-            parameters: vec!["x".to_string()],
+            parameters: vec![Parameter::new("x".to_string())],
             body: vec![
                 Statement::Return(Some(Expression::Variable("x".to_string())))
             ],
