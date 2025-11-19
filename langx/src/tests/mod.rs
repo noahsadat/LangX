@@ -2387,25 +2387,137 @@ End repeat.";
         // Clean up if file exists
         let _ = fs::remove_file(temp_file);
         
-        // Note: The parser doesn't support escape sequences yet, so we'll use a simpler test
-        // For now, test with a single line that contains special characters
-        let simple_content = "Hello\nWorld";
+        // Test with escape sequences - now supported!
+        // The LangX code uses \n which will be processed as a newline
+        let expected_content = "Hello\nWorld";
         let source = format!(
-            "Set content to \"{}\".\n\
+            "Set content to \"Hello\\nWorld\".\n\
              Call write_file with \"{}\", content.\n\
              Set read_content to Call read_file with \"{}\".",
-            simple_content, temp_file, temp_file
+            temp_file, temp_file
         );
         
         let program = parser::parse(&source).unwrap();
         let mut interpreter = Interpreter::new();
         interpreter.interpret(&program).unwrap();
         
-        // Verify content was written and read
+        // Verify content was written and read (escape sequence processed to actual newline)
         let file_content = fs::read_to_string(temp_file).unwrap();
-        assert_eq!(file_content, simple_content);
+        assert_eq!(file_content, expected_content);
         
         // Clean up
         fs::remove_file(temp_file).unwrap();
+    }
+    
+    #[test]
+    fn test_escape_sequences_newline() {
+        let source = "Set text to \"Hello\\nWorld\". print text.";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        
+        if let Some(crate::interpreter::Value::String(s)) = interpreter.env.get("text") {
+            assert_eq!(s, "Hello\nWorld");
+        } else {
+            panic!("Expected string value");
+        }
+    }
+    
+    #[test]
+    fn test_escape_sequences_tab() {
+        let source = "Set text to \"Tab\\there\". print text.";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        
+        if let Some(crate::interpreter::Value::String(s)) = interpreter.env.get("text") {
+            assert_eq!(s, "Tab\there");
+        } else {
+            panic!("Expected string value");
+        }
+    }
+    
+    #[test]
+    fn test_escape_sequences_quote() {
+        let source = "Set text to \"Quote: \\\"Hello\\\"\". print text.";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        
+        if let Some(crate::interpreter::Value::String(s)) = interpreter.env.get("text") {
+            assert_eq!(s, "Quote: \"Hello\"");
+        } else {
+            panic!("Expected string value");
+        }
+    }
+    
+    #[test]
+    fn test_escape_sequences_backslash() {
+        let source = "Set text to \"Backslash: \\\\\". print text.";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        
+        if let Some(crate::interpreter::Value::String(s)) = interpreter.env.get("text") {
+            assert_eq!(s, "Backslash: \\");
+        } else {
+            panic!("Expected string value");
+        }
+    }
+    
+    #[test]
+    fn test_escape_sequences_multiple() {
+        let source = "Set text to \"Line1\\nLine2\\tTabbed\". print text.";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        
+        if let Some(crate::interpreter::Value::String(s)) = interpreter.env.get("text") {
+            assert_eq!(s, "Line1\nLine2\tTabbed");
+        } else {
+            panic!("Expected string value");
+        }
+    }
+    
+    #[test]
+    fn test_escape_sequences_carriage_return() {
+        let source = "Set text to \"Line1\\rLine2\". print text.";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        
+        if let Some(crate::interpreter::Value::String(s)) = interpreter.env.get("text") {
+            assert_eq!(s, "Line1\rLine2");
+        } else {
+            panic!("Expected string value");
+        }
+    }
+    
+    #[test]
+    fn test_escape_sequences_null() {
+        let source = "Set text to \"Null\\0here\". print text.";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        
+        if let Some(crate::interpreter::Value::String(s)) = interpreter.env.get("text") {
+            assert_eq!(s, "Null\0here");
+        } else {
+            panic!("Expected string value");
+        }
+    }
+    
+    #[test]
+    fn test_escape_sequences_unknown_kept() {
+        let source = "Set text to \"Unknown\\x\". print text.";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        
+        if let Some(crate::interpreter::Value::String(s)) = interpreter.env.get("text") {
+            assert_eq!(s, "Unknown\\x");
+        } else {
+            panic!("Expected string value");
+        }
     }
 } 

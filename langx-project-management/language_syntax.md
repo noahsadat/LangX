@@ -374,6 +374,8 @@ Parentheses required for complex expressions as function arguments:
 - **Variable names** are case-sensitive
 - **Comments** start with `#`
 - **Strings** use double quotes: `"text"`
+  - **Escape sequences** supported: `\n` (newline), `\t` (tab), `\r` (carriage return), `\"` (quote), `\\` (backslash), `\0` (null)
+  - Example: `"Hello\nWorld"` produces a string with a newline between "Hello" and "World"
 
 ## Grammar Summary
 LangX uses a formal grammar defined with LALRPOP. The language is:

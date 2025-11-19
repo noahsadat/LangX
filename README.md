@@ -242,6 +242,7 @@ LangX supports:
   - File I/O: `read_file`, `write_file`
 - Print statements
 - Comments: `# comment`
+- String escape sequences: `\n`, `\t`, `\r`, `\"`, `\\`, `\0`
 
 ### String Concatenation
 The `+` operator works for both arithmetic and string concatenation:
@@ -251,6 +252,25 @@ Set message to "The answer is " + 42.     # = "The answer is 42"
 Set text2 to 100 + " percent".            # = "100 percent"
 Set status to "Status: " + true.         # = "Status: true"
 ```
+
+### String Escape Sequences
+LangX supports escape sequences in string literals:
+```
+Set text1 to "Hello\nWorld".      # Newline: Hello
+                                   #          World
+Set text2 to "Tab\there".          # Tab character
+Set text3 to "Quote: \"Hi\"".      # Escaped quotes
+Set text4 to "Path: C:\\Users".    # Escaped backslash
+print text1.
+```
+
+Supported escape sequences:
+- `\n` - Newline
+- `\t` - Tab
+- `\r` - Carriage return
+- `\"` - Double quote
+- `\\` - Backslash
+- `\0` - Null character
 
 ### Extended Function Support
 Functions now support up to 5 parameters:
@@ -361,4 +381,5 @@ print sub.
 - ✅ **For loops** - Iterate over lists with `For each item in list: ... End for.` (January 2026)
 - ✅ **Break/Continue statements** - Control loop flow with `Break loop.` and `Continue to next iteration.` (January 2026)
 - ✅ **Math functions** - Added `abs`, `min`, `max`, `pow`, `sqrt`, `round`, `floor`, `ceil` (January 2026)
-- ✅ **File I/O operations** - Added `read_file` and `write_file` built-in functions (January 2026) 
+- ✅ **File I/O operations** - Added `read_file` and `write_file` built-in functions (January 2026)
+- ✅ **String escape sequences** - Added support for `\n`, `\t`, `\r`, `\"`, `\\`, `\0` in string literals (January 2026) 

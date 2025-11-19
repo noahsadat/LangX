@@ -1,6 +1,38 @@
 use logos::Logos;
 use std::fmt;
 
+/// Process escape sequences in a string literal
+fn process_escape_sequences(input: &str) -> String {
+    let mut result = String::new();
+    let mut chars = input.chars().peekable();
+    
+    while let Some(ch) = chars.next() {
+        if ch == '\\' {
+            match chars.next() {
+                Some('n') => result.push('\n'),
+                Some('t') => result.push('\t'),
+                Some('r') => result.push('\r'),
+                Some('\\') => result.push('\\'),
+                Some('"') => result.push('"'),
+                Some('0') => result.push('\0'),
+                Some(c) => {
+                    // Unknown escape sequence, keep as-is
+                    result.push('\\');
+                    result.push(c);
+                }
+                None => {
+                    // Backslash at end of string, keep it
+                    result.push('\\');
+                }
+            }
+        } else {
+            result.push(ch);
+        }
+    }
+    
+    result
+}
+
 /// Token types for the LangX language
 #[derive(Logos, Debug, PartialEq, Clone)]
 pub enum Token {
@@ -121,9 +153,6 @@ pub enum Token {
     #[token(":")]
     Colon,
     
-    #[token("\"")]
-    Quote,
-    
     #[token("(")]
     LeftParen,
     
@@ -152,11 +181,15 @@ pub enum Token {
     #[regex(r"[a-zA-Z_][a-zA-Z0-9_]*", |lex| lex.slice().to_string(), priority = 2)]
     Identifier(String),
     
-    #[regex(r#""[^"]*""#, |lex| {
+    // String literal with escape sequences
+    // Single-line strings: handles escaped quotes and backslashes
+    // Note: Multi-line strings (triple-quoted) not yet supported due to regex limitations
+    #[regex(r#""(?:[^"\\]|\\.)*""#, |lex| {
         let slice = lex.slice();
         // Remove the quotes
-        slice[1..slice.len()-1].to_string()
-    }, priority = 2)]
+        let content = &slice[1..slice.len()-1];
+        process_escape_sequences(content)
+    }, priority = 3)]
     StringLiteral(String),
     
     // Comments (lines starting with #)
@@ -232,7 +265,6 @@ impl fmt::Display for Token {
             Token::Period => write!(f, "."),
             Token::Comma => write!(f, ","),
             Token::Colon => write!(f, ":"),
-            Token::Quote => write!(f, "\""),
             Token::LeftParen => write!(f, "("),
             Token::RightParen => write!(f, ")"),
             Token::LeftBracket => write!(f, "["),

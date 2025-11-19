@@ -1,0 +1,13 @@
+# Test escape sequences
+Set text1 to "Hello\nWorld".
+print text1.
+
+Set text2 to "Tab\there".
+print text2.
+
+Set text3 to "Quote: \"Hello\"".
+print text3.
+
+Set text4 to "Backslash: \\".
+print text4.
+
