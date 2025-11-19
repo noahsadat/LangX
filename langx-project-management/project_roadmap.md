@@ -78,10 +78,17 @@ LangX is a programming language that combines structured English with mathematic
   - [x] `format_timestamp` - Format timestamp with optional custom format
   - [x] `time_difference` - Calculate difference between two timestamps
 
-### 7. Advanced Features [NOT STARTED]
+### 7. Advanced Features [IN PROGRESS]
 - [ ] Module system
 - [ ] Package management
-- [ ] Bytecode compiler
+- [x] **Bytecode compiler** - ✅ Completed November 2025
+  - [x] Stack-based bytecode instruction set (30+ opcodes)
+  - [x] AST to bytecode compiler
+  - [x] Virtual machine for bytecode execution
+  - [x] Support for all language features (variables, control flow, data structures, built-ins)
+  - [x] Function body compilation and execution
+  - [x] CLI integration with `--bytecode` flag
+  - [ ] Recursive function calls (in progress - known issue)
 - [ ] WebAssembly target
 - [ ] Performance optimizations
 - [ ] JIT compilation

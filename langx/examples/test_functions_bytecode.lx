@@ -1,0 +1,7 @@
+Define add with parameters x, y:
+    Return x + y.
+End definition.
+
+Set result to Call add with 5, 10.
+print result.
+

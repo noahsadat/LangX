@@ -1,0 +1,9 @@
+Set x to 5.
+print x.
+
+Set y to 10.
+print y.
+
+Set z to x + y.
+print z.
+

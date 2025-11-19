@@ -47,6 +47,24 @@ cd langx
 cargo run -- examples/hello.lx
 ```
 
+### Bytecode Compilation Mode
+
+LangX now supports bytecode compilation for improved performance. Use the `--bytecode` or `-b` flag:
+
+```bash
+cd langx
+cargo run -- --bytecode examples/hello.lx
+# Or using the release binary:
+./target/release/langx --bytecode examples/hello.lx
+```
+
+The bytecode compiler converts LangX programs to a stack-based bytecode format that is executed by a virtual machine. This provides:
+- Faster execution for complex programs
+- Foundation for future optimizations
+- Better performance characteristics
+
+**Note:** The bytecode compiler supports all language features except recursive function calls (which are being debugged). For recursive functions, use the standard interpreter mode.
+
 ## Language Syntax
 
 ### Variable Assignment

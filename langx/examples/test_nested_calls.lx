@@ -1,0 +1,12 @@
+Define inner with parameter x:
+    Return x + 1.
+End definition.
+
+Define outer with parameter y:
+    Set result to Call inner with y.
+    Return result.
+End definition.
+
+print "Testing nested calls:".
+print Call outer with 5.
+

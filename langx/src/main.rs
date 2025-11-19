@@ -2,7 +2,7 @@ mod repl;
 #[cfg(test)]
 mod tests;
 
-use langx::{parser, interpreter};
+use langx::{parser, interpreter, bytecode};
 
 use std::env;
 use std::fs;
@@ -13,12 +13,23 @@ use repl::LangXHelper;
 fn main() -> Result<(), String> {
     let args: Vec<String> = env::args().collect();
     
+    // Check for --bytecode flag
+    let use_bytecode = args.iter().any(|arg| arg == "--bytecode" || arg == "-b");
+    let args: Vec<String> = args.into_iter().filter(|arg| arg != "--bytecode" && arg != "-b").collect();
+    
     if args.len() > 1 {
         // Run a file
         let filename = &args[1];
-        run_file(filename)
+        if use_bytecode {
+            run_file_bytecode(filename)
+        } else {
+            run_file(filename)
+        }
     } else {
         // Start REPL
+        if use_bytecode {
+            println!("Note: Bytecode mode is not yet supported in REPL. Using interpreter mode.");
+        }
         run_repl()
     }
 }
@@ -195,6 +206,29 @@ fn run(source: &str) -> Result<(), String> {
     // Interpret the program
     let mut interpreter = interpreter::Interpreter::new();
     interpreter.interpret(&program)?;
+    
+    Ok(())
+}
+
+fn run_file_bytecode(filename: &str) -> Result<(), String> {
+    let source = fs::read_to_string(filename)
+        .map_err(|e| format!("Error reading file: {}", e))?;
+    
+    run_bytecode(&source)
+}
+
+fn run_bytecode(source: &str) -> Result<(), String> {
+    // Parse the source code
+    let program = parser::parse(source)?;
+    
+    // Compile to bytecode
+    let mut compiler = bytecode::Compiler::new();
+    let chunk = compiler.compile(&program)?;
+    let functions = compiler.get_functions().clone();
+    
+    // Execute bytecode
+    let mut vm = bytecode::VM::new();
+    vm.execute(chunk, functions)?;
     
     Ok(())
 }
