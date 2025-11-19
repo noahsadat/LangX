@@ -573,8 +573,48 @@ Set result to Call ceil with 42.
 print result.  # Prints: 42
 ```
 
+### File I/O Functions
+
+#### `read_file`
+Read the contents of a file as a string.
+```
+Call read_file with [filename]
+```
+Example:
+```
+Set content to Call read_file with "data.txt".
+print content.
+```
+
+**Note:** The filename must be a string. Returns the file contents as a string. If the file doesn't exist or cannot be read, an error is raised.
+
+#### `write_file`
+Write a string to a file.
+```
+Call write_file with [filename], [content]
+```
+Example:
+```
+Set text to "Hello, World!".
+Call write_file with "output.txt", text.
+```
+
+**Note:** Both filename and content must be strings. Creates the file if it doesn't exist, or overwrites it if it does. Returns `null` on success. If the file cannot be written, an error is raised.
+
+**Complete File I/O Example:**
+```
+# Write data to a file
+Set data to "This is my data.".
+Call write_file with "myfile.txt", data.
+
+# Read it back
+Set read_data to Call read_file with "myfile.txt".
+print read_data.  # Prints: "This is my data."
+```
+
 ## Future Syntax Extensions
 - **String interpolation**: `"Hello, {name}!"`
 - **Match expressions**: `Match [value] with [patterns]`
 - **Lambda functions**: `Set func to function with x: Return x * 2.`
-- **File I/O operations**: read_file, write_file
+- **Escape sequences in strings**: `\n`, `\t`, `\"`, etc.
+- **Multi-line strings**

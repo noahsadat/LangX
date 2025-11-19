@@ -1,5 +1,6 @@
 use crate::ast::{Program, Statement, Expression, BinaryOperator, UnaryOperator};
 use std::collections::HashMap;
+use std::fs;
 
 /// Value types that can be stored in variables
 #[derive(Debug, Clone, PartialEq)]
@@ -461,6 +462,34 @@ impl Interpreter {
                     Ok(Some(Value::Number(*n)))
                 } else {
                     Err(format!("Built-in function 'ceil' expects a number argument, got {:?}.", arg_values[0]))
+                }
+            }
+            // File I/O functions
+            "read_file" => {
+                if arg_values.len() != 1 {
+                    return Err(format!("Built-in function 'read_file' expects 1 argument (filename), got {}.", arg_values.len()));
+                }
+                if let Value::String(filename) = &arg_values[0] {
+                    match fs::read_to_string(filename) {
+                        Ok(content) => Ok(Some(Value::String(content))),
+                        Err(e) => Err(format!("Built-in function 'read_file' failed to read file '{}': {}.", filename, e))
+                    }
+                } else {
+                    Err(format!("Built-in function 'read_file' expects a string argument (filename), got {:?}.", arg_values[0]))
+                }
+            }
+            "write_file" => {
+                if arg_values.len() != 2 {
+                    return Err(format!("Built-in function 'write_file' expects 2 arguments (filename, content), got {}.", arg_values.len()));
+                }
+                if let (Value::String(filename), Value::String(content)) = (&arg_values[0], &arg_values[1]) {
+                    match fs::write(filename, content) {
+                        Ok(_) => Ok(Some(Value::Null)),
+                        Err(e) => Err(format!("Built-in function 'write_file' failed to write file '{}': {}.", filename, e))
+                    }
+                } else {
+                    Err(format!("Built-in function 'write_file' expects (string, string) arguments (filename, content), got ({:?}, {:?}).", 
+                        arg_values[0], arg_values[1]))
                 }
             }
             _ => Ok(None), // Not a built-in function

@@ -2225,4 +2225,187 @@ End repeat.";
         assert_eq!(interpreter.env.get("power"), Some(crate::interpreter::Value::Number(8)));
         assert_eq!(interpreter.env.get("root"), Some(crate::interpreter::Value::Number(2)));
     }
+    
+    // File I/O function tests
+    #[test]
+    fn test_write_file_basic() {
+        use std::fs;
+        use std::path::Path;
+        
+        let temp_file = "test_write_file_basic.txt";
+        
+        // Clean up if file exists
+        let _ = fs::remove_file(temp_file);
+        
+        let source = format!(
+            "Set content to \"Hello, World!\".\n\
+             Call write_file with \"{}\", content.",
+            temp_file
+        );
+        let program = parser::parse(&source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        
+        // Verify file was written
+        assert!(Path::new(temp_file).exists());
+        let file_content = fs::read_to_string(temp_file).unwrap();
+        assert_eq!(file_content, "Hello, World!");
+        
+        // Clean up
+        fs::remove_file(temp_file).unwrap();
+    }
+    
+    #[test]
+    fn test_read_file_basic() {
+        use std::fs;
+        
+        let temp_file = "test_read_file_basic.txt";
+        let test_content = "This is test content.";
+        
+        // Create test file
+        fs::write(temp_file, test_content).unwrap();
+        
+        let source = format!(
+            "Set content to Call read_file with \"{}\".\n\
+             print content.",
+            temp_file
+        );
+        let program = parser::parse(&source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        
+        // Verify content was read correctly
+        assert_eq!(
+            interpreter.env.get("content"),
+            Some(crate::interpreter::Value::String(test_content.to_string()))
+        );
+        
+        // Clean up
+        fs::remove_file(temp_file).unwrap();
+    }
+    
+    #[test]
+    fn test_write_and_read_file() {
+        use std::fs;
+        
+        let temp_file = "test_write_and_read_file.txt";
+        
+        // Clean up if file exists
+        let _ = fs::remove_file(temp_file);
+        
+        let source = format!(
+            "Set content to \"LangX File I/O Test\".\n\
+             Call write_file with \"{}\", content.\n\
+             Set read_content to Call read_file with \"{}\".\n\
+             print read_content.",
+            temp_file, temp_file
+        );
+        let program = parser::parse(&source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        
+        // Verify both write and read worked
+        assert_eq!(
+            interpreter.env.get("content"),
+            Some(crate::interpreter::Value::String("LangX File I/O Test".to_string()))
+        );
+        assert_eq!(
+            interpreter.env.get("read_content"),
+            Some(crate::interpreter::Value::String("LangX File I/O Test".to_string()))
+        );
+        
+        // Clean up
+        fs::remove_file(temp_file).unwrap();
+    }
+    
+    #[test]
+    fn test_read_file_nonexistent() {
+        let source = "
+            Set content to Call read_file with \"nonexistent_file_12345.txt\".
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("read_file"));
+    }
+    
+    #[test]
+    fn test_write_file_wrong_args() {
+        let source = "
+            Call write_file with \"test.txt\".
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("expects 2 arguments"));
+    }
+    
+    #[test]
+    fn test_read_file_wrong_args() {
+        let source = "
+            Set content to Call read_file with \"test.txt\", \"extra\".
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("expects 1 argument"));
+    }
+    
+    #[test]
+    fn test_write_file_wrong_types() {
+        let source = "
+            Call write_file with 123, \"content\".
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("expects (string, string)"));
+    }
+    
+    #[test]
+    fn test_read_file_wrong_type() {
+        let source = "
+            Set content to Call read_file with 123.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("expects a string argument"));
+    }
+    
+    #[test]
+    fn test_file_io_multiline_content() {
+        use std::fs;
+        
+        let temp_file = "test_file_io_multiline.txt";
+        
+        // Clean up if file exists
+        let _ = fs::remove_file(temp_file);
+        
+        // Note: The parser doesn't support escape sequences yet, so we'll use a simpler test
+        // For now, test with a single line that contains special characters
+        let simple_content = "Hello\nWorld";
+        let source = format!(
+            "Set content to \"{}\".\n\
+             Call write_file with \"{}\", content.\n\
+             Set read_content to Call read_file with \"{}\".",
+            simple_content, temp_file, temp_file
+        );
+        
+        let program = parser::parse(&source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        
+        // Verify content was written and read
+        let file_content = fs::read_to_string(temp_file).unwrap();
+        assert_eq!(file_content, simple_content);
+        
+        // Clean up
+        fs::remove_file(temp_file).unwrap();
+    }
 } 

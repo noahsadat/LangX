@@ -1,0 +1,28 @@
+# File I/O Example
+# Demonstrates reading from and writing to files
+
+# Write some data to a file
+Set message to "Hello from LangX!".
+Call write_file with "output.txt", message.
+
+# Read the file back
+Set content to Call read_file with "output.txt".
+print content.
+
+# Combine file operations with other features
+Set numbers to [1, 2, 3, 4, 5].
+Set numbers_text to Call join with numbers, ", ".
+Call write_file with "numbers.txt", numbers_text.
+
+Set saved_numbers to Call read_file with "numbers.txt".
+print saved_numbers.
+
+# Write formatted data
+Set name to "LangX".
+Set version to "0.2.1".
+Set info to "Language: " + name + ", Version: " + version.
+Call write_file with "info.txt", info.
+
+Set file_info to Call read_file with "info.txt".
+print file_info.
+

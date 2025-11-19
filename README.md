@@ -239,6 +239,7 @@ LangX supports:
 - Built-in functions: 
   - String: `string_length`, `substring`, `split`, `join`, `replace`
   - Math: `abs`, `min`, `max`, `pow`, `sqrt`, `round`, `floor`, `ceil`
+  - File I/O: `read_file`, `write_file`
 - Print statements
 - Comments: `# comment`
 
@@ -310,6 +311,23 @@ Set ceiled to Call ceil with 42.
 # All return: 42
 ```
 
+### Built-in File I/O Functions
+```
+# Read a file
+Set content to Call read_file with "data.txt".
+print content.
+
+# Write to a file
+Set text to "Hello, World!".
+Call write_file with "output.txt", text.
+
+# Write and read example
+Set data to "This is my data.".
+Call write_file with "myfile.txt", data.
+Set read_data to Call read_file with "myfile.txt".
+print read_data.  # Prints: "This is my data."
+```
+
 ### Example
 ```
 Define add with parameters a, b:
@@ -342,4 +360,5 @@ print sub.
 - ✅ Improved test coverage to ~85%+ (January 2026)
 - ✅ **For loops** - Iterate over lists with `For each item in list: ... End for.` (January 2026)
 - ✅ **Break/Continue statements** - Control loop flow with `Break loop.` and `Continue to next iteration.` (January 2026)
-- ✅ **Math functions** - Added `abs`, `min`, `max`, `pow`, `sqrt`, `round`, `floor`, `ceil` (January 2026) 
+- ✅ **Math functions** - Added `abs`, `min`, `max`, `pow`, `sqrt`, `round`, `floor`, `ceil` (January 2026)
+- ✅ **File I/O operations** - Added `read_file` and `write_file` built-in functions (January 2026) 
