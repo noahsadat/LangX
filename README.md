@@ -23,7 +23,7 @@ Clone the repository and build the project:
 
 ```bash
 git clone https://github.com/yourusername/langx.git
-cd langx
+cd langx/langx
 cargo build --release
 ```
 
@@ -31,17 +31,19 @@ cargo build --release
 
 ### Running the REPL
 
-To start an interactive REPL session:
+To start an interactive REPL session (from the `langx` directory):
 
 ```bash
+cd langx
 cargo run
 ```
 
 ### Running a LangX File
 
-To execute a LangX program from a file:
+To execute a LangX program from a file (from the `langx` directory):
 
 ```bash
+cd langx
 cargo run -- examples/hello.lx
 ```
 
@@ -62,23 +64,41 @@ Set greeting to "Hello, world!".
 ### Conditional Statements
 
 ```
-If [condition], [statement].
+If [condition] then [statement].
 ```
 
 Example:
 ```
-If x is greater than 5, print "x is large".
+If x is greater than 5 then print "x is large".
 ```
 
 ### Loops
 
+#### Repeat Loop
 ```
 Repeat [count] times: [statement].
+End repeat.
 ```
 
 Example:
 ```
 Repeat 3 times: print "Hello".
+End repeat.
+```
+
+#### While Loop
+```
+While [condition]: [statement].
+End while.
+```
+
+Example:
+```
+Set x to 0.
+While x is less than 5:
+    print x.
+    Set x to x + 1.
+End while.
 ```
 
 ### Functions
@@ -94,7 +114,7 @@ Call [name] with [arg1], [arg2].
 Example:
 ```
 Define add with parameters a, b:
-    Return a.
+    Return a + b.
 End definition.
 
 Set result to Call add with 5, 10.

@@ -60,12 +60,16 @@ Current Status
 ✅ Variables and assignments
 ✅ Arithmetic with proper precedence (+ - * /)
 ✅ Boolean logic (and, or, not)
-✅ Comparisons (is greater than, is less than, is equal to)
+✅ Comparisons (is greater than, is less than, is equal to, is not equal to)
 ✅ Conditionals (If...then)
-✅ Loops (Repeat...times)
-✅ Functions (0-2 parameters with return values)
+✅ Loops (Repeat...times...End repeat., While...End while.)
+✅ Functions (0-5 parameters with return values)
+✅ Lists/Arrays (creation, indexing, appending)
+✅ String concatenation (string + number, number + string, string + boolean)
+✅ Built-in functions (string_length, substring)
 ✅ Comments (# prefix)
 ✅ Interactive REPL + file execution
+✅ Enhanced error messages with line numbers
 
 ───────────────
 Vision (Later Stages)
