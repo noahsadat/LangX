@@ -141,6 +141,7 @@ LangX is a programming language that combines structured English with mathematic
 - [x] **Extended function support** - ✅ Now supports 0-5 parameters (November 2025)
 - [x] **Advanced control flow** - ✅ While loops and For loops implemented (November 2025)
 - [x] **List/array data structures** - ✅ Implemented
+- [x] **Map/dictionary data structures** - ✅ Implemented (January 2026)
 - [x] **String manipulation functions** - ✅ Completed (length, substring, split, join, replace, concatenation)
 - [x] **File I/O operations** - ✅ Completed (read_file, write_file)
 - [x] **Math functions** - ✅ Completed (abs, min, max, pow, sqrt, round, floor, ceil)
@@ -190,6 +191,7 @@ LangX is a programming language that combines structured English with mathematic
 ✅ **String escape sequences**: `\n`, `\t`, `\r`, `\"`, `\\`, `\0`
 ✅ **Multi-line strings**: `"""text"""` - Can span multiple lines and contain unescaped quotes
 ✅ **Lists/Arrays**: Creation, indexing, appending
+✅ **Maps/Dictionaries**: Key-value pairs with string/number/boolean keys, access with `at`, assignment with `Set map at key to value`
 ✅ **Built-in string functions**: `string_length`, `substring`, `split`, `join`, `replace`
 ✅ **Built-in math functions**: `abs`, `min`, `max`, `pow`, `sqrt`, `round`, `floor`, `ceil`
 ✅ **File I/O functions**: `read_file`, `write_file`

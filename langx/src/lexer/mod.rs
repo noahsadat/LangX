@@ -199,6 +199,12 @@ pub enum Token {
     #[token("]")]
     RightBracket,
     
+    #[token("{")]
+    LeftBrace,
+    
+    #[token("}")]
+    RightBrace,
+    
     #[token("...")]
     Ellipsis,
     
@@ -207,6 +213,9 @@ pub enum Token {
     
     #[token("of")]
     Of,
+    
+    #[token("at")]
+    At,
     
     #[token("Add")]
     Add,
@@ -347,8 +356,11 @@ impl fmt::Display for Token {
             Token::RightParen => write!(f, ")"),
             Token::LeftBracket => write!(f, "["),
             Token::RightBracket => write!(f, "]"),
+            Token::LeftBrace => write!(f, "{{"),
+            Token::RightBrace => write!(f, "}}"),
             Token::Item => write!(f, "item"),
             Token::Of => write!(f, "of"),
+            Token::At => write!(f, "at"),
             Token::Add => write!(f, "Add"),
             Token::Number(n) => write!(f, "{}", n),
             Token::Identifier(s) => write!(f, "{}", s),

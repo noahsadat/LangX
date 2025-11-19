@@ -76,6 +76,15 @@ pub enum Expression {
         list: Box<Expression>,
         index: Box<Expression>,
     },
+    
+    /// A map literal (e.g., {"key": value, "key2": value2})
+    Map(Vec<(Expression, Expression)>),
+    
+    /// Map indexing (e.g., map at "key")
+    MapIndex {
+        map: Box<Expression>,
+        key: Box<Expression>,
+    },
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -152,6 +161,13 @@ pub enum Statement {
         value: Expression,
     },
     
+    /// Map assignment statement (e.g., Set map at "key" to value)
+    MapAssignment {
+        map_name: String,
+        key: Expression,
+        value: Expression,
+    },
+    
     /// Break statement (e.g., Break loop.)
     Break,
     
@@ -196,6 +212,19 @@ impl fmt::Display for Expression {
             }
             Expression::ListIndex { list, index } => {
                 write!(f, "item {} of {}", index, list)
+            }
+            Expression::Map(entries) => {
+                write!(f, "{{")?;
+                for (i, (key, value)) in entries.iter().enumerate() {
+                    if i > 0 {
+                        write!(f, ", ")?;
+                    }
+                    write!(f, "{}: {}", key, value)?;
+                }
+                write!(f, "}}")
+            }
+            Expression::MapIndex { map, key } => {
+                write!(f, "{} at {}", map, key)
             }
         }
     }
@@ -277,6 +306,9 @@ impl fmt::Display for Statement {
             }
             Statement::ListAppend { list_name, value } => {
                 write!(f, "Add {} to {}", value, list_name)
+            }
+            Statement::MapAssignment { map_name, key, value } => {
+                write!(f, "Set {} at {} to {}", map_name, key, value)
             }
             Statement::Break => {
                 write!(f, "Break loop")

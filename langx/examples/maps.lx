@@ -1,0 +1,47 @@
+# Map/Dictionary Examples
+
+# Create a map
+Set person to {"name": "Alice", "age": 30, "city": "New York"}.
+print person.
+
+# Access map values
+Set name to person at "name".
+Set age to person at "age".
+print name.
+print age.
+
+# Update map values
+Set person at "age" to 31.
+print person.
+
+# Add new key-value pair
+Set person at "country" to "USA".
+print person.
+
+# Access non-existent key (returns null)
+Set missing to person at "missing_key".
+print missing.
+
+# Map with different value types
+Set mixed to {"number": 42, "text": "hello", "flag": true}.
+print mixed.
+print mixed at "number".
+print mixed at "text".
+print mixed at "flag".
+
+# Empty map
+Set empty to {}.
+print empty.
+
+# Nested map access (requires parentheses)
+Set nested to {"outer": {"inner": "value"}}.
+print nested.
+Set inner_map to nested at "outer".
+print inner_map.
+Set inner_value to inner_map at "inner".
+print inner_value.
+
+# Or use parentheses for chained access
+Set chained_value to (nested at "outer") at "inner".
+print chained_value.
+

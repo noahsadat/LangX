@@ -100,6 +100,7 @@
 - [x] **For loops** - Implemented `For each item in list: ... End for.` syntax with full support for lists, strings, and mixed types (January 2026)
 - [x] **Break/Continue statements** - Implemented `Break loop.` and `Continue to next iteration.` for all loop types (Repeat, While, For) (January 2026)
 - [x] **Major test coverage improvement** - Added 95+ new tests, improved coverage from ~70% to ~85%+ (January 2026)
+- [x] **Maps/Dictionaries** - Implemented map literals, map access (`map at "key"`), and map assignment (`Set map at "key" to value`) (January 2026)
   - Added comprehensive lexer tests (10 new tests)
   - Added comprehensive parser tests (10 new tests)
   - Added extensive interpreter edge case tests (60+ new tests)
@@ -187,16 +188,17 @@ All critical issues resolved ✅
    ```
 
 ### Phase 2: Data Structures
-1. **Lists**
+1. **Lists** - ✅ **Completed**
    ```
    Set list to [1, 2, 3, 4, 5].
    Set first to item 0 of list.
    Add 6 to list.
    ```
-2. **Maps/Dictionaries**
+2. **Maps/Dictionaries** - ✅ **Completed January 2026**
    ```
    Set map to {"name": "Alice", "age": 30}.
    Set name to map at "name".
+   Set map at "age" to 31.
    ```
 
 ### Phase 3: Advanced Functions

@@ -12,6 +12,14 @@ pub Statement: Statement = {
         Statement::Assignment { variable, value }
     },
     
+    "Set" <map_name:Identifier> "at" <key:PrimaryExpression> "to" <value:LogicalOr> "." => {
+        Statement::MapAssignment {
+            map_name,
+            key,
+            value,
+        }
+    },
+    
     "If" <condition:LogicalOr> "then" <then_branch:Statement> => {
         Statement::Conditional { 
             condition, 
@@ -158,9 +166,25 @@ Atom: Expression = {
     FunctionCall,
     ListLiteral,
     ListIndexExpr,
+    MapLiteral,
+    MapIndexExpr,
+};
+
+// Base expression for map indexing (excludes MapIndexExpr to avoid ambiguity)
+MapIndexBase: Expression = {
+    "(" <expr:LogicalOr> ")" => expr,
+    <n:Number> => Expression::Number(n),
+    <s:StringLiteral> => Expression::String(s),
+    "true" => Expression::Boolean(true),
+    "false" => Expression::Boolean(false),
+    <id:Identifier> => Expression::Variable(id),
+    ListLiteral,
+    ListIndexExpr,
+    MapLiteral,
 };
 
 // Atom without FunctionCall - for list items to avoid ambiguity
+// Note: MapIndexExpr is excluded to avoid ambiguity with chained "at" operations
 AtomNoCall: Expression = {
     "(" <expr:LogicalOr> ")" => expr,
     <n:Number> => Expression::Number(n),
@@ -170,6 +194,7 @@ AtomNoCall: Expression = {
     <id:Identifier> => Expression::Variable(id),
     ListLiteral,
     ListIndexExpr,
+    MapLiteral,
 };
 
 // List literal: [expr1, expr2, ...]
@@ -228,6 +253,36 @@ ListIndexExpr: Expression = {
         Expression::ListIndex {
             list: Box::new(list),
             index: Box::new(index),
+        }
+    },
+};
+
+// Map literal: {key: value, key2: value2}
+MapLiteral: Expression = {
+    "{" <entries:MapEntries?> "}" => Expression::Map(entries.unwrap_or_default()),
+};
+
+// Map entries - key-value pairs
+MapEntries: Vec<(Expression, Expression)> = {
+    <first:MapEntry> <rest:("," <MapEntry>)*> => {
+        let mut entries = vec![first];
+        entries.extend(rest);
+        entries
+    },
+};
+
+// Individual map entry: key: value
+MapEntry: (Expression, Expression) = {
+    <key:PrimaryExpression> ":" <value:PrimaryExpression> => (key, value),
+};
+
+// Map indexing: map at "key"
+// Note: For chained access like "map at key1 at key2", use parentheses: "(map at key1) at key2"
+MapIndexExpr: Expression = {
+    <map:MapIndexBase> "at" <key:AtomNoCall> => {
+        Expression::MapIndex {
+            map: Box::new(map),
+            key: Box::new(key),
         }
     },
 };
@@ -359,6 +414,8 @@ PrimaryExpression: Expression = {
     <id:Identifier> => Expression::Variable(id),
     ListLiteral,
     ListIndexExpr,
+    MapLiteral,
+    MapIndexExpr,
 };
 
 // Restore Expression as an alias for Term
@@ -406,6 +463,8 @@ extern {
         ")" => Token::RightParen,
         "[" => Token::LeftBracket,
         "]" => Token::RightBracket,
+        "{" => Token::LeftBrace,
+        "}" => Token::RightBrace,
         "..." => Token::Ellipsis,
         "." => Token::Period,
         "," => Token::Comma,
@@ -421,6 +480,7 @@ extern {
         "false" => Token::False,
         "item" => Token::Item,
         "of" => Token::Of,
+        "at" => Token::At,
         "Add" => Token::Add,
         "Break" => Token::Break,
         "Continue" => Token::Continue,

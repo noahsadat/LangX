@@ -195,6 +195,57 @@ Return true.
 Return.
 ```
 
+### Maps/Dictionaries
+
+Maps (also called dictionaries) store key-value pairs. Keys can be strings, numbers, or booleans.
+
+#### Map Literals
+
+Create a map using curly braces with key-value pairs:
+```
+Set [variable] to {[key]: [value], [key2]: [value2], ...}.
+```
+
+Examples:
+```
+Set person to {"name": "Alice", "age": 30, "city": "New York"}.
+Set empty to {}.
+Set mixed to {"number": 42, "text": "hello", "flag": true}.
+```
+
+**Note:** Keys must be strings, numbers, or booleans. Values can be any type including nested maps.
+
+#### Map Access
+
+Access a value in a map using the `at` keyword:
+```
+Set [variable] to [map] at [key].
+```
+
+Examples:
+```
+Set name to person at "name".
+Set age to person at "age".
+Set nested_value to (nested_map at "outer") at "inner".
+```
+
+**Note:** If the key doesn't exist, accessing it returns `null`. For chained access (nested maps), use parentheses: `(map at "outer") at "inner"`.
+
+#### Map Assignment
+
+Set or update a value in a map:
+```
+Set [map] at [key] to [value].
+```
+
+Examples:
+```
+Set person at "age" to 31.
+Set person at "country" to "USA".
+```
+
+**Note:** This will update an existing key or add a new key-value pair if the key doesn't exist.
+
 ### Lists/Arrays
 
 #### List Literals

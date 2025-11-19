@@ -162,6 +162,39 @@ Set result to Call add with 5, 10.
 print result.
 ```
 
+### Maps/Dictionaries
+
+Maps store key-value pairs. Keys can be strings, numbers, or booleans.
+
+```
+# Create a map
+Set person to {"name": "Alice", "age": 30, "city": "New York"}.
+
+# Access values
+Set name to person at "name".
+
+# Update or add values
+Set person at "age" to 31.
+Set person at "country" to "USA".
+
+# Nested maps (use parentheses for chained access)
+Set nested to {"outer": {"inner": "value"}}.
+Set value to (nested at "outer") at "inner".
+```
+
+### Lists/Arrays
+
+```
+# Create a list
+Set numbers to [1, 2, 3, 4, 5].
+
+# Access items
+Set first to item 0 of numbers.
+
+# Append to list
+Add 6 to numbers.
+```
+
 ### Print Statements
 
 ```
@@ -236,6 +269,7 @@ LangX supports:
 - Function calls: `Call func with arg1, arg2, arg3`
 - String concatenation: `"Hello" + 42`, `100 + " percent"`
 - Lists/Arrays: Creation, indexing, appending
+- Maps/Dictionaries: Key-value pairs with string/number/boolean keys
 - Built-in functions: 
   - String: `string_length`, `substring`, `split`, `join`, `replace`
   - Math: `abs`, `min`, `max`, `pow`, `sqrt`, `round`, `floor`, `ceil`

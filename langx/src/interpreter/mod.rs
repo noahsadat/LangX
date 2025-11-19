@@ -10,6 +10,7 @@ pub enum Value {
     String(String),
     Boolean(bool),
     List(Vec<Value>),
+    Map(HashMap<String, Value>),
     Null,
 }
 
@@ -28,6 +29,18 @@ impl std::fmt::Display for Value {
                     write!(f, "{}", item)?;
                 }
                 write!(f, "]")
+            }
+            Value::Map(map) => {
+                write!(f, "{{")?;
+                let mut first = true;
+                for (key, value) in map.iter() {
+                    if !first {
+                        write!(f, ", ")?;
+                    }
+                    write!(f, "\"{}\": {}", key, value)?;
+                    first = false;
+                }
+                write!(f, "}}")
             }
             Value::Null => write!(f, "null"),
         }
@@ -317,6 +330,29 @@ impl Interpreter {
                     Err(format!("Runtime error: Variable '{}' is not a list.", list_name))
                 }
             }
+            Statement::MapAssignment { map_name, key, value } => {
+                let map_value = self.env.get(map_name)
+                    .ok_or_else(|| format!("Runtime error: Undefined variable '{}'.", map_name))?;
+                
+                if let Value::Map(mut map_data) = map_value {
+                    let key_value = self.evaluate_expression(key)?;
+                    let value_value = self.evaluate_expression(value)?;
+                    
+                    // Convert key to string
+                    let key_string = match key_value {
+                        Value::String(s) => s,
+                        Value::Number(n) => n.to_string(),
+                        Value::Boolean(b) => b.to_string(),
+                        _ => return Err(format!("Runtime error: Map key must be a string, number, or boolean, got {:?}.", key_value)),
+                    };
+                    
+                    map_data.insert(key_string, value_value);
+                    self.env.set(map_name, Value::Map(map_data));
+                    Ok(ExecutionResult::Normal)
+                } else {
+                    Err(format!("Runtime error: Variable '{}' is not a map.", map_name))
+                }
+            }
             Statement::Break => {
                 Ok(ExecutionResult::Break)
             }
@@ -397,6 +433,7 @@ impl Interpreter {
                             Value::Boolean(b) => parts.push(b.to_string()),
                             Value::Null => parts.push("null".to_string()),
                             Value::List(_) => return Err("Built-in function 'join' cannot join nested lists.".to_string()),
+                            Value::Map(_) => return Err("Built-in function 'join' cannot join maps.".to_string()),
                         }
                     }
                     Ok(Some(Value::String(parts.join(delimiter))))
@@ -845,6 +882,45 @@ impl Interpreter {
                     }
                 } else {
                     Err(format!("Runtime error: Cannot index into non-list value {:?}.", list_value))
+                }
+            }
+            Expression::Map(entries) => {
+                let mut map = HashMap::new();
+                for (key_expr, value_expr) in entries {
+                    let key_value = self.evaluate_expression(key_expr)?;
+                    let value_value = self.evaluate_expression(value_expr)?;
+                    
+                    // Convert key to string
+                    let key_string = match key_value {
+                        Value::String(s) => s,
+                        Value::Number(n) => n.to_string(),
+                        Value::Boolean(b) => b.to_string(),
+                        _ => return Err(format!("Runtime error: Map key must be a string, number, or boolean, got {:?}.", key_value)),
+                    };
+                    
+                    map.insert(key_string, value_value);
+                }
+                Ok(Value::Map(map))
+            }
+            Expression::MapIndex { map, key } => {
+                let map_value = self.evaluate_expression(&*map)?;
+                let key_value = self.evaluate_expression(&*key)?;
+                
+                if let Value::Map(map_data) = map_value {
+                    // Convert key to string
+                    let key_string = match key_value {
+                        Value::String(s) => s,
+                        Value::Number(n) => n.to_string(),
+                        Value::Boolean(b) => b.to_string(),
+                        _ => return Err(format!("Runtime error: Map key must be a string, number, or boolean, got {:?}.", key_value)),
+                    };
+                    
+                    match map_data.get(&key_string) {
+                        Some(value) => Ok(value.clone()),
+                        None => Ok(Value::Null), // Return null if key doesn't exist
+                    }
+                } else {
+                    Err(format!("Runtime error: Cannot access key of non-map value {:?}.", map_value))
                 }
             }
         }
