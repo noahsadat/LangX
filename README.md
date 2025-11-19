@@ -243,6 +243,9 @@ Check out the `examples/` directory for sample LangX programs:
 
 - `hello.lx` - Basic variable assignment and printing
 - `functions.lx` - Function definitions and calls
+- `maps.lx` - Map/dictionary data structures
+- `lists.lx` - List/array operations
+- `file_io.lx` - File reading and writing
 
 ## License
 
@@ -425,7 +428,13 @@ print len.
 print sub.
 ```
 
-## Recent Improvements (November 2025)
+## Recent Improvements
+
+### November 2025
+- ✅ **Maps/Dictionaries** - Full support for key-value data structures with `{"key": value}` syntax, `map at "key"` access, and `Set map at "key" to value` assignment
+- ✅ **Milestone 2 Complete** - All enhanced features implemented
+
+### November 2025
 - ✅ Enhanced error messages with line numbers and code snippets
 - ✅ Extended function support to 5 parameters (was 0-2)
 - ✅ String concatenation with multiple types (string + number, number + string, string + boolean)
