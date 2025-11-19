@@ -68,6 +68,35 @@ End for.
 print sum.
 ```
 
+#### Break Statement
+Exit a loop early.
+```
+Break loop.
+```
+Example:
+```
+Set count to 0.
+Repeat 10 times:
+    Set count to count + 1.
+    If count is greater than 5 then Break loop.
+End repeat.
+```
+
+#### Continue Statement
+Skip to the next iteration of a loop.
+```
+Continue to next iteration.
+```
+Example:
+```
+Set sum to 0.
+Repeat 10 times:
+    Set i to i + 1.
+    If i is equal to 5 then Continue to next iteration.
+    Set sum to sum + i.
+End repeat.
+```
+
 ### Print Statements
 ```
 print [expression].

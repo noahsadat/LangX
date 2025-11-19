@@ -94,6 +94,7 @@
 - [x] **Comprehensive test suite** - Added 30+ new tests covering edge cases and new features
 - [x] **Fixed example file syntax** - All example files now have proper `End repeat.` and `End while.` markers
 - [x] **For loops** - Implemented `For each item in list: ... End for.` syntax with full support for lists, strings, and mixed types (January 2026)
+- [x] **Break/Continue statements** - Implemented `Break loop.` and `Continue to next iteration.` for all loop types (Repeat, While, For) (January 2026)
 
 ### In Progress
 - [ ] Performance profiling and optimization
@@ -108,7 +109,7 @@
 ### Planned - Medium Priority
 - [ ] File I/O operations
 - [ ] More built-in functions (math, string)
-- [ ] Break and continue statements
+- [x] Break and continue statements - **✅ Completed January 2026**
 - [ ] Multi-line strings
 - [ ] Escape sequences in strings
 
@@ -169,7 +170,7 @@ All critical issues resolved ✅
    For each item in list: statement.
    End for.
    ```
-3. **Break/Continue**
+3. **Break/Continue** - ✅ **Completed January 2026**
    ```
    Break loop.
    Continue to next iteration.
@@ -295,7 +296,7 @@ All critical issues resolved ✅
 **Supported Features:** 30+ - **Added: string concat, extended functions, built-ins**
 **Parser Conflicts:** 0 ✅
 **Known Bugs:** 0 critical, 2 minor
-**Test Suite:** 50+ tests (30+ new comprehensive tests including For loop tests)
+**Test Suite:** 74+ tests (40+ new comprehensive tests including For loop and Break/Continue tests)
 
 ---
 

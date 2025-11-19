@@ -104,6 +104,8 @@ impl Environment {
 pub enum ExecutionResult {
     Normal,
     Return(Option<Value>),
+    Break,
+    Continue,
 }
 
 /// Interpreter for executing LangX programs
@@ -133,6 +135,14 @@ impl Interpreter {
                 ExecutionResult::Return(value) => {
                     // Top-level return is not allowed
                     return Err(format!("Return statement outside of function: {:?}", value));
+                }
+                ExecutionResult::Break => {
+                    // Top-level break is not allowed
+                    return Err("Break statement outside of loop.".to_string());
+                }
+                ExecutionResult::Continue => {
+                    // Top-level continue is not allowed
+                    return Err("Continue statement outside of loop.".to_string());
                 }
             }
         }
@@ -165,6 +175,8 @@ impl Interpreter {
                     for _ in 0..n {
                         match self.execute_statement(body)? {
                             ExecutionResult::Normal => {},
+                            ExecutionResult::Continue => {}, // Continue to next iteration
+                            ExecutionResult::Break => return Ok(ExecutionResult::Normal), // Break out of loop
                             result @ ExecutionResult::Return(_) => return Ok(result),
                         }
                     }
@@ -183,6 +195,8 @@ impl Interpreter {
                     if let Value::Boolean(true) = condition_value {
                         match self.execute_statement(body)? {
                             ExecutionResult::Normal => {},
+                            ExecutionResult::Continue => continue, // Continue to next iteration
+                            ExecutionResult::Break => break, // Break out of loop
                             result @ ExecutionResult::Return(_) => return Ok(result),
                         }
                     } else {
@@ -201,6 +215,8 @@ impl Interpreter {
                         // Execute the body
                         match self.execute_statement(body)? {
                             ExecutionResult::Normal => {},
+                            ExecutionResult::Continue => continue, // Continue to next iteration
+                            ExecutionResult::Break => break, // Break out of loop
                             result @ ExecutionResult::Return(_) => return Ok(result),
                         }
                     }
@@ -214,6 +230,8 @@ impl Interpreter {
                     match self.execute_statement(stmt)? {
                         ExecutionResult::Normal => {},
                         result @ ExecutionResult::Return(_) => return Ok(result),
+                        result @ ExecutionResult::Break => return Ok(result), // Propagate break
+                        result @ ExecutionResult::Continue => return Ok(result), // Propagate continue
                     }
                 }
                 Ok(ExecutionResult::Normal)
@@ -245,6 +263,12 @@ impl Interpreter {
                 } else {
                     Err(format!("Runtime error: Variable '{}' is not a list.", list_name))
                 }
+            }
+            Statement::Break => {
+                Ok(ExecutionResult::Break)
+            }
+            Statement::Continue => {
+                Ok(ExecutionResult::Continue)
             }
         }
     }
@@ -506,6 +530,14 @@ impl Interpreter {
                         ExecutionResult::Return(value) => {
                             result = value.unwrap_or(Value::Null);
                             break;
+                        }
+                        ExecutionResult::Break => {
+                            // Break/Continue inside function (not in loop) is an error
+                            return Err("Break statement must be inside a loop.".to_string());
+                        }
+                        ExecutionResult::Continue => {
+                            // Break/Continue inside function (not in loop) is an error
+                            return Err("Continue statement must be inside a loop.".to_string());
                         }
                     }
                 }

@@ -117,6 +117,31 @@ End for.
 print sum.
 ```
 
+#### Break and Continue
+Break exits a loop early, Continue skips to the next iteration.
+
+```
+Break loop.
+Continue to next iteration.
+```
+
+Example:
+```
+# Break example
+Set count to 0.
+Repeat 10 times:
+    Set count to count + 1.
+    If count is greater than 5 then Break loop.
+End repeat.
+
+# Continue example
+Set sum to 0.
+For each num in [1, 2, 3, 4, 5]:
+    If num is equal to 3 then Continue to next iteration.
+    Set sum to sum + num.
+End for.
+```
+
 ### Functions
 
 ```
@@ -206,6 +231,7 @@ LangX supports:
 - Parentheses and operator precedence
 - Conditional statements: `If condition then statement`
 - Loops: `Repeat N times: ... End repeat.`, `While condition: ... End while.`, `For each item in list: ... End for.`
+- Loop control: `Break loop.`, `Continue to next iteration.`
 - Functions: 0-5 parameters with return values
 - Function calls: `Call func with arg1, arg2, arg3`
 - String concatenation: `"Hello" + 42`, `100 + " percent"`
@@ -285,4 +311,5 @@ print sub.
 - ✅ Comprehensive test suite (20+ new tests)
 - ✅ Fixed all example file syntax issues
 - ✅ Improved test coverage to ~70%
-- ✅ **For loops** - Iterate over lists with `For each item in list: ... End for.` (January 2026) 
+- ✅ **For loops** - Iterate over lists with `For each item in list: ... End for.` (January 2026)
+- ✅ **Break/Continue statements** - Control loop flow with `Break loop.` and `Continue to next iteration.` (January 2026) 

@@ -1,0 +1,60 @@
+# Break and Continue Examples in LangX
+
+# Break in Repeat loop - exit early
+Set count to 0.
+Repeat 10 times:
+    Set count to count + 1.
+    If count is greater than 5 then Break loop.
+End repeat.
+print count.
+
+# Continue in Repeat loop - skip iteration
+Set sum to 0.
+Set i to 0.
+Repeat 10 times:
+    Set i to i + 1.
+    If i is equal to 5 then Continue to next iteration.
+    Set sum to sum + i.
+End repeat.
+print sum.
+
+# Break in While loop
+Set x to 0.
+While x is less than 10:
+    Set x to x + 1.
+    If x is greater than 5 then Break loop.
+End while.
+print x.
+
+# Continue in While loop
+Set x to 0.
+Set sum to 0.
+While x is less than 10:
+    Set x to x + 1.
+    If x is equal to 5 then Continue to next iteration.
+    Set sum to sum + x.
+End while.
+print sum.
+
+# Break in For loop - find first item greater than threshold
+Set found to false.
+Set numbers to [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].
+For each num in numbers:
+    If num is greater than 5 then Break loop.
+End for.
+print num.
+
+# Continue in For loop - skip even numbers
+Set sum to 0.
+Set numbers to [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].
+For each num in numbers:
+    # Skip even numbers (simplified check)
+    If num is equal to 2 then Continue to next iteration.
+    If num is equal to 4 then Continue to next iteration.
+    If num is equal to 6 then Continue to next iteration.
+    If num is equal to 8 then Continue to next iteration.
+    If num is equal to 10 then Continue to next iteration.
+    Set sum to sum + num.
+End for.
+print sum.
+

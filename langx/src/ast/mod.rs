@@ -117,6 +117,12 @@ pub enum Statement {
         list_name: String,
         value: Expression,
     },
+    
+    /// Break statement (e.g., Break loop.)
+    Break,
+    
+    /// Continue statement (e.g., Continue to next iteration.)
+    Continue,
 }
 
 #[derive(Debug, PartialEq)]
@@ -229,6 +235,12 @@ impl fmt::Display for Statement {
             }
             Statement::ListAppend { list_name, value } => {
                 write!(f, "Add {} to {}", value, list_name)
+            }
+            Statement::Break => {
+                write!(f, "Break loop")
+            }
+            Statement::Continue => {
+                write!(f, "Continue to next iteration")
             }
         }
     }

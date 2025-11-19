@@ -83,6 +83,21 @@ pub enum Token {
     #[token("Return")]
     Return,
     
+    #[token("Break")]
+    Break,
+    
+    #[token("Continue")]
+    Continue,
+    
+    #[token("loop")]
+    Loop,
+    
+    #[token("iteration")]
+    Iteration,
+    
+    #[token("next")]
+    Next,
+    
     // Arithmetic operators (using symbols)
     #[token("+")]
     Plus,
@@ -205,6 +220,11 @@ impl fmt::Display for Token {
             Token::Definition => write!(f, "definition"),
             Token::Call => write!(f, "Call"),
             Token::Return => write!(f, "Return"),
+            Token::Break => write!(f, "Break"),
+            Token::Continue => write!(f, "Continue"),
+            Token::Loop => write!(f, "loop"),
+            Token::Iteration => write!(f, "iteration"),
+            Token::Next => write!(f, "next"),
             Token::Plus => write!(f, "+"),
             Token::Minus => write!(f, "-"),
             Token::Times => write!(f, "*"),

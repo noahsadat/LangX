@@ -131,6 +131,7 @@ LangX is a programming language that combines structured English with mathematic
 - [ ] Variadic function arguments
 - [ ] Default function parameters
 - [x] **For loops** - ✅ Implemented (January 2026)
+- [x] **Break/Continue statements** - ✅ Implemented (January 2026)
 
 ### 🎯 Milestone 3: Performance & Tooling (Q2 2026)
 - [ ] Bytecode compiler
@@ -157,6 +158,7 @@ LangX is a programming language that combines structured English with mathematic
 ✅ **Comparisons**: `is greater than`, `is less than`, `is equal to`, `is not equal to`
 ✅ **Conditionals**: `If...then`
 ✅ **Loops**: `Repeat...times`, `While...End while`, `For each...in...End for`
+✅ **Loop control**: `Break loop.`, `Continue to next iteration.`
 ✅ **Functions**: 0-5 parameters with return values - **Extended from 0-2**
 ✅ **Comments**: `#` prefix
 ✅ **Operator precedence**: Correct mathematical precedence

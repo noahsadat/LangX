@@ -712,4 +712,201 @@ End repeat.";
         // Should return 3 (first number > 2)
         assert_eq!(interpreter.env.get("result"), Some(crate::interpreter::Value::Number(3)));
     }
+    
+    #[test]
+    fn test_break_in_repeat_loop() {
+        let source = "
+            Set count to 0.
+            Repeat 10 times:
+                Set count to count + 1.
+                If count is greater than 5 then Break loop.
+            End repeat.
+            print count.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        // Should break at count = 6
+        assert_eq!(interpreter.env.get("count"), Some(crate::interpreter::Value::Number(6)));
+    }
+    
+    #[test]
+    fn test_continue_in_repeat_loop() {
+        let source = "
+            Set sum to 0.
+            Set count to 0.
+            Repeat 10 times:
+                Set count to count + 1.
+                If count is equal to 5 then Continue to next iteration.
+                Set sum to sum + count.
+            End repeat.
+            print sum.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        // Sum of 1+2+3+4+6+7+8+9+10 = 50 (skipping 5)
+        assert_eq!(interpreter.env.get("sum"), Some(crate::interpreter::Value::Number(50)));
+    }
+    
+    #[test]
+    fn test_break_in_while_loop() {
+        let source = "
+            Set x to 0.
+            While x is less than 10:
+                Set x to x + 1.
+                If x is greater than 5 then Break loop.
+            End while.
+            print x.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        // Should break at x = 6
+        assert_eq!(interpreter.env.get("x"), Some(crate::interpreter::Value::Number(6)));
+    }
+    
+    #[test]
+    fn test_continue_in_while_loop() {
+        let source = "
+            Set x to 0.
+            Set sum to 0.
+            While x is less than 10:
+                Set x to x + 1.
+                If x is equal to 5 then Continue to next iteration.
+                Set sum to sum + x.
+            End while.
+            print sum.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        // Sum of 1+2+3+4+6+7+8+9+10 = 50 (skipping 5)
+        assert_eq!(interpreter.env.get("sum"), Some(crate::interpreter::Value::Number(50)));
+    }
+    
+    #[test]
+    fn test_break_in_for_loop() {
+        let source = "
+            Set count to 0.
+            Set numbers to [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].
+            For each num in numbers:
+                Set count to count + 1.
+                If num is greater than 5 then Break loop.
+            End for.
+            print count.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        // Should break at num = 6, so count = 6
+        assert_eq!(interpreter.env.get("count"), Some(crate::interpreter::Value::Number(6)));
+    }
+    
+    #[test]
+    fn test_continue_in_for_loop() {
+        let source = "
+            Set sum to 0.
+            Set numbers to [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].
+            For each num in numbers:
+                If num is equal to 5 then Continue to next iteration.
+                Set sum to sum + num.
+            End for.
+            print sum.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        // Sum of 1+2+3+4+6+7+8+9+10 = 50 (skipping 5)
+        assert_eq!(interpreter.env.get("sum"), Some(crate::interpreter::Value::Number(50)));
+    }
+    
+    #[test]
+    fn test_break_outside_loop_error() {
+        let source = "
+            Break loop.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("Break statement outside of loop"));
+    }
+    
+    #[test]
+    fn test_continue_outside_loop_error() {
+        let source = "
+            Continue to next iteration.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("Continue statement outside of loop"));
+    }
+    
+    #[test]
+    fn test_break_in_function_without_loop_error() {
+        let source = "
+            Define test:
+                Break loop.
+            End definition.
+            Call test.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("Break statement must be inside a loop"));
+    }
+    
+    #[test]
+    fn test_continue_in_function_without_loop_error() {
+        let source = "
+            Define test:
+                Continue to next iteration.
+            End definition.
+            Call test.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("Continue statement must be inside a loop"));
+    }
+    
+    #[test]
+    fn test_break_in_function_with_loop() {
+        let source = "
+            Define find_first_greater with parameter numbers, threshold:
+                For each num in numbers:
+                    If num is greater than threshold then Break loop.
+                End for.
+                Return num.
+            End definition.
+            
+            Set list to [1, 2, 3, 4, 5].
+            Set result to Call find_first_greater with list, 3.
+        ";
+        // Actually, this won't work because num is scoped to the loop
+        // Let me test a simpler case - break works inside loop in function
+        let source = "
+            Define count_until with parameters numbers, limit:
+                Set count to 0.
+                For each num in numbers:
+                    Set count to count + 1.
+                    If num is greater than limit then Break loop.
+                End for.
+                Return count.
+            End definition.
+            
+            Set list to [1, 2, 3, 4, 5, 6, 7].
+            Set result to Call count_until with list, 4.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        // Should break at num = 5, so count = 5
+        assert_eq!(interpreter.env.get("result"), Some(crate::interpreter::Value::Number(5)));
+    }
 } 

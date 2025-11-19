@@ -123,6 +123,14 @@ pub Statement: Statement = {
         }
     },
     
+    "Break" "loop" "." => {
+        Statement::Break
+    },
+    
+    "Continue" "to" "next" "iteration" "." => {
+        Statement::Continue
+    },
+    
     // Call as a statement (for functions that don't return a value)
     <call:FunctionCall> "." => {
         Statement::Print(call)
@@ -435,5 +443,10 @@ extern {
         "item" => Token::Item,
         "of" => Token::Of,
         "Add" => Token::Add,
+        "Break" => Token::Break,
+        "Continue" => Token::Continue,
+        "loop" => Token::Loop,
+        "iteration" => Token::Iteration,
+        "next" => Token::Next,
     }
 } 
