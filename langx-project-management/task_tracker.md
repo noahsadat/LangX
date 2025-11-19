@@ -90,16 +90,21 @@
 - [x] **Extended string concatenation** - Supports string + number, number + string, string + boolean
 - [x] **Extended function support** - Functions now support 0-5 parameters (was 0-2)
 - [x] **Built-in string functions** - Added `string_length`, `substring`, `split`, `join`, and `replace` functions
+- [x] **Built-in math functions** - Added `abs`, `min`, `max`, `pow`, `sqrt`, `round`, `floor`, `ceil` functions
+- [x] **File I/O operations** - Added `read_file` and `write_file` built-in functions
+- [x] **String escape sequences** - Added support for `\n`, `\t`, `\r`, `\"`, `\\`, `\0` in string literals
+- [x] **Multi-line strings** - Implemented triple-quoted strings (`"""text"""`) with support for unescaped quotes and escape sequences (January 2026)
 - [x] **Fixed parentheses precedence** - Removed redundant precedence function, parser handles it correctly
 - [x] **Comprehensive test suite** - Added 30+ new tests covering edge cases and new features
 - [x] **Fixed example file syntax** - All example files now have proper `End repeat.` and `End while.` markers
 - [x] **For loops** - Implemented `For each item in list: ... End for.` syntax with full support for lists, strings, and mixed types (January 2026)
 - [x] **Break/Continue statements** - Implemented `Break loop.` and `Continue to next iteration.` for all loop types (Repeat, While, For) (January 2026)
-- [x] **Major test coverage improvement** - Added 80+ new tests, improved coverage from ~70% to ~85%+ (January 2026)
+- [x] **Major test coverage improvement** - Added 95+ new tests, improved coverage from ~70% to ~85%+ (January 2026)
   - Added comprehensive lexer tests (10 new tests)
   - Added comprehensive parser tests (10 new tests)
   - Added extensive interpreter edge case tests (60+ new tests)
-  - All 160 tests passing ✅
+  - Added multi-line string tests (5 new tests)
+  - All 209 tests passing ✅
 
 ### In Progress
 - [ ] Performance profiling and optimization
@@ -112,11 +117,11 @@
 - [x] More string operations - **✅ Completed** (length, substring, split, join, replace)
 
 ### Planned - Medium Priority
-- [ ] File I/O operations
-- [ ] More built-in functions (math, string)
+- [x] File I/O operations - **✅ Completed** (read_file, write_file)
+- [x] More built-in functions (math, string) - **✅ Completed** (math: abs, min, max, pow, sqrt, round, floor, ceil)
 - [x] Break and continue statements - **✅ Completed January 2026**
-- [ ] Multi-line strings
-- [ ] Escape sequences in strings
+- [x] Multi-line strings - **✅ Completed January 2026** (triple-quoted strings: `"""text"""`)
+- [x] Escape sequences in strings - **✅ Completed** (`\n`, `\t`, `\r`, `\"`, `\\`, `\0`)
 
 ### Planned - Low Priority  
 - [ ] REPL improvements (history, auto-complete)
@@ -297,15 +302,16 @@ All critical issues resolved ✅
 
 **Lines of Code:** ~2,800 (Rust)
 **Test Coverage:** ~85%+ (goal: 90%) - **Improved from ~70%** ✅ January 2026
-**Example Programs:** 22+ (including new test examples)
+**Example Programs:** 23+ (including new test examples and multiline_strings.lx)
 **Supported Features:** 30+ - **Added: string concat, extended functions, built-ins**
 **Parser Conflicts:** 0 ✅
 **Known Bugs:** 0 critical, 2 minor
-**Test Suite:** 160 tests (86+ new comprehensive tests added January 2026)
+**Test Suite:** 209 tests (95+ new comprehensive tests added January 2026)
   - Added 80+ new tests covering edge cases, error handling, and boundary conditions
   - Comprehensive lexer tests (10 new)
   - Comprehensive parser tests (10 new)
   - Extensive interpreter edge case tests (60+ new)
+  - Multi-line string tests (5 new)
 
 ---
 

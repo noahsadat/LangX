@@ -56,7 +56,7 @@ LangX is a programming language that combines structured English with mathematic
 - [ ] Interactive debugger
 
 ### 6. Standard Library [IN PROGRESS]
-- [ ] Math functions (sqrt, pow, abs, etc.)
+- [x] **Math functions** - ✅ Completed (abs, min, max, pow, sqrt, round, floor, ceil)
 - [x] **String manipulation** - ✅ Completed December 2025
   - [x] `string_length` - Get length of a string
   - [x] `substring` - Extract substring (string, start, length)
@@ -64,7 +64,9 @@ LangX is a programming language that combines structured English with mathematic
   - [x] `join` - Join list into string with delimiter
   - [x] `replace` - Replace all occurrences of substring
   - [x] String concatenation with `+` operator
-- [ ] I/O operations (file read/write)
+  - [x] String escape sequences (`\n`, `\t`, `\r`, `\"`, `\\`, `\0`)
+  - [x] Multi-line strings (`"""text"""`)
+- [x] **I/O operations** - ✅ Completed (read_file, write_file)
 - [x] **Data structures** - ✅ Lists implemented
 - [ ] Time and date handling
 
@@ -81,7 +83,7 @@ LangX is a programming language that combines structured English with mathematic
 - [x] Language syntax reference
 - [x] Updated project descriptions
 - [x] Implementation plans
-- [x] Example programs (15+ examples)
+- [x] Example programs (23+ examples)
 - [ ] API documentation
 - [ ] Tutorial series
 - [ ] Video tutorials
@@ -100,7 +102,8 @@ LangX is a programming language that combines structured English with mathematic
   - [x] Comprehensive lexer tests (10 new tests)
   - [x] Comprehensive parser tests (10 new tests)
   - [x] Extensive interpreter edge case tests (60+ new tests)
-  - [x] All 160 tests passing ✅
+  - [x] Multi-line string tests (5 new tests)
+  - [x] All 209 tests passing ✅
 - [ ] Benchmarks
 - [ ] Fuzzing tests
 - [ ] Code coverage reports (aim for 90%+) - **Current: ~85%+** (improved from ~70%)
@@ -131,7 +134,10 @@ LangX is a programming language that combines structured English with mathematic
 - [x] **Advanced control flow** - ✅ While loops and For loops implemented (January 2026)
 - [x] **List/array data structures** - ✅ Implemented
 - [x] **String manipulation functions** - ✅ Completed (length, substring, split, join, replace, concatenation)
-- [ ] File I/O operations
+- [x] **File I/O operations** - ✅ Completed (read_file, write_file)
+- [x] **Math functions** - ✅ Completed (abs, min, max, pow, sqrt, round, floor, ceil)
+- [x] **String escape sequences** - ✅ Completed (`\n`, `\t`, `\r`, `\"`, `\\`, `\0`)
+- [x] **Multi-line strings** - ✅ Completed (triple-quoted strings: `"""text"""`)
 - [x] **Improved error messages** - ✅ Line numbers and code snippets (December 2025)
 - [ ] Variadic function arguments
 - [ ] Default function parameters
@@ -152,7 +158,7 @@ LangX is a programming language that combines structured English with mathematic
 - [ ] Official documentation site
 - [ ] Community examples repository
 
-## Current Status (December 2025)
+## Current Status (January 2026)
 
 ### What's Working
 ✅ **Fully functional interpreter**
@@ -171,8 +177,12 @@ LangX is a programming language that combines structured English with mathematic
 ✅ **REPL**: Interactive mode
 ✅ **File execution**: Run `.lx` files
 ✅ **String concatenation**: `"text" + 42`, `100 + " percent"`, `"Status: " + true`
+✅ **String escape sequences**: `\n`, `\t`, `\r`, `\"`, `\\`, `\0`
+✅ **Multi-line strings**: `"""text"""` - Can span multiple lines and contain unescaped quotes
 ✅ **Lists/Arrays**: Creation, indexing, appending
-✅ **Built-in functions**: `string_length`, `substring`, `split`, `join`, `replace`
+✅ **Built-in string functions**: `string_length`, `substring`, `split`, `join`, `replace`
+✅ **Built-in math functions**: `abs`, `min`, `max`, `pow`, `sqrt`, `round`, `floor`, `ceil`
+✅ **File I/O functions**: `read_file`, `write_file`
 ✅ **Enhanced error messages**: Line numbers and code snippets
 
 ### Key Design Decisions
@@ -237,17 +247,21 @@ By combining the best of natural language with symbolic precision, LangX creates
 - ✅ Enhanced error messages with line numbers
 - ✅ Extended function support to 5 parameters
 - ✅ String concatenation with multiple types
-- ✅ Built-in string functions (`string_length`, `substring`)
+- ✅ Built-in string functions (`string_length`, `substring`, `split`, `join`, `replace`)
+- ✅ Built-in math functions (`abs`, `min`, `max`, `pow`, `sqrt`, `round`, `floor`, `ceil`)
+- ✅ File I/O operations (`read_file`, `write_file`)
+- ✅ String escape sequences (`\n`, `\t`, `\r`, `\"`, `\\`, `\0`)
+- ✅ Multi-line strings (triple-quoted: `"""text"""`)
 - ✅ Fixed parentheses precedence
-- ✅ Comprehensive test suite (20+ new tests)
+- ✅ Comprehensive test suite (95+ new tests)
 - ✅ Fixed all example file syntax issues
 - ✅ **Major test coverage expansion** (January 2026)
-  - Added 80+ new tests covering edge cases, error handling, and boundary conditions
+  - Added 95+ new tests covering edge cases, error handling, and boundary conditions
   - Improved test coverage from ~70% to ~85%+
-  - All 160 tests passing ✅
+  - All 209 tests passing ✅
 
 ---
 
 **Last Updated:** January 2026
 **Current Version:** 0.2.1
-**Status:** Milestone 2 In Progress (60% complete)
+**Status:** Milestone 2 In Progress (75% complete)
