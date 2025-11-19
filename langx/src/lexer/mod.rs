@@ -32,6 +32,15 @@ pub enum Token {
     #[token("Repeat")]
     Repeat,
     
+    #[token("While")]
+    While,
+    
+    #[token("repeat")]
+    RepeatLower,
+    
+    #[token("while")]
+    WhileLower,
+    
     #[token("times")]
     TimesKeyword,
     
@@ -94,6 +103,21 @@ pub enum Token {
     #[token(")")]
     RightParen,
     
+    #[token("[")]
+    LeftBracket,
+    
+    #[token("]")]
+    RightBracket,
+    
+    #[token("item")]
+    Item,
+    
+    #[token("of")]
+    Of,
+    
+    #[token("Add")]
+    Add,
+    
     // Literals
     #[regex(r"[0-9]+", |lex| lex.slice().parse::<i64>().ok(), priority = 2)]
     Number(i64),
@@ -152,6 +176,9 @@ impl fmt::Display for Token {
             Token::Than => write!(f, "than"),
             Token::Print => write!(f, "print"),
             Token::Repeat => write!(f, "Repeat"),
+            Token::While => write!(f, "While"),
+            Token::RepeatLower => write!(f, "repeat"),
+            Token::WhileLower => write!(f, "while"),
             Token::TimesKeyword => write!(f, "times"),
             Token::Define => write!(f, "Define"),
             Token::With => write!(f, "with"),
@@ -172,6 +199,11 @@ impl fmt::Display for Token {
             Token::Quote => write!(f, "\""),
             Token::LeftParen => write!(f, "("),
             Token::RightParen => write!(f, ")"),
+            Token::LeftBracket => write!(f, "["),
+            Token::RightBracket => write!(f, "]"),
+            Token::Item => write!(f, "item"),
+            Token::Of => write!(f, "of"),
+            Token::Add => write!(f, "Add"),
             Token::Number(n) => write!(f, "{}", n),
             Token::Identifier(s) => write!(f, "{}", s),
             Token::StringLiteral(s) => write!(f, "\"{}\"", s),
@@ -265,7 +297,7 @@ mod tests {
     
     #[test]
     fn test_arithmetic_tokenization() {
-        let input = "Set x to 5 plus 3 minus 2 times 4 divided by 2.";
+        let input = "Set x to 5 + 3 - 2 * 4 / 2.";
         let tokens: Vec<Token> = tokenize(input).into_iter().map(|(_, t, _)| t).collect();
         
         assert_eq!(tokens, vec![
@@ -279,8 +311,7 @@ mod tests {
             Token::Number(2),
             Token::Times,
             Token::Number(4),
-            Token::Divided,
-            Token::By,
+            Token::Divide,
             Token::Number(2),
             Token::Period,
         ]);

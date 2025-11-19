@@ -1,0 +1,6 @@
+Set x to 2.
+While x is less than 3:
+    print x.
+    Set x to x + 1.
+End while.
+

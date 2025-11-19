@@ -7,6 +7,7 @@ pub enum Value {
     Number(i64),
     String(String),
     Boolean(bool),
+    List(Vec<Value>),
     Null,
 }
 
@@ -16,6 +17,16 @@ impl std::fmt::Display for Value {
             Value::Number(n) => write!(f, "{}", n),
             Value::String(s) => write!(f, "{}", s),
             Value::Boolean(b) => write!(f, "{}", b),
+            Value::List(items) => {
+                write!(f, "[")?;
+                for (i, item) in items.iter().enumerate() {
+                    if i > 0 {
+                        write!(f, ", ")?;
+                    }
+                    write!(f, "{}", item)?;
+                }
+                write!(f, "]")
+            }
             Value::Null => write!(f, "null"),
         }
     }
@@ -154,6 +165,24 @@ impl Interpreter {
                     Err(format!("Expected number for repeat count, got {:?}", count_value))
                 }
             }
+            Statement::While { condition, body } => {
+                loop {
+                    // Re-evaluate condition each iteration to get updated variable values
+                    let condition_value = self.evaluate_expression(condition)?;
+                    if let Value::Boolean(false) = condition_value {
+                        break;
+                    }
+                    if let Value::Boolean(true) = condition_value {
+                        match self.execute_statement(body)? {
+                            ExecutionResult::Normal => {},
+                            result @ ExecutionResult::Return(_) => return Ok(result),
+                        }
+                    } else {
+                        return Err(format!("While loop condition must evaluate to a boolean, got {:?}", condition_value));
+                    }
+                }
+                Ok(ExecutionResult::Normal)
+            }
             Statement::Block(statements) => {
                 for stmt in statements {
                     match self.execute_statement(stmt)? {
@@ -177,6 +206,19 @@ impl Interpreter {
                     None => None,
                 };
                 Ok(ExecutionResult::Return(value))
+            }
+            Statement::ListAppend { list_name, value } => {
+                let list_value = self.env.get(list_name)
+                    .ok_or_else(|| format!("Runtime error: Undefined variable '{}'.", list_name))?;
+                
+                if let Value::List(mut items) = list_value {
+                    let value_to_add = self.evaluate_expression(value)?;
+                    items.push(value_to_add);
+                    self.env.set(list_name, Value::List(items));
+                    Ok(ExecutionResult::Normal)
+                } else {
+                    Err(format!("Runtime error: Variable '{}' is not a list.", list_name))
+                }
             }
         }
     }
@@ -218,21 +260,28 @@ impl Interpreter {
     
     fn evaluate_expression(&self, expr: &Expression) -> Result<Value, String> {
         // Before we do anything, regroup the tree for correct precedence:
+        // Clone the expression to avoid mutating the original
+        // Apply precedence to ensure correct operator precedence
         let expr = self.apply_precedence(expr.clone());
+        // Now evaluate the expression, looking up variables fresh each time
+        self.evaluate_expression_internal(&expr)
+    }
+    
+    fn evaluate_expression_internal(&self, expr: &Expression) -> Result<Value, String> {
         match expr {
-            Expression::Number(n) => Ok(Value::Number(n)),
-            Expression::String(s) => Ok(Value::String(s)),
-            Expression::Boolean(b) => Ok(Value::Boolean(b)),
+            Expression::Number(n) => Ok(Value::Number(*n)),
+            Expression::String(s) => Ok(Value::String(s.clone())),
+            Expression::Boolean(b) => Ok(Value::Boolean(*b)),
             Expression::Variable(name) => {
-                self.env.get(&name)
+                self.env.get(name)
                     .ok_or_else(|| format!(
                         "Runtime error: Undefined variable '{}'.\nHint: Check if the variable is declared and spelled correctly.",
                         name
                     ))
             }
             Expression::BinaryOp { left, operator, right } => {
-                let left_val = self.evaluate_expression(&left)?;
-                let right_val = self.evaluate_expression(&right)?;
+                let left_val = self.evaluate_expression_internal(left)?;
+                let right_val = self.evaluate_expression_internal(right)?;
                 match operator {
                     BinaryOperator::GreaterThan => {
                         if let (Value::Number(l), Value::Number(r)) = (&left_val, &right_val) {
@@ -300,7 +349,7 @@ impl Interpreter {
                             if !l {
                                 return Ok(Value::Boolean(false));
                             }
-                            let right_val = self.evaluate_expression(&right)?;
+                            let right_val = self.evaluate_expression_internal(right)?;
                             if let Value::Boolean(r) = right_val {
                                 Ok(Value::Boolean(r))
                             } else {
@@ -315,7 +364,7 @@ impl Interpreter {
                             if l {
                                 return Ok(Value::Boolean(true));
                             }
-                            let right_val = self.evaluate_expression(&right)?;
+                            let right_val = self.evaluate_expression_internal(right)?;
                             if let Value::Boolean(r) = right_val {
                                 Ok(Value::Boolean(r))
                             } else {
@@ -337,7 +386,7 @@ impl Interpreter {
                 
                 // Evaluate arguments
                 let mut arg_values = Vec::new();
-                for arg in &arguments {
+                for arg in arguments {
                     arg_values.push(self.evaluate_expression(arg)?);
                 }
                 
@@ -376,7 +425,7 @@ impl Interpreter {
                 Ok(result)
             }
             Expression::UnaryOp { operator, operand } => {
-                let value = self.evaluate_expression(&operand)?;
+                let value = self.evaluate_expression_internal(operand)?;
                 match operator {
                     UnaryOperator::Not => {
                         if let Value::Boolean(b) = value {
@@ -385,6 +434,37 @@ impl Interpreter {
                             Err("Runtime error: 'not' operator requires a boolean operand.\nHint: Use 'not' only with boolean expressions.".to_string())
                         }
                     }
+                }
+            }
+            Expression::List(items) => {
+                let mut evaluated_items = Vec::new();
+                for item in items {
+                    evaluated_items.push(self.evaluate_expression(item)?);
+                }
+                Ok(Value::List(evaluated_items))
+            }
+            Expression::ListIndex { list, index } => {
+                let list_value = self.evaluate_expression(&*list)?;
+                let index_value = self.evaluate_expression(&*index)?;
+                
+                if let Value::List(items) = list_value {
+                    if let Value::Number(idx) = index_value {
+                        if idx < 0 {
+                            return Err(format!("Runtime error: List index must be non-negative, got {}.", idx));
+                        }
+                        let idx_usize = idx as usize;
+                        if idx_usize >= items.len() {
+                            return Err(format!(
+                                "Runtime error: List index {} is out of bounds. List has {} items.",
+                                idx_usize, items.len()
+                            ));
+                        }
+                        Ok(items[idx_usize].clone())
+                    } else {
+                        Err(format!("Runtime error: List index must be a number, got {:?}.", index_value))
+                    }
+                } else {
+                    Err(format!("Runtime error: Cannot index into non-list value {:?}.", list_value))
                 }
             }
         }
@@ -482,5 +562,130 @@ mod tests {
         let mut interpreter = Interpreter::new();
         interpreter.interpret(&program).unwrap();
         assert_eq!(interpreter.env.get("x"), Some(Value::Number(14)));
+    }
+    
+    #[test]
+    fn test_while_loop_basic() {
+        let source = "
+            Set x to 0.
+            While x is less than 3:
+                Set x to x + 1.
+            print x.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        assert_eq!(interpreter.env.get("x"), Some(Value::Number(3)));
+    }
+    
+    #[test]
+    fn test_while_loop_false_condition() {
+        let source = "
+            Set x to 5.
+            While x is less than 3:
+                Set x to x + 1.
+            print x.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        // x should remain 5 since condition is false
+        assert_eq!(interpreter.env.get("x"), Some(Value::Number(5)));
+    }
+    
+    #[test]
+    fn test_while_loop_with_counter() {
+        let source = "
+            Set counter to 0.
+            Set sum to 0.
+            While counter is less than 5:
+                Set sum to sum + counter.
+                Set counter to counter + 1.
+            print sum.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        // Sum of 0+1+2+3+4 = 10
+        assert_eq!(interpreter.env.get("sum"), Some(Value::Number(10)));
+        assert_eq!(interpreter.env.get("counter"), Some(Value::Number(5)));
+    }
+    
+    #[test]
+    fn test_list_literal() {
+        let source = "Set list to [1, 2, 3]. print list.";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        assert_eq!(
+            interpreter.env.get("list"),
+            Some(Value::List(vec![
+                Value::Number(1),
+                Value::Number(2),
+                Value::Number(3),
+            ]))
+        );
+    }
+    
+    #[test]
+    fn test_list_indexing() {
+        let source = "
+            Set list to [10, 20, 30].
+            Set first to item 0 of list.
+            print first.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        assert_eq!(interpreter.env.get("first"), Some(Value::Number(10)));
+    }
+    
+    #[test]
+    fn test_list_append() {
+        let source = "
+            Set list to [1, 2].
+            Add 3 to list.
+            print list.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        assert_eq!(
+            interpreter.env.get("list"),
+            Some(Value::List(vec![
+                Value::Number(1),
+                Value::Number(2),
+                Value::Number(3),
+            ]))
+        );
+    }
+    
+    #[test]
+    fn test_list_out_of_bounds() {
+        let source = "
+            Set list to [1, 2].
+            Set x to item 5 of list.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        let result = interpreter.interpret(&program);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("out of bounds"));
+    }
+    
+    #[test]
+    fn test_list_mixed_types() {
+        let source = "
+            Set list to [1, \"hello\", true].
+            Set num to item 0 of list.
+            Set str to item 1 of list.
+            Set bool to item 2 of list.
+        ";
+        let program = parser::parse(source).unwrap();
+        let mut interpreter = Interpreter::new();
+        interpreter.interpret(&program).unwrap();
+        assert_eq!(interpreter.env.get("num"), Some(Value::Number(1)));
+        assert_eq!(interpreter.env.get("str"), Some(Value::String("hello".to_string())));
+        assert_eq!(interpreter.env.get("bool"), Some(Value::Boolean(true)));
     }
 } 

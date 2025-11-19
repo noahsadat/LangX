@@ -29,12 +29,26 @@ If flag then print "Flag is true".
 **Note:** Uses `then`, not comma.
 
 ### Loops
+
+#### Repeat Loop
 ```
 Repeat [count] times: [statement].
 ```
 Example:
 ```
 Repeat 3 times: print "Hello".
+```
+
+#### While Loop
+```
+While [condition]: [statement].
+```
+Example:
+```
+Set x to 0.
+While x is less than 5:
+    print x.
+    Set x to x + 1.
 ```
 
 ### Print Statements
@@ -108,6 +122,42 @@ Examples:
 Return x + 5.
 Return true.
 Return.
+```
+
+### Lists/Arrays
+
+#### List Literals
+```
+Set [variable] to [[item1], [item2], ...].
+```
+Examples:
+```
+Set numbers to [1, 2, 3, 4, 5].
+Set mixed to [1, "hello", true].
+Set empty to [].
+```
+
+#### List Indexing
+```
+Set [variable] to item [index] of [list].
+```
+Examples:
+```
+Set first to item 0 of numbers.
+Set second to item 1 of numbers.
+```
+
+**Note:** List indices start at 0. The index must be a number or a parenthesized expression.
+
+#### List Append
+```
+Add [value] to [list].
+```
+Example:
+```
+Set list to [1, 2].
+Add 3 to list.
+# list is now [1, 2, 3]
 ```
 
 ## Expressions and Operators

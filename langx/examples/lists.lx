@@ -1,0 +1,29 @@
+# List Examples
+
+# Create a list
+Set numbers to [1, 2, 3, 4, 5].
+print numbers.
+
+# Access list items
+Set first to item 2 of numbers.
+Set second to item 1 of numbers.
+print first.
+print second.
+
+# Append to list
+Add "hello" to numbers.
+print numbers.
+
+# List with mixed types
+Set mixed to [1, "hello", true, 42].
+Set num to item 0 of mixed.
+Set str to item 1 of mixed.
+Set bool to item 2 of mixed.
+print num.
+print str.
+print bool.
+
+# Empty list
+Set empty to [].
+print empty.
+

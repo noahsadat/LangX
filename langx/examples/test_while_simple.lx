@@ -1,0 +1,7 @@
+Set x to 0.
+print x.
+Set x to x + 1.
+print x.
+Set x to x + 1.
+print x.
+

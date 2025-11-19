@@ -1,0 +1,33 @@
+# Combining While Loops and Lists
+
+# Sum all items in a list
+Set list to [10, 20, 30, 40, 50].
+Set index to 0.
+Set sum to 0.
+While index is less than 5:
+    Set current_item to item (index) of list.
+    Set sum to sum + current_item.
+    Set index to index + 1.
+End while.
+print sum.
+
+# Build a list using a while loop
+Set result to [].
+Set i to 1.
+While i is less than 6:
+    Add i to result.
+    Set i to i + 1.
+End while.
+print result.
+
+# Find maximum in a list
+Set numbers to [5, 2, 8, 1, 9, 3].
+Set max to item 0 of numbers.
+Set idx to 1.
+While idx is less than 6:
+    Set current to item (idx) of numbers.
+    If current is greater than max then Set max to current.
+    Set idx to idx + 1.
+End while.
+print max.
+

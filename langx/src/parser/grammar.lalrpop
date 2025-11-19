@@ -23,10 +23,26 @@ pub Statement: Statement = {
         Statement::Print(expr)
     },
     
-    "Repeat" <count:PrimaryExpression> "times_kw" ":" <body:Statement> => {
+    "Repeat" <count:PrimaryExpression> "times_kw" ":" <body:Statement*> "End" "repeat" "." => {
         Statement::Repeat {
             count,
-            body: Box::new(body)
+            body: Box::new(if body.len() == 1 {
+                body.into_iter().next().unwrap()
+            } else {
+                Statement::Block(body)
+            })
+        }
+    },
+    
+
+    "While" <condition:LogicalOr> ":" <body:Statement*> "End" "while" "." => {
+        Statement::While {
+            condition,
+            body: Box::new(if body.len() == 1 {
+                body.into_iter().next().unwrap()
+            } else {
+                Statement::Block(body)
+            })
         }
     },
     
@@ -59,6 +75,13 @@ pub Statement: Statement = {
     
     "Return" <expr:LogicalOr?> "." => {
         Statement::Return(expr)
+    },
+    
+    "Add" <value:LogicalOr> "to" <list:Identifier> "." => {
+        Statement::ListAppend {
+            list_name: list,
+            value,
+        }
     },
     
     // Call as a statement (for functions that don't return a value)
@@ -131,6 +154,80 @@ Atom: Expression = {
     "false" => Expression::Boolean(false),
     <id:Identifier> => Expression::Variable(id),
     FunctionCall,
+    ListLiteral,
+    ListIndexExpr,
+};
+
+// Atom without FunctionCall - for list items to avoid ambiguity
+AtomNoCall: Expression = {
+    "(" <expr:LogicalOr> ")" => expr,
+    <n:Number> => Expression::Number(n),
+    <s:StringLiteral> => Expression::String(s),
+    "true" => Expression::Boolean(true),
+    "false" => Expression::Boolean(false),
+    <id:Identifier> => Expression::Variable(id),
+    ListLiteral,
+    ListIndexExpr,
+};
+
+// List literal: [expr1, expr2, ...]
+ListLiteral: Expression = {
+    "[" <items:ListItems?> "]" => Expression::List(items.unwrap_or_default()),
+};
+
+// List items - use expressions without top-level function calls to avoid ambiguity
+// Function calls in lists must be parenthesized: [(Call func with x), y]
+ListItemFactor: Expression = {
+    <first:AtomNoCall> <rest:ListItemFactorOp*> => {
+        rest.into_iter().fold(first, |acc, (op, rhs)| {
+            Expression::BinaryOp {
+                left: Box::new(acc),
+                operator: op,
+                right: Box::new(rhs),
+            }
+        })
+    }
+};
+
+ListItemFactorOp: (BinaryOperator, Expression) = {
+    "*" <rhs:AtomNoCall> => (BinaryOperator::Times, rhs),
+    "/" <rhs:AtomNoCall> => (BinaryOperator::Divide, rhs),
+};
+
+ListItemTerm: Expression = {
+    <first:ListItemFactor> <rest:ListItemTermOp*> => {
+        rest.into_iter().fold(first, |acc, (op, rhs)| {
+            Expression::BinaryOp {
+                left: Box::new(acc),
+                operator: op,
+                right: Box::new(rhs),
+            }
+        })
+    }
+};
+
+ListItemTermOp: (BinaryOperator, Expression) = {
+    "+" <rhs:ListItemFactor> => (BinaryOperator::Plus, rhs),
+    "-" <rhs:ListItemFactor> => (BinaryOperator::Minus, rhs),
+};
+
+ListItems: Vec<Expression> = {
+    <first:ListItemTerm> <rest:("," <ListItemTerm>)*> => {
+        let mut items = vec![first];
+        items.extend(rest);
+        items
+    },
+};
+
+// List indexing: item index of list
+// Use AtomNoCall for list to avoid ambiguity in list items
+ListIndexExpr: Expression = {
+    "item" <index:AtomNoCall> "of" <list:AtomNoCall> => {
+        Expression::ListIndex {
+            list: Box::new(list),
+            index: Box::new(index),
+        }
+    },
 };
 
 // Factor: multiplication/division (left-associative, warning-free)
@@ -212,6 +309,8 @@ PrimaryExpression: Expression = {
     "true" => Expression::Boolean(true),
     "false" => Expression::Boolean(false),
     <id:Identifier> => Expression::Variable(id),
+    ListLiteral,
+    ListIndexExpr,
 };
 
 // Restore Expression as an alias for Term
@@ -233,7 +332,10 @@ extern {
         "than" => Token::Than,
         "print" => Token::Print,
         "Repeat" => Token::Repeat,
+        "While" => Token::While,
         "times_kw" => Token::TimesKeyword,
+        "repeat" => Token::RepeatLower,
+        "while" => Token::WhileLower,
         "Define" => Token::Define,
         "with" => Token::With,
         "parameters" => Token::Parameters,
@@ -249,6 +351,8 @@ extern {
         "/" => Token::Divide,
         "(" => Token::LeftParen,
         ")" => Token::RightParen,
+        "[" => Token::LeftBracket,
+        "]" => Token::RightBracket,
         "." => Token::Period,
         "," => Token::Comma,
         ":" => Token::Colon,
@@ -261,5 +365,8 @@ extern {
         "or" => Token::Or,
         "true" => Token::True,
         "false" => Token::False,
+        "item" => Token::Item,
+        "of" => Token::Of,
+        "Add" => Token::Add,
     }
 } 

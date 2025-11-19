@@ -33,6 +33,15 @@ pub enum Expression {
         name: String,
         arguments: Vec<Expression>,
     },
+    
+    /// A list literal (e.g., [1, 2, 3])
+    List(Vec<Expression>),
+    
+    /// List indexing (e.g., item 0 of list)
+    ListIndex {
+        list: Box<Expression>,
+        index: Box<Expression>,
+    },
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -77,6 +86,12 @@ pub enum Statement {
         body: Box<Statement>,
     },
     
+    /// While statement (e.g., While condition: statement)
+    While {
+        condition: Expression,
+        body: Box<Statement>,
+    },
+    
     /// Block of statements
     Block(Vec<Statement>),
     
@@ -89,6 +104,12 @@ pub enum Statement {
     
     /// Return statement (e.g., Return x)
     Return(Option<Expression>),
+    
+    /// List append statement (e.g., Add 6 to list)
+    ListAppend {
+        list_name: String,
+        value: Expression,
+    },
 }
 
 #[derive(Debug, PartialEq)]
@@ -115,6 +136,19 @@ impl fmt::Display for Expression {
                     .map(|arg| format!("{}", arg))
                     .collect();
                 write!(f, "{}", args.join(", "))
+            }
+            Expression::List(items) => {
+                write!(f, "[")?;
+                for (i, item) in items.iter().enumerate() {
+                    if i > 0 {
+                        write!(f, ", ")?;
+                    }
+                    write!(f, "{}", item)?;
+                }
+                write!(f, "]")
+            }
+            Expression::ListIndex { list, index } => {
+                write!(f, "item {} of {}", index, list)
             }
         }
     }
@@ -160,6 +194,9 @@ impl fmt::Display for Statement {
             Statement::Repeat { count, body } => {
                 write!(f, "Repeat {} times: {}", count, body)
             }
+            Statement::While { condition, body } => {
+                write!(f, "While {}: {}", condition, body)
+            }
             Statement::Block(statements) => {
                 write!(f, "{{")?;
                 for stmt in statements {
@@ -179,6 +216,9 @@ impl fmt::Display for Statement {
                     Some(e) => write!(f, "Return {}", e),
                     None => write!(f, "Return"),
                 }
+            }
+            Statement::ListAppend { list_name, value } => {
+                write!(f, "Add {} to {}", value, list_name)
             }
         }
     }

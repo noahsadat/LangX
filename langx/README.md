@@ -72,6 +72,7 @@ If x is greater than 5, print "x is large".
 
 ### Loops
 
+#### Repeat Loop
 ```
 Repeat [count] times: [statement].
 ```
@@ -79,6 +80,19 @@ Repeat [count] times: [statement].
 Example:
 ```
 Repeat 3 times: print "Hello".
+```
+
+#### While Loop
+```
+While [condition]: [statement].
+```
+
+Example:
+```
+Set x to 0.
+While x is less than 5:
+    print x.
+    Set x to x + 1.
 ```
 
 ### Functions
@@ -99,6 +113,22 @@ End definition.
 
 Set result to Call add with 5, 10.
 print result.
+```
+
+### Lists/Arrays
+
+```
+Set list to [1, 2, 3, 4, 5].
+Set first to item 0 of list.
+Add 6 to list.
+```
+
+Example:
+```
+Set numbers to [10, 20, 30].
+Set first to item 0 of numbers.
+Add 40 to numbers.
+print numbers.  # Prints: [10, 20, 30, 40]
 ```
 
 ### Print Statements
