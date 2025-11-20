@@ -55,6 +55,12 @@ impl Compiler {
     
     /// Compile a program to bytecode
     pub fn compile(&mut self, program: &Program) -> Result<Chunk, String> {
+        // Reset compiler state for new compilation
+        self.chunk = Chunk::new();
+        self.functions.clear();
+        self.loop_starts.clear();
+        self.loop_ends.clear();
+        
         // First pass: collect function definitions
         for statement in &program.statements {
             if let Statement::FunctionDefinition { name, parameters, body } = statement {
@@ -79,10 +85,13 @@ impl Compiler {
             let func_info = self.functions.get(&func_name).unwrap();
             let body = func_info.body.clone();
             
-            // Create compiler with current functions map (which may have some chunks already compiled)
+            // Create compiler with current functions map (which includes all function definitions)
+            // This allows recursive calls to find the function being compiled
+            // IMPORTANT: Clone the functions map AFTER we've collected all definitions
+            // but BEFORE we start compiling, so recursive calls can find the function
             let mut func_compiler = Compiler {
                 chunk: Chunk::new(),
-                functions: self.functions.clone(),  // Give access to all functions for recursive calls
+                functions: self.functions.clone(),  // Clone current state with all function definitions
                 loop_starts: Vec::new(),
                 loop_ends: Vec::new(),
             };
@@ -114,6 +123,7 @@ impl Compiler {
         }
         
         // Third pass: compile main program statements
+        
         for statement in &program.statements {
             match statement {
                 Statement::FunctionDefinition { .. } => {
@@ -419,8 +429,14 @@ impl Compiler {
                 } else {
                     // Regular function call
                     // Check if function exists
+                    // CRITICAL: self.functions should contain all function definitions
+                    // including the one being compiled (for recursive calls)
                     if !self.functions.contains_key(name) {
-                        return Err(format!("Undefined function '{}'", name));
+                        let available: Vec<String> = self.functions.keys().cloned().collect();
+                        return Err(format!(
+                            "Compilation error: Undefined function '{}'. Available functions: {:?}",
+                            name, available
+                        ));
                     }
                     
                     // Compile arguments

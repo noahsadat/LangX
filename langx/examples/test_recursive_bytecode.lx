@@ -2,7 +2,6 @@ Define factorial with parameter n:
     If n is greater than 1 then
         Set temp to Call factorial with n - 1.
         Return n * temp.
-    End if.
     Return 1.
 End definition.
 
